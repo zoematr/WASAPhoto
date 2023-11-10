@@ -8,6 +8,8 @@ info:
 tags:
   - name: login
   - name: user
+  - name: stream
+  - name: photo
 
 #########COMPONENTS#################################
 components:
@@ -86,20 +88,6 @@ components:
           $ref: "#/components/schemas/commentid"
         userid:
           $ref: "#/components/schemas/userid"
-    
-    likes:
-      title: likes
-      type: array
-      description: list of all the users that liked a picture
-      items: 
-        $ref: "#/components/schemas/user"
-      
-    comments:
-      title: comments
-      type: array
-      description: list of all the users that commented a picture
-      items: 
-        $ref: "#/components/schemas/comment"
 
     user:
       title: user
@@ -116,13 +104,8 @@ components:
           description: description of the photo
           pattern: '^.*?$'
           example: I am Zoe and I study ACSAI at Sapienza!
-        photos: 
-          title: photos
-          type: array
-          description: Array of Photos posted by the user
-          items: { $ref: "#/components/schemas/photo" }
         
-        #maybe i should add also the following followers and banned as properties of the user??
+        #maybe i should add also the photos, following, followers and banned as properties of the user??
     
     photo:
       title: photo
@@ -133,6 +116,12 @@ components:
           $ref: '#/components/schemas/photoid'
         photofile:
           $ref: '#/components/schemas/photofile'
+        description:
+          type: string
+          description: description of the photo
+          pattern: '^.*?$'
+          example: this is the picture of yesterday's sunset!
+
   
   securitySchemes:
     bearerAuthentication: 
