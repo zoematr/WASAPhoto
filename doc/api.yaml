@@ -33,12 +33,16 @@ components:
       description:  |-
         unique identifier for a comment
       pattern: '^.*?$'
+      minLength: 3
+      maxLength: 29
+      example: 01234abcdef1234a1234b1234c01234
     
     photoid:
       title: photoid
       type: string
       description:  |-
         this is the unique identifier of a photo.
+      pattern: '^.*?$'
       minLength: 3
       maxLength: 29
       example: 01234abcdef1234a1234b1234c01234
@@ -61,7 +65,6 @@ components:
         this is the actual file that is uploaded, so it's a binary sequence that encodes the pixels of the picture.
       minLength: 73 
       maxLength: 2147483647
-      pattern: '^.*$'
       example: '10101100101011011010011110001010000100010101011000010111110010100001001010110010101101101001111000101000010001010101100001011111001010000100'
     
     datetime:
@@ -72,8 +75,8 @@ components:
       minLength: 20
       maxLength: 20
       format: date-time
-      default: 0000-01-01T00:00:00Z
-      example: 2023-11-08T22:38:00Z
+      default: D0000-01-01T00:00:00
+      example: D2023-11-08T22:38:00
       
     comment:
       title: comment
@@ -83,9 +86,19 @@ components:
         content:
           type: string
           pattern: '^.*?$'
+          minLenght: 0
+          maxLength: 400
           example: what a beautiful picture of a sunset!
         commentid: #used to delete a specific comment
-          $ref: "#/components/schemas/commentid"
+          $ref: "#/components/schemas/commentid" #the user id is not enough because one user can write multiple comments
+        userid:
+          $ref: "#/components/schemas/userid"
+
+    like:
+      title: like
+      type: object
+      description: like under a photo
+      properties:
         userid:
           $ref: "#/components/schemas/userid"
 
@@ -101,11 +114,17 @@ components:
           $ref: '#/components/schemas/username'
         biography:
           type: string
-          description: description of the photo
+          description: description of the user
           pattern: '^.*?$'
+          minLenght: 0
+          maxLength: 200
           example: I am Zoe and I study ACSAI at Sapienza!
-        
-        #maybe i should add also the photos, following, followers and banned as properties of the user??
+        banned:
+          $ref: '#/components/schemas/listbanned'
+        followers:
+          $ref: '#/components/schemas/followers'
+        following:
+          $ref: '#/components/schemas/following'
     
     photo:
       title: photo
@@ -116,20 +135,61 @@ components:
           $ref: '#/components/schemas/photoid'
         photofile:
           $ref: '#/components/schemas/photofile'
+        likes:
+          $ref: '#/components/schemas/listlikes'
+        comments:
+          $ref: '#/components/schemas/listcomments'
         description:
           type: string
           description: description of the photo
           pattern: '^.*?$'
+          minLenght: 0
+          maxLength: 400
           example: this is the picture of yesterday's sunset!
 
-  
+    listbanned:
+      title: listbanned
+      description: this is the list of users banned by a user.
+      minItems: 0
+      maxItems: 10000000000000
+      items: { $ref: "#/components/schemas/user"}
+    
+    following:
+      title: following
+      description: this is the list of users followed by a user.
+      minItems: 0
+      maxItems: 10000000000000
+      items: { $ref: "#/components/schemas/user"}
+    
+    followers:
+      title: followers
+      description: this is the list of users following a user.
+      minItems: 0
+      maxItems: 10000000000000
+      items: { $ref: "#/components/schemas/user"}
+    
+    listlikes:
+      title: listlikes
+      description: this is the list of users that liked a photo
+      minItems: 0
+      maxItems: 10000000000000
+      items: { $ref: "#/components/schemas/user"}
+
+    listcomments:
+      title: listcomments
+      description: this is the list of comments under a photo
+      minItems: 0
+      maxItems: 10000000000000
+      description: Array of users blocked
+      items: { $ref: "#/components/schemas/comment"}
+
   securitySchemes:
     bearerAuthentication: 
       type: http
       scheme: bearer
 
   parameters:
-  
+
     username: 
       name: username
       in: path
@@ -499,7 +559,7 @@ paths:
         '403': 
           description: You cannot perform this operation.
         
-        '404': 
+        '404':
           description: comment not found.
 
   /users/{userid}/following/: 
