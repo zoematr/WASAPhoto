@@ -86,19 +86,10 @@ components:
         content:
           type: string
           pattern: '^.*?$'
-          minLenght: 0
           maxLength: 400
           example: what a beautiful picture of a sunset!
         commentid: #used to delete a specific comment
           $ref: "#/components/schemas/commentid" #the user id is not enough because one user can write multiple comments
-        userid:
-          $ref: "#/components/schemas/userid"
-
-    like:
-      title: like
-      type: object
-      description: like under a photo
-      properties:
         userid:
           $ref: "#/components/schemas/userid"
 
@@ -116,7 +107,6 @@ components:
           type: string
           description: description of the user
           pattern: '^.*?$'
-          minLenght: 0
           maxLength: 200
           example: I am Zoe and I study ACSAI at Sapienza!
         banned:
@@ -143,12 +133,12 @@ components:
           type: string
           description: description of the photo
           pattern: '^.*?$'
-          minLenght: 0
           maxLength: 400
           example: this is the picture of yesterday's sunset!
 
     listbanned:
       title: listbanned
+      type: array
       description: this is the list of users banned by a user.
       minItems: 0
       maxItems: 10000000000000
@@ -156,6 +146,7 @@ components:
     
     following:
       title: following
+      type: array
       description: this is the list of users followed by a user.
       minItems: 0
       maxItems: 10000000000000
@@ -163,6 +154,7 @@ components:
     
     followers:
       title: followers
+      type: array
       description: this is the list of users following a user.
       minItems: 0
       maxItems: 10000000000000
@@ -177,10 +169,10 @@ components:
 
     listcomments:
       title: listcomments
+      type: array
       description: this is the list of comments under a photo
       minItems: 0
       maxItems: 10000000000000
-      description: Array of users blocked
       items: { $ref: "#/components/schemas/comment"}
 
   securitySchemes:
