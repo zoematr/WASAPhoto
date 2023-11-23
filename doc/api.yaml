@@ -11,10 +11,10 @@ tags:
   - name: stream
   - name: photo
 
-#########COMPONENTS#################################
+#COMPONENTS
 components:
 
-#########SCHEMAS#################################
+#SCHEMAS
   schemas:
   
     userid:
@@ -25,7 +25,7 @@ components:
       pattern: ^[0-9a-fA-F-]{36}
       minLength: 36
       maxLength: 36
-      example: 01234567-1234-1234-1234-012345678912
+      example: "01234567-1234-1234-1234-012345678912"
     
     commentid:
       title: commentid
@@ -35,7 +35,7 @@ components:
       pattern: '^.*?$'
       minLength: 3
       maxLength: 29
-      example: 01234abcdef1234a1234b1234c01234
+      example: "01234abcdef1234a1234b1234c01234"
     
     photoid:
       title: photoid
@@ -45,7 +45,7 @@ components:
       pattern: '^.*?$'
       minLength: 3
       maxLength: 29
-      example: 01234abcdef1234a1234b1234c01234
+      example: "01234abcdef1234a1234b1234c01234"
  
     username: 
       title: username
@@ -55,7 +55,7 @@ components:
       minLength: 3
       maxLength: 31
       pattern: '^.*?$'
-      example: zoematr12345
+      example: "zoematr12345"
       
     photofile:
       title: photofile
@@ -65,7 +65,7 @@ components:
         this is the actual file that is uploaded, so it's a binary sequence that encodes the pixels of the picture.
       minLength: 73 
       maxLength: 2147483647
-      example: '10101100101011011010011110001010000100010101011000010111110010100001001010110010101101101001111000101000010001010101100001011111001010000100'
+      example: "10101100101011011010011110001010000100010101011000010111110010100001001010110010101101101001111000101000010001010101100001011111001010000100"
     
     datetime:
       title: date
@@ -75,8 +75,8 @@ components:
       minLength: 20
       maxLength: 20
       format: date-time
-      default: D0000-01-01T00:00:00
-      example: D2023-11-08T22:38:00
+      default: 0000-01-01T00:00:00Z
+      example: 2023-11-08T22:38:00Z
       
     comment:
       title: comment
@@ -87,11 +87,11 @@ components:
           type: string
           pattern: '^.*?$'
           maxLength: 400
-          example: what a beautiful picture of a sunset!
-        commentid: #used to delete a specific comment
-          $ref: "#/components/schemas/commentid" #the user id is not enough because one user can write multiple comments
-        userid:
-          $ref: "#/components/schemas/userid"
+          example: "what a beautiful picture of a sunset!"
+        commentid: {$ref: '#/components/schemas/commentid'} #used to delete a specific comment
+        #the user id is not enough because one user can write multiple comments
+        userid: {$ref: '#/components/schemas/userid'}
+        datetime: {$ref: '#/components/schemas/datetime'}
 
     user:
       title: user
@@ -99,44 +99,34 @@ components:
       description: |
         this is the entire user object which includes the username, the identifier and additional information.
       properties:
-        userid: 
-          $ref: '#/components/schemas/userid'
-        username:
-          $ref: '#/components/schemas/username'
+        userid: {$ref: '#/components/schemas/userid'}
+        username: {$ref: '#/components/schemas/username'}
         biography:
           type: string
           description: description of the user
           pattern: '^.*?$'
           maxLength: 200
-          example: I am Zoe and I study ACSAI at Sapienza!
-        banned:
-          $ref: '#/components/schemas/listbanned'
-        followers:
-          $ref: '#/components/schemas/followers'
-        following:
-          $ref: '#/components/schemas/following'
+          example: "I am Zoe and I study ACSAI at Sapienza!"
+        banned: {$ref: '#/components/schemas/listbanned'}
+        followers: {$ref: '#/components/schemas/followers'}
+        following: {$ref: '#/components/schemas/following'}
     
     photo:
       title: photo
       type: object
       description: this is the photo object, which includes the picture posted and all the additional relevant information such as the owner, the date and time it was posted, an optional description and the number of likes.
       properties:
-        photoid:
-          $ref: '#/components/schemas/photoid'
-        photofile:
-          $ref: '#/components/schemas/photofile'
-        likes:
-          $ref: '#/components/schemas/listlikes'
-        comments:
-          $ref: '#/components/schemas/listcomments'
-        datetime:
-          $ref: '#/components/schemas/datetime'
+        photoid: {$ref: '#/components/schemas/photoid'}
+        photofile: {$ref: '#/components/schemas/photofile'}
+        likes: {$ref: '#/components/schemas/listlikes'}
+        comments: {$ref: '#/components/schemas/listcomments'}
+        datetime: {$ref: '#/components/schemas/datetime'}
         description:
           type: string
           description: description of the photo
           pattern: '^.*?$'
           maxLength: 400
-          example: this is the picture of yesterday's sunset!
+          example: "this is the picture of yesterday's sunset!"
 
     listbanned:
       title: listbanned
@@ -144,7 +134,7 @@ components:
       description: this is the list of users banned by a user.
       minItems: 0
       maxItems: 10000000000000
-      items: { $ref: "#/components/schemas/user"}
+      items: {$ref: "#/components/schemas/userid"}
     
     following:
       title: following
@@ -152,7 +142,7 @@ components:
       description: this is the list of users followed by a user.
       minItems: 0
       maxItems: 10000000000000
-      items: { $ref: "#/components/schemas/user"}
+      items: {$ref: '#/components/schemas/userid'}
     
     followers:
       title: followers
@@ -160,14 +150,14 @@ components:
       description: this is the list of users following a user.
       minItems: 0
       maxItems: 10000000000000
-      items: { $ref: "#/components/schemas/user"}
+      items: {$ref: '#/components/schemas/userid'}
     
     listlikes:
       title: listlikes
       description: this is the list of users that liked a photo
       minItems: 0
       maxItems: 10000000000000
-      items: { $ref: "#/components/schemas/user"}
+      items: {$ref: '#/components/schemas/userid'}
 
     listcomments:
       title: listcomments
@@ -175,7 +165,7 @@ components:
       description: this is the list of comments under a photo
       minItems: 0
       maxItems: 10000000000000
-      items: { $ref: "#/components/schemas/comment"}
+      items: {$ref: '#/components/schemas/comment'}
 
   securitySchemes:
     bearerAuthentication: 
@@ -190,8 +180,7 @@ components:
       required: true
       description: |
         used to search a user
-      schema: 
-        $ref: "#/components/schemas/username"
+      schema: {$ref: '#/components/schemas/username'}
       
     userid:
       name: userid
@@ -199,8 +188,7 @@ components:
       required: true
       description: |
         used to perform the operation concerning a user
-      schema:
-        $ref: "#/components/schemas/userid"
+      schema: {$ref: '#/components/schemas/userid'}
     
     photoid:
       name: photoid
@@ -208,8 +196,7 @@ components:
       required: true
       description: |
         used to perform specific operations on pictures such as liking it or deleting it.
-      schema:
-        $ref: "#/components/schemas/photoid"
+      schema: {$ref: '#/components/schemas/photoid'}
     
     commentid:
       name: commentid
@@ -217,10 +204,9 @@ components:
       required: true
       description: |
         used to perform specific operations on pictures such as liking it or deleting it.
-      schema:
-        $ref: "#/components/schemas/commentid"
+      schema: {$ref: '#/components/schemas/commentid'}
 
-#########PATHS#################################
+#PATHS
 paths:
   /session: 
     post:
@@ -235,23 +221,20 @@ paths:
         description: User details 
         content:
           application/json: 
-            schema: 
-              $ref: '#/components/schemas/username'
+            schema: {$ref: '#/components/schemas/username'}
         required: true 
       responses:
         '201':
           description: User log-in action successful 
           content:
             application/json: 
-              schema: 
-                $ref: '#/components/schemas/userid'
+              schema: {$ref: '#/components/schemas/userid'}
 
   /users/{userid}:
     summary: specific profile of the user corresponding to that userid.
     parameters: 
-      #I need to provide for a Username of the person I am looking for.
       - $ref : "#/components/parameters/userid"
-    
+
     patch: #patch is for changing only partially a resource
       security:
       - bearerAuthentication: []
@@ -262,17 +245,14 @@ paths:
         Change the username of one's own profile, with the one provided provided in input.
         The outcome of the operation is returned (either successful or not authorized)
         This operation can be performed only by the owner of the profile, so authentication is required.
-
       requestBody:
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/username" }
+            schema: {$ref: '#/components/schemas/username'}
         required: true
-
       responses: 
         '204': 
           description: The username was updated successfully.
-          
         '403': 
           description: You cannot perform this operation.
     
@@ -289,19 +269,15 @@ paths:
           description: User profile is returned successfully.
           content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/user"
-              
+              schema: {$ref: '#/components/schemas/user'}
         '404':
           description: User profile is not found.
-        
         '403': 
           description: You cannot perform this operation.
       
   /users/{userid}/mystream/:
     summary: Stream of picture posted by the followed users.
     parameters: 
-      #I need to provide for a username of the person for which I want to know the stream.
       - $ref : '#/components/parameters/userid'
 
     #Getting the stream of an account.
@@ -323,11 +299,9 @@ paths:
                 minItems: 0
                 maxItems: 100000
                 description: Array of Photos of the user's stream.
-                items: { $ref: "#/components/schemas/photo" }
-        
+                items: {$ref: '#/components/schemas/photo'}
         '204': 
-          description: No one posted anything yet.
-        
+          description: No one posted anything yet.   
         '403':
           description: You cannot perform this operation.
   
@@ -335,7 +309,7 @@ paths:
     summary: Photos posted by a user
     parameters: 
       - $ref : "#/components/parameters/userid"
-      
+
     post:
       security:
         - bearerAuthentication: []
@@ -349,14 +323,14 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: {$ref: "#/components/schemas/photo"}
+            schema: {$ref: '#/components/schemas/photo'}
 
       responses:
         '201':
           description: Your new photo was uploaded successfully.
           content:
             application/json:
-              schema: {$ref : "#/components/schemas/photoid"}
+              schema: {$ref: '#/components/schemas/photoid'}
 
         '403': 
           description: You cannot perform this operation.
@@ -378,11 +352,9 @@ paths:
                 type: array
                 minItems: 0
                 description: Array of Stream Photos.
-                items: { $ref: "#/components/schemas/photo" }
-                
+                items: {$ref: '#/components/schemas/photo'}     
         '204': 
           description: The user did not post any pictures yet.
-          
         '403': 
           description: You cannot perform this operation.
 
@@ -401,14 +373,11 @@ paths:
       description: |
         given the userid of the owner of the account (i.e. userX) requesting the operation  and the photoid of the pictures that the owner wishes to delete, delete the photo object from the collection of photos posted by userX.
         We request for authentication of the user that wants to perform this action, since we must make sure that he/she must be the author of the picture.
-        
       responses:
         '204': 
           description: You just deleted your photo.
-        
         '403': 
           description: You cannot perform this operation.
-        
         '404': 
           description: Photo not found. #if the photoid passed in input does not correspond to any of the photoid's in the collection of photos of the requesting user
   
@@ -427,17 +396,13 @@ paths:
       description: |
         Given the photoid and a user requesting the operation, return all the username of the users that liked the specific photo.
         We request for authentication of the user that wants to perform this action, since a user must have logged in to see the like left on someone's picture.
-        
       responses:
         '200': 
           description: these are the users that like this photo.
-        
         '204': 
           description: No one has liked yet.
-        
         '403': 
           description: You cannot perform this operation.
-    
     
     put:
       security:
@@ -448,11 +413,9 @@ paths:
       description: |
         Given the photoid and a user requesting the operation, add the userid corresponding to the requesting user to the list of users liking that specific picture.
         We request for authentication of the user that wants to perform this action, since a user must have logged in to like a picture.
-        
       responses:
         '204': 
           description: You liked the photo.
-        
         '403': 
           description: You cannot perform this operation.
           
@@ -494,14 +457,11 @@ paths:
       description: |
         Given the photoid and a user requesting the operation, return all the comments under the specific photo.
         We request for authentication of the user that wants to perform this action, since a user must have logged in to see the comments under someone's picture.
-        
       responses:
         '200': 
           description: these are the comments under a photo.
-        
         '204': 
           description: No one has commented yet.
-        
         '403': 
           description: You cannot perform this operation.
     
@@ -518,14 +478,11 @@ paths:
         description: Comment details 
         content:
           applcation/json: 
-            schema: 
-              $ref: '#/components/schemas/comment'
+            schema: {$ref : '#/components/schemas/comment'}
         required: true  
-        
       responses:
         '204': 
           description: You added your comment to the photo.
-        
         '403': 
           description: You cannot perform this operation.
           
@@ -545,20 +502,17 @@ paths:
       description: |
         Given the photoid, the commentid and a user requesting the operation, delete the comment corresponding to the specific commentid from the collection of comments under a specific picture.
         We request for authentication of the user that wants to perform this action, since the user requesting the operation must be the author of the comment.
-        
       responses:
         '204': 
           description: You deleted your comment.
-        
         '403': 
           description: You cannot perform this operation.
-        
         '404':
           description: comment not found.
 
   /users/{userid}/following/: 
     parameters: 
-        - $ref : "#/components/parameters/userid"
+      - $ref : "#/components/parameters/userid"
     put:
       security:
         - bearerAuthentication: []
@@ -568,17 +522,15 @@ paths:
       description: |
         given the userid of the owner of the account (i.e. userX) requesting the operation, follow the user corresponding to the username passed in input and add the corresponding userid to the collection of users followed by userX.
         We request for authentication of the user that wants to perform this action, since we must make sure that the user that the followed user did not ban the author of the request. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
-        
       responses:
         '204': 
           description: You just started following the user.
-        
         '403': 
           description: You cannot perform this operation.
   
   /users/{userid}/following/{userid}: 
     parameters: 
-        - $ref : "#/components/parameters/userid"  
+      - $ref : "#/components/parameters/userid"  
     delete:
       security:
         - bearerAuthentication: []
@@ -588,17 +540,15 @@ paths:
       description: |
         given the userid of the owner of the account (i.e. userX) requesting the operation, unfollow the user corresponding to the username passed in input and delete the corresponding userid from the collection of users followed by userX.
         We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unfollowed user was initially followed. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
-        
       responses:
         '204': 
           description: You just unfollowed the user.
-        
         '403': 
           description: You cannot perform this operation.
     
   /users/{userid}/banned/:   
     parameters: 
-        - $ref : "#/components/parameters/userid"
+      - $ref : "#/components/parameters/userid"
     
     put:
       security:
@@ -609,11 +559,9 @@ paths:
       description: |
         given the userid of the owner of the account (i.e. userX) requesting the operation, ban the user corresponding to the username passed in input and add the corresponding userid to the collection of users banned by userX.
         We request for authentication of the user that wants to perform this action, since we have to make sure that the author of the request is the owner of the account. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
-        
       responses:
         '204': 
           description: You just started following the user.
-        
         '403': 
           description: You cannot perform this operation.
 
@@ -629,10 +577,8 @@ paths:
       description: |
         given the userid of the owner of the account (i.e. userX) requesting the operation, unban the user corresponding to the username passed in input and delete the corresponding userid from the collection of users banned by userX.
         We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unbanned user was initially banned. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
-        
       responses:
         '204': 
           description: You just unfollowed the user.
-        
         '403': 
           description: You cannot perform this operation.
