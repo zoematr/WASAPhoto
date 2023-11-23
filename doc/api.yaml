@@ -134,7 +134,7 @@ components:
       description: this is the list of users banned by a user.
       minItems: 0
       maxItems: 10000000000000
-      items: {$ref: "#/components/schemas/userid"}
+      items: {$ref: '#/components/schemas/userid'}
     
     following:
       title: following
@@ -230,10 +230,10 @@ paths:
             application/json: 
               schema: {$ref: '#/components/schemas/userid'}
 
-  /users/{userid}:
+  /users/{username}:
     summary: specific profile of the user corresponding to that userid.
     parameters: 
-      - $ref : "#/components/parameters/userid"
+      - $ref : "#/components/parameters/username"
 
     patch: #patch is for changing only partially a resource
       security:
@@ -403,8 +403,14 @@ paths:
           description: No one has liked yet.
         '403': 
           description: You cannot perform this operation.
+          
+  /users/{userid}/photos/{photoid}/likes/{userid}:
+    summary: specific like of a specific user on a specific photo
+    parameters:
+      - $ref : "#/components/parameters/userid"
+      - $ref : "#/components/parameters/photoid"
     
-    put:
+    put: #from what the professor said it should be here to avoid the problem of a user putting multiple likes
       security:
         - bearerAuthentication: []
       operationId: likePhoto
@@ -418,12 +424,6 @@ paths:
           description: You liked the photo.
         '403': 
           description: You cannot perform this operation.
-          
-  /users/{userid}/photos/{photoid}/likes/{userid}:
-    summary: specific like of a specific user on a specific photo
-    parameters:
-      - $ref : "#/components/parameters/userid"
-      - $ref : "#/components/parameters/photoid"
       
     delete:
       security:
