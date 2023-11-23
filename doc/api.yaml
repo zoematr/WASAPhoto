@@ -129,6 +129,8 @@ components:
           $ref: '#/components/schemas/listlikes'
         comments:
           $ref: '#/components/schemas/listcomments'
+        datetime:
+          $ref: '#/components/schemas/datetime'
         description:
           type: string
           description: description of the photo
