@@ -77,18 +77,23 @@ components:
       format: date-time
       default: 0000-01-01T00:00:00Z
       example: 2023-11-08T22:38:00Z
+    
+    commentcontent:
+      title: commentcontent
+      type: string
+      description: |
+        content of a comment under a photo
+      minLength: 1
+      maxLength: 400
+      pattern: '^.*?$'
+      example: "what a beautiful picture of a sunset!"
       
     comment:
       title: comment
       type: object
       description: can be used to comment a picture or a profile
       properties:
-        content:
-          type: string
-          pattern: '^.*?$'
-          minLength: 1
-          maxLength: 400
-          example: "what a beautiful picture of a sunset!"
+        content: {$ref: '#/components/schemas/commentcontent'}
         commentid: {$ref: '#/components/schemas/commentid'} #used to delete a specific comment
         #the user id is not enough because one user can write multiple comments
         userid: {$ref: '#/components/schemas/userid'}
@@ -517,7 +522,7 @@ paths:
         description: Comment details 
         content:
           applcation/json: 
-            schema: {$ref : '#/components/schemas/comment'}
+            schema: {$ref : '#/components/schemas/commentcontent'}
         required: true  
       responses:
         '201': 
