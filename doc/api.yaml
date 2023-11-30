@@ -21,7 +21,7 @@ components:
       title: userid
       type: string
       description:  |-
-        this is the unique identifier of a user that will be passed as Token in the Bearer Authentication. It has 36 chars: 8 - 4 - 4 - 4 - 12. It does not change with the changes of username.
+        This is a unique user identifier that does not change with the username. It will be passed as Token in the Bearer Authentication.
       pattern: ^[0-9a-fA-F-]{36}
       minLength: 36
       maxLength: 36
@@ -128,7 +128,7 @@ components:
         likes: {$ref: '#/components/schemas/listlikes'}
         comments: {$ref: '#/components/schemas/listcomments'}
         datetime: {$ref: '#/components/schemas/datetime'}
-        description:
+        photocaption:
           type: string
           description: description of the photo
           pattern: '^.*?$'
