@@ -194,6 +194,30 @@ components:
         used to perform the operation concerning a user
       schema: {$ref: '#/components/schemas/userid'}
     
+    followinguserid:
+      name: followinguserid
+      in: path
+      required: true
+      description: |
+        used to perform the operation concerning a user followed by another user
+      schema: {$ref: '#/components/schemas/userid'}
+
+    likinguserid:
+      name: likinguserid
+      in: path
+      required: true
+      description: |
+        used to perform the operation concerning a user that liked a specific picture
+      schema: {$ref: '#/components/schemas/userid'}
+    
+    banneduserid:
+      name: banneduserid
+      in: path
+      required: true
+      description: |
+        used to perform the operation concerning a user banned by another user
+      schema: {$ref: '#/components/schemas/userid'}
+    
     photoid:
       name: photoid
       in: path
@@ -412,10 +436,11 @@ paths:
         '403': 
           description: You cannot perform this operation.
           
-  /users/{userid}/photos/{photoid}/likes/{userid}:
+  /users/{userid}/photos/{photoid}/likes/{likinguserid}:
     summary: specific like of a specific user on a specific photo
     parameters:
       - $ref : "#/components/parameters/userid"
+      - $ref : "#/components/parameters/likinguserid"
       - $ref : "#/components/parameters/photoid"
     
     put: #from what the professor said it should be here to avoid the problem of a user putting multiple likes
@@ -539,9 +564,10 @@ paths:
         '403': 
           description: You cannot perform this operation.
   
-  /users/{userid}/following/{userid}: 
+  /users/{userid}/following/{followinguserid}: 
     parameters: 
-      - $ref : "#/components/parameters/userid"  
+      - $ref : "#/components/parameters/userid"
+      - $ref : "#/components/parameters/followinguserid"
     delete:
       security:
         - bearerAuthentication: []
@@ -576,9 +602,10 @@ paths:
         '403': 
           description: You cannot perform this operation.
 
-  /users/{userid}/banned/{userid}:   
+  /users/{userid}/banned/{banneduserid}:   
     parameters: 
       - $ref : "#/components/parameters/userid"
+      - $ref : "#/components/parameters/banneduserid"
     delete:
       security:
         - bearerAuthentication: []
