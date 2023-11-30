@@ -443,7 +443,7 @@ paths:
       - $ref : "#/components/parameters/likinguserid"
       - $ref : "#/components/parameters/photoid"
     
-    put: #from what the professor said it should be here to avoid the problem of a user putting multiple likes
+    post: #from what the professor said it should be here to avoid the problem of a user putting multiple likes
       security:
         - bearerAuthentication: []
       operationId: likePhoto
@@ -453,8 +453,11 @@ paths:
         Given the photoid and a user requesting the operation, add the userid corresponding to the requesting user to the list of users liking that specific picture.
         We request for authentication of the user that wants to perform this action, since a user must have logged in to like a picture.
       responses:
-        '204': 
+        '200': 
           description: You liked the photo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/parameters/likinguserid'}
         '403': 
           description: You cannot perform this operation.
       
@@ -500,8 +503,8 @@ paths:
           description: No one has commented yet.
         '403': 
           description: You cannot perform this operation.
-    
-    put:
+
+    post:
       security:
         - bearerAuthentication: []
       operationId: commentPhoto
@@ -517,8 +520,11 @@ paths:
             schema: {$ref : '#/components/schemas/comment'}
         required: true  
       responses:
-        '204': 
+        '201': 
           description: You added your comment to the photo.
+          content:
+            application/json:
+              schema: {$ref : "#/components/schemas/commentid"}
         '403': 
           description: You cannot perform this operation.
           
