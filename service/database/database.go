@@ -59,7 +59,65 @@ func New(db *sql.DB) (AppDatabase, error) {
 	var tableName string
 	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
+		sqlStmt := `
+
+		CREATE TABLE example_table (
+			id INTEGER NOT NULL PRIMARY KEY, 
+			name TEXT
+			);
+		
+		CREATE TABLE IF NOT EXISTS users (
+			userid TEXT NOT NULL PRIMARY KEY, 
+			username TEXT NOT NULL UNIQUE, 
+			biography TEXT
+			);
+
+		CREATE TABLE IF NOT EXISTS photos (
+			photoid TEXT NOT NULL PRIMARY KEY,
+			userid TEXT NOT NULL,
+			photofile TEXT NOT NULL,
+			numberoflikes INTEGER NOT NULL DEFAULT 0,
+			datetime TEXT NOT NULL DEFAULT "0000-01-01T00:00:00Z"
+			photocaption TEXT,
+			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE
+			);
+		
+		CREATE TABLE IF NOT EXISTS likes (
+			photoid TEXT NOT NULL, 
+			userid TEXT NOT NULL
+			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE,
+			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE
+			PRIMARY KEY (photoid, userid)
+			);
+		
+		CREATE TABLE IF NOT EXISTS comments (
+			commentid TEXT NOT NULL PRIMARY KEY,
+			photoid TEXT NOT NULL, 
+			userid TEXT NOT NULL,
+			content TEXT NOT NULL,
+			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE,
+			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE
+			);
+		
+		CREATE TABLE IF NOT EXISTS banned (
+			userid TEXT NOT NULL, 
+			banneduserid TEXT NOT NULL,
+			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE,
+			FOREIGN KEY(banneduserid) REFERENCES users(userid) ON DELETE CASCADE
+			PRIMARY KEY (userid, banneduserid)
+			);
+
+		CREATE TABLE IF NOT EXISTS followers (
+			userid TEXT NOT NULL, 
+			followeruserid TEXT NOT NULL,
+			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE,
+			FOREIGN KEY(followeruserid) REFERENCES users(userid) ON DELETE CASCADE
+			PRIMARY KEY (userid, followeruserid)
+			);
+		
+		`
+		
+
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
