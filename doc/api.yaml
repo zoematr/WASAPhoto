@@ -123,6 +123,7 @@ components:
       type: object
       description: this is the photo object, which includes the picture posted and all the additional relevant information such as the owner, the date and time it was posted, an optional description and the number of likes.
       properties:
+        userid: {$ref: '#/components/schemas/userid'}
         photoid: {$ref: '#/components/schemas/photoid'}
         photofile: {$ref: '#/components/schemas/photofile'}
         likes: {$ref: '#/components/schemas/listlikes'}
