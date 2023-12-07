@@ -126,7 +126,7 @@ components:
         userid: {$ref: '#/components/schemas/userid'}
         photoid: {$ref: '#/components/schemas/photoid'}
         photofile: {$ref: '#/components/schemas/photofile'}
-        likes: {$ref: '#/components/schemas/listlikes'}
+        listlikes: {$ref: '#/components/schemas/listlikes'}
         comments: {$ref: '#/components/schemas/listcomments'}
         datetime: {$ref: '#/components/schemas/datetime'}
         photocaption:
@@ -416,7 +416,7 @@ paths:
         '404': 
           description: Photo not found. #if the photoid passed in input does not correspond to any of the photoid's in the collection of photos of the requesting user
   
-  /users/{userid}/photos/{photoid}/likes/:
+  /users/{userid}/photos/{photoid}/listlikes/:
     summary: likes on a Photos posted by a user
     parameters:
       - $ref : "#/components/parameters/userid"
@@ -442,7 +442,7 @@ paths:
         '403': 
           description: You cannot perform this operation.
           
-  /users/{userid}/photos/{photoid}/likes/{likinguserid}:
+  /users/{userid}/photos/{photoid}/listlikes/{likinguserid}:
     summary: specific like of a specific user on a specific photo
     parameters:
       - $ref : "#/components/parameters/userid"
