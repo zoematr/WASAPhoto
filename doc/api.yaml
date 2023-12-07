@@ -521,7 +521,7 @@ paths:
       requestBody:
         description: Comment details 
         content:
-          applcation/json: 
+          application/json: 
             schema: {$ref : '#/components/schemas/commentcontent'}
         required: true  
       responses:
