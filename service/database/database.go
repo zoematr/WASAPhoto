@@ -38,9 +38,17 @@ import (
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
+
+	//the structure seems to be 
+	//nameFunction(input) (output)
 	GetName() (string, error)
 	SetName(name string) error
 
+	doLogin(username string) (string, error)
+	setMyUserName(username string) error
+	getUserName() ()
+
+	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
 }
 
