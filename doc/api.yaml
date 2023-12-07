@@ -465,7 +465,7 @@ paths:
         description: Comment details 
         content:
           application/json: 
-            schema: {$ref : '#/components/schemas/commentcontent'}
+            schema: {$ref : '#/components/schemas/comment'}
         required: true  
       responses:
         '201': 
