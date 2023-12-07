@@ -22,10 +22,10 @@ components:
       type: string
       description:  |-
         This is a unique user identifier that does not change with the username. It will be passed as Token in the Bearer Authentication.
-      pattern: ^[0-9a-fA-F-]{36}
-      minLength: 36
-      maxLength: 36
-      example: "01234567-1234-1234-1234-012345678912"
+      pattern: '^.*?$'
+      minLength: 3
+      maxLength: 29
+      example: "01234abcdef1234a1234b1234c012"
     
     commentid:
       title: commentid
