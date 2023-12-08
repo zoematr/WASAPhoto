@@ -291,7 +291,11 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/username'}
+            schema:
+              type: object
+              properties:
+                username: {$ref: '#/components/schemas/username'}
+                userid: {$ref: '#/components/schemas/userid'}
         required: true
       responses: 
         '200':
@@ -428,9 +432,7 @@ paths:
   /likes/{likeid}:
     summary: specific like of a specific user on a specific photo
     parameters:
-      - $ref : "#/components/parameters/userid"
       - $ref : "#/components/parameters/likeid"
-      - $ref : "#/components/parameters/photoid"
       
     delete:
       operationId: unlikePhoto
@@ -450,9 +452,6 @@ paths:
     
   /comments/:
     summary: comments on a Photos posted by a user
-    parameters:
-      - $ref : "#/components/parameters/userid"
-      - $ref : "#/components/parameters/photoid"
 
     post:
       operationId: commentPhoto
