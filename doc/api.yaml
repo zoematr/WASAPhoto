@@ -4,7 +4,7 @@ info:
   description: |-
     This OpenAPI document describes the functioning of WASAPhoto, a platform that allows the sharing of pictures that will be visible to one's follower. Each user will be presented with a stream of photos (images) in reverse chronological order, with information about when each photo was uploaded (date and time) and how many likes and comments it has. The stream is composed by photos from “following”. Users can place (and later remove) a “like” to photos from other users. Also, users can add comments to any image (even those uploaded by themself). Only authors can remove their comments. Users can ban other users.
   version: "1.0.0" 
-  
+
 tags:
   - name: login
   - name: user
@@ -102,7 +102,7 @@ components:
           minLength: 0
           maxLength: 400
           example: "this is the picture of yesterday's sunset!"
-    
+
     photoid:
       title: photoid
       type: string
@@ -185,8 +185,6 @@ components:
       minLength: 3
       maxLength: 29
       example: "01234abcdef1234a1234b1234c012"
-
-
 
   parameters:
 
@@ -289,13 +287,14 @@ paths:
         The outcome of the operation is returned (either successful or not authorized)
         This operation can be performed only by the owner of the profile, so authentication is required.
       requestBody:
+        description: new username and userid to confirm the user's identity
         content:
           application/json:
             schema:
               type: object
               properties:
                 username: {$ref: '#/components/schemas/username'}
-                userid: {$ref: '#/components/schemas/userid'}
+                userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
         required: true
       responses: 
         '200':
@@ -367,21 +366,20 @@ paths:
       description: |
         Given a user requesting the operation, a new picture given in input is posted on his profile. We request for authentication of the user that wants to perform
         this action, because you can only post pictures on your own profile. 
-      
       requestBody:
         content:
           application/json:
             schema: {$ref: '#/components/schemas/photo'}
-
       responses:
         '201':
           description: Your new photo was uploaded successfully.
           content:
             application/json:
               schema: {$ref: '#/components/schemas/photoid'}
-
         '403': 
           description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
 
   /photos/{photoid}:
     summary: specific Photo posted by a user
@@ -402,6 +400,8 @@ paths:
           description: You cannot perform this operation.
         '404': 
           description: Photo not found. #if the photoid passed in input does not correspond to any of the photoid's in the collection of photos of the requesting user
+      security:
+        - bearerAuth: []
 
   /likes/: 
     summary: likes on photos posted on WASAPhoto
@@ -414,16 +414,21 @@ paths:
         Given the photoid and a user requesting the operation, add the userid corresponding to the requesting user to the list of users liking that specific picture.
         We request for authentication of the user that wants to perform this action, since a user must have logged in to like a picture.
       requestBody:
-        description: Comment details 
+        description: user that wants to like the photo and photo that he wants to like
         content:
-          application/json: 
-            schema: {$ref : '#/components/schemas/userid'}
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: {$ref: '#/components/schemas/photoid'}
+                userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
+        required: true
       responses:
         '200': 
           description: You liked the photo.
           content:
             application/json:
-              schema: {$ref : '#/components/schemas/userid'}
+              schema: {$ref : '#/components/schemas/likeid'}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -440,18 +445,16 @@ paths:
       summary: Unlike a photo.
       description: Given the likeid and a user requesting the operation, delete the userid corresponding to the requesting user to the list of users liking that specific picture.
         We request for authentication of the user that wants to perform this action, since a user must have liked the picture before.
-        
       responses:
         '204': 
           description: You unliked the photo.
-        
         '403':
           description: You cannot perform this operation.
       security:
         - bearerAuth: []
     
   /comments/:
-    summary: comments on a Photos posted by a user
+    summary: all comments on WASAPhoto
 
     post:
       operationId: commentPhoto
@@ -463,9 +466,13 @@ paths:
       requestBody:
         description: Comment details 
         content:
-          application/json: 
-            schema: {$ref : '#/components/schemas/comment'}
-        required: true  
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment: {$ref: '#/components/schemas/comment'}
+                userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
+        required: true
       responses:
         '201': 
           description: You added your comment to the photo.
@@ -478,7 +485,7 @@ paths:
         - bearerAuth: []
           
   /comments/{commentid}:
-    summary: comments on a Photos posted by a user 
+    summary: specific comment
     
     parameters:
       - $ref : "#/components/parameters/commentid"
@@ -488,7 +495,7 @@ paths:
       tags: ["photo"]
       summary: Uncomment a photo.
       description: |
-        Given the photoid, the commentid and a user requesting the operation, delete the comment corresponding to the specific commentid from the collection of comments under a specific picture.
+        Given the commentid and a user requesting the operation, delete the comment corresponding to the specific commentid from the collection of comments under a specific picture.
         We request for authentication of the user that wants to perform this action, since the user requesting the operation must be the author of the comment.
       responses:
         '204': 
@@ -503,16 +510,25 @@ paths:
   /users/{userid}/following/: 
     parameters: 
       - $ref : "#/components/parameters/userid"
-    put:
+    post:
       operationId: followUser
       tags: ["user"]
       summary: Follow a another user.
       description: |
         given the userid of the owner of the account (i.e. userX) requesting the operation, follow the user corresponding to the username passed in input and add the corresponding userid to the collection of users followed by userX.
         We request for authentication of the user that wants to perform this action, since we must make sure that the user that the followed user did not ban the author of the request. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
+      requestBody:
+        description: username of the user that we want to follow
+        content:
+          application/json:
+            schema: {$ref : "#/components/schemas/username"}
+        required: true
       responses:
-        '204': 
+        '201': 
           description: You just started following the user.
+          content:
+            application/json:
+              schema: {$ref : "#/components/schemas/user"}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -541,16 +557,25 @@ paths:
     parameters: 
       - $ref : "#/components/parameters/userid"
     
-    put:
+    post:
       operationId: banUser
       tags: ["user"]
       summary: Ban another user.
       description: |
         given the userid of the owner of the account (i.e. userX) requesting the operation, ban the user corresponding to the username passed in input and add the corresponding userid to the collection of users banned by userX.
         We request for authentication of the user that wants to perform this action, since we have to make sure that the author of the request is the owner of the account. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
+      requestBody:
+        description: username of the user that we want to ban
+        content:
+          application/json:
+            schema: {$ref : "#/components/schemas/username"}
+        required: true
       responses:
-        '204': 
-          description: You just started following the user.
+        '201': 
+          description: You banned the user.
+          content:
+            application/json:
+              schema: {$ref : "#/components/schemas/user"}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -569,7 +594,7 @@ paths:
         We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unbanned user was initially banned. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
       responses:
         '204': 
-          description: You just unfollowed the user.
+          description: You just unbanned the user.
         '403': 
           description: You cannot perform this operation.
       security:
