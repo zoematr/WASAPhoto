@@ -25,14 +25,13 @@ components:
     user:
       title: user
       type: object
-      description: |
-        this is the entire user object which includes the username, the identifier and additional information.
+      description: this is the entire user object which includes the username, the identifier and additional information.
       properties:
         userid: {$ref: '#/components/schemas/userid'}
         username: {$ref: '#/components/schemas/username'}
         biography:
           type: string
-          description: description of the user
+          description: a brief description of the user
           pattern: '^.*?$'
           minLength: 1
           maxLength: 200
@@ -44,8 +43,7 @@ components:
     userid:
       title: userid
       type: string
-      description:  |-
-        This is a unique user identifier that does not change with the username. It will be passed as Token in the Bearer Authentication.
+      description: This is a unique user identifier that does not change with the username. It will be passed as Token in the Bearer Authentication.
       pattern: '^.*?$'
       minLength: 3
       maxLength: 29
@@ -54,8 +52,7 @@ components:
     username: 
       title: username
       type: string
-      description: |
-        this is the username that can be used to search a user and to login.
+      description: this is the username that can be used to search a user and to login.
       minLength: 3
       maxLength: 31
       pattern: '^.*?$'
@@ -106,8 +103,7 @@ components:
     photoid:
       title: photoid
       type: string
-      description:  |-
-        this is the unique identifier of a photo.
+      description: this is the unique identifier of a photo.
       pattern: '^.*?$'
       minLength: 3
       maxLength: 29
@@ -117,17 +113,15 @@ components:
       title: photofile
       type: string
       format: binary
-      description: |
-        this is the actual file that is uploaded, so it's a binary sequence that encodes the pixels of the picture.
+      description: this is the actual file that is uploaded, so it's a binary sequence that encodes the pixels of the picture.
       minLength: 73 
       maxLength: 2147483647
       example: "10101100101011011010011110001010000100010101011000010111110010100001001010110010101101101001111000101000010001010101100001011111001010000100"
     
     datetime:
-      title: date
+      title: datetime
       type: string
-      description: |
-        date and time, used to keep track of when a photo/comment was posted, or a like was added
+      description: date and time, used to keep track of when a photo/comment was posted, or a like was added
       minLength: 20
       maxLength: 20
       format: date-time
@@ -149,8 +143,7 @@ components:
     commentid:
       title: commentid
       type: string
-      description:  |-
-        unique identifier for a comment
+      description: unique identifier for a comment
       pattern: '^.*?$'
       minLength: 3
       maxLength: 29
@@ -159,8 +152,7 @@ components:
     commentcontent:
       title: commentcontent
       type: string
-      description: |
-        content of a comment under a photo
+      description: content of a comment under a photo
       minLength: 1
       maxLength: 400
       pattern: '^.*?$'
@@ -179,8 +171,7 @@ components:
     likeid:
       title: commentid
       type: string
-      description:  |-
-        unique identifier for a like
+      description: unique identifier for a like
       pattern: '^.*?$'
       minLength: 3
       maxLength: 29
@@ -192,56 +183,49 @@ components:
       name: username
       in: path
       required: true
-      description: |
-        used to search a user
+      description: used to search a user
       schema: {$ref: '#/components/schemas/username'}
       
     userid:
       name: userid
       in: path
       required: true
-      description: |
-        used to perform the operation concerning a user
+      description: used to perform the operation concerning a user
       schema: {$ref: '#/components/schemas/userid'}
     
     likeid:
       name: likeid
       in: path
       required: true
-      description: |
-        used to perform the operation concerning a user
+      description: used to perform the operation concerning a user
       schema: {$ref: '#/components/schemas/likeid'}
     
     followinguserid:
       name: followinguserid
       in: path
       required: true
-      description: |
-        used to perform the operation concerning a user followed by another user
+      description: used to perform the operation concerning a user followed by another user
       schema: {$ref: '#/components/schemas/userid'}
     
     banneduserid:
       name: banneduserid
       in: path
       required: true
-      description: |
-        used to perform the operation concerning a user banned by another user
+      description: used to perform the operation concerning a user banned by another user
       schema: {$ref: '#/components/schemas/userid'}
     
     photoid:
       name: photoid
       in: path
       required: true
-      description: |
-        used to perform specific operations on pictures such as liking it or deleting it.
+      description: used to perform specific operations on pictures such as liking it or deleting it.
       schema: {$ref: '#/components/schemas/photoid'}
     
     commentid:
       name: commentid
       in: path
       required: true
-      description: |
-        used to perform specific operations on pictures such as liking it or deleting it.
+      description: used to perform specific operations on pictures such as liking it or deleting it.
       schema: {$ref: '#/components/schemas/commentid'}
 
 #PATHS
@@ -253,10 +237,7 @@ paths:
     post:
       tags: ["login"]
       summary: Logs in the user 
-      description: |-
-        If the user does not exist, it will be created,
-        and an identifier is returned.
-        If the user exists, the user identifier is returned.
+      description: If the user does not exist, it will be created, and an identifier is returned. If the user exists, the user identifier is returned.
       operationId: doLogin 
       requestBody:
         description: User details 
@@ -281,11 +262,8 @@ paths:
     patch: #patch is for changing only partially a resource
       operationId: setMyUserName
       tags: ["user"]
-      summary: Change your Username.
-      description: |
-        Change the username of one's own profile, with the one provided provided in input.
-        The outcome of the operation is returned (either successful or not authorized)
-        This operation can be performed only by the owner of the profile, so authentication is required.
+      summary: Change your own username.
+      description: Change the username of one's own profile, with the one provided provided in input. The outcome of the operation is returned (either successful or not authorized). This operation can be performed only by the owner of the profile, so authentication is required.
       requestBody:
         description: new username and userid to confirm the user's identity
         content:
@@ -311,8 +289,7 @@ paths:
       operationId: getUserProfile
       tags: ["user"]
       summary: Return a profile.
-      description: |
-        It returns the profile corresponding to the username given in input (if it exists), if the user performing the operation is authorized to view it. Authentication is required as it must be ensured that the user can view the desired profile (i.e. if userX can see the profile of userY only if userX is not banned by userY).
+      description: It returns the profile corresponding to the username given in input (if it exists), if the user performing the operation is authorized to view it. Authentication is required as it must be ensured that the user can view the desired profile (i.e. if userX can see the profile of userY only if userX is not banned by userY).
       responses:
         '200':
           description: User profile is returned successfully.
@@ -336,8 +313,7 @@ paths:
       operationId: getMyStream
       tags: ["stream"]
       summary: Get the Stream.
-      description: |
-        For the user given in input (which is the one requesting the operation, i.e. userX), it returns a stream of pictures posted by the users followed by UserX, in reverse chronological order. Authentication is needed because, as already mentioned, this operation is allowed only to the owner of the profile.
+      description: For the user given in input (which is the one requesting the operation, i.e. userX), it returns a stream of pictures posted by the users followed by UserX, in reverse chronological order. Authentication is needed because, as already mentioned, this operation is allowed only to the owner of the profile.
       responses:
         '200':
           description: These are the latest Photos posted by your friends.
@@ -363,9 +339,7 @@ paths:
       operationId: uploadPhoto
       tags: ["photo"]
       summary: Post a new picture on your profile
-      description: |
-        Given a user requesting the operation, a new picture given in input is posted on his profile. We request for authentication of the user that wants to perform
-        this action, because you can only post pictures on your own profile. 
+      description: Given a user requesting the operation, a new picture given in input is posted on his profile. We request for authentication of the user that wants to perform this action, because you can only post pictures on your own profile. 
       requestBody:
         content:
           application/json:
@@ -390,9 +364,7 @@ paths:
       operationId: deletePhoto
       tags: ["photo"]
       summary: delete a photo from one's own profile.
-      description: |
-        given the userid of the owner of the account (i.e. userX) requesting the operation  and the photoid of the pictures that the owner wishes to delete, delete the photo object from the collection of photos posted by userX.
-        We request for authentication of the user that wants to perform this action, since we must make sure that he/she must be the author of the picture.
+      description: given the userid of the owner of the account (i.e. userX) requesting the operation  and the photoid of the pictures that the owner wishes to delete, delete the photo object from the collection of photos posted by userX. We request for authentication of the user that wants to perform this action, since we must make sure that he/she must be the author of the picture.
       responses:
         '204': 
           description: You just deleted your photo.
@@ -410,9 +382,7 @@ paths:
       operationId: likePhoto
       tags: ["photo"]
       summary: like a photo.
-      description: |
-        Given the photoid and a user requesting the operation, add the userid corresponding to the requesting user to the list of users liking that specific picture.
-        We request for authentication of the user that wants to perform this action, since a user must have logged in to like a picture.
+      description: Given the photoid and a user requesting the operation, add the userid corresponding to the requesting user to the list of users liking that specific picture. We request for authentication of the user that wants to perform this action, since a user must have logged in to like a picture.
       requestBody:
         description: user that wants to like the photo and photo that he wants to like
         content:
@@ -428,7 +398,7 @@ paths:
           description: You liked the photo.
           content:
             application/json:
-              schema: {$ref : '#/components/schemas/likeid'}
+              schema: {$ref : '#/components/schemas/like'}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -443,8 +413,7 @@ paths:
       operationId: unlikePhoto
       tags: ["photo"]
       summary: Unlike a photo.
-      description: Given the likeid and a user requesting the operation, delete the userid corresponding to the requesting user to the list of users liking that specific picture.
-        We request for authentication of the user that wants to perform this action, since a user must have liked the picture before.
+      description: Given the likeid and a user requesting the operation, delete the userid corresponding to the requesting user to the list of users liking that specific picture. We request for authentication of the user that wants to perform this action, since a user must have liked the picture before.
       responses:
         '204': 
           description: You unliked the photo.
@@ -460,9 +429,7 @@ paths:
       operationId: commentPhoto
       tags: ["photo"]
       summary: comment a photo.
-      description: |
-        Given the photoid and a user requesting the operation, add the comment passed in the request body to the list of comments under that specific photo.
-        We request for authentication of the user that wants to perform this action, since a user must have logged in to comment a picture.
+      description: Given the photoid and a user requesting the operation, add the comment passed in the request body to the list of comments under that specific photo. We request for authentication of the user that wants to perform this action, since a user must have logged in to comment a picture.
       requestBody:
         description: Comment details 
         content:
@@ -470,7 +437,7 @@ paths:
             schema:
               type: object
               properties:
-                comment: {$ref: '#/components/schemas/comment'}
+                comment: {$ref: '#/components/schemas/commentcontent'}
                 userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
         required: true
       responses:
@@ -478,7 +445,7 @@ paths:
           description: You added your comment to the photo.
           content:
             application/json:
-              schema: {$ref : "#/components/schemas/commentid"}
+              schema: {$ref : "#/components/schemas/comment"}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -494,9 +461,7 @@ paths:
       operationId: uncommentPhoto
       tags: ["photo"]
       summary: Uncomment a photo.
-      description: |
-        Given the commentid and a user requesting the operation, delete the comment corresponding to the specific commentid from the collection of comments under a specific picture.
-        We request for authentication of the user that wants to perform this action, since the user requesting the operation must be the author of the comment.
+      description: Given the commentid and a user requesting the operation, delete the comment corresponding to the specific commentid from the collection of comments under a specific picture. We request for authentication of the user that wants to perform this action, since the user requesting the operation must be the author of the comment.
       responses:
         '204': 
           description: You deleted your comment.
@@ -514,9 +479,7 @@ paths:
       operationId: followUser
       tags: ["user"]
       summary: Follow a another user.
-      description: |
-        given the userid of the owner of the account (i.e. userX) requesting the operation, follow the user corresponding to the username passed in input and add the corresponding userid to the collection of users followed by userX.
-        We request for authentication of the user that wants to perform this action, since we must make sure that the user that the followed user did not ban the author of the request. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
+      description: given the userid of the owner of the account (i.e. userX) requesting the operation, follow the user corresponding to the username passed in input and add the corresponding userid to the collection of users followed by userX. We request for authentication of the user that wants to perform this action, since we must make sure that the user that the followed user did not ban the author of the request. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
       requestBody:
         description: username of the user that we want to follow
         content:
@@ -542,9 +505,7 @@ paths:
       operationId: unfollowUser
       tags: ["user"]
       summary: Unfollow another user.
-      description: |
-        given the userid of the owner of the account (i.e. userX) requesting the operation, unfollow the user corresponding to the username passed in input and delete the corresponding userid from the collection of users followed by userX.
-        We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unfollowed user was initially followed. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
+      description: given the userid of the owner of the account (i.e. userX) requesting the operation, unfollow the user corresponding to the username passed in input and delete the corresponding userid from the collection of users followed by userX. We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unfollowed user was initially followed. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
       responses:
         '204': 
           description: You just unfollowed the user.
@@ -561,9 +522,7 @@ paths:
       operationId: banUser
       tags: ["user"]
       summary: Ban another user.
-      description: |
-        given the userid of the owner of the account (i.e. userX) requesting the operation, ban the user corresponding to the username passed in input and add the corresponding userid to the collection of users banned by userX.
-        We request for authentication of the user that wants to perform this action, since we have to make sure that the author of the request is the owner of the account. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
+      description: given the userid of the owner of the account (i.e. userX) requesting the operation, ban the user corresponding to the username passed in input and add the corresponding userid to the collection of users banned by userX. We request for authentication of the user that wants to perform this action, since we have to make sure that the author of the request is the owner of the account. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
       requestBody:
         description: username of the user that we want to ban
         content:
@@ -589,9 +548,7 @@ paths:
       operationId: unbanUser
       tags: ["user"]
       summary: Unban another user.
-      description: |
-        given the userid of the owner of the account (i.e. userX) requesting the operation, unban the user corresponding to the username passed in input and delete the corresponding userid from the collection of users banned by userX.
-        We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unbanned user was initially banned. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
+      description: given the userid of the owner of the account (i.e. userX) requesting the operation, unban the user corresponding to the username passed in input and delete the corresponding userid from the collection of users banned by userX. We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unbanned user was initially banned. Also the userid of the user requesting the operation must be different from the userid corresponding to the username given in input.
       responses:
         '204': 
           description: You just unbanned the user.
