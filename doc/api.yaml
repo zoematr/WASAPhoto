@@ -92,13 +92,16 @@ components:
         photoid: {$ref: '#/components/schemas/photoid'}
         photofile: {$ref: '#/components/schemas/photofile'}
         datetime: {$ref: '#/components/schemas/datetime'}
-        photocaption:
-          type: string
-          description: description of the photo
-          pattern: '^.*?$'
-          minLength: 0
-          maxLength: 400
-          example: "this is the picture of yesterday's sunset!"
+        photocaption: {$ref: '#/components/schemas/photocaption'}
+
+    photocaption:
+      title: photoid
+      type: string
+      description: description of the photo
+      pattern: '^.*?$'
+      minLength: 0
+      maxLength: 400
+      example: "this is the picture of yesterday's sunset!"
 
     photoid:
       title: photoid
@@ -343,7 +346,12 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/photo'}
+            schema:
+              type: object
+              properties:
+                photofile: {$ref: '#/components/schemas/photofile'}
+                userid: {$ref: '#/components/schemas/userid'}
+                photocaption: {$ref: '#/components/schemas/photocaption'}
       responses:
         '201':
           description: Your new photo was uploaded successfully.
@@ -394,7 +402,7 @@ paths:
                 userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
         required: true
       responses:
-        '200': 
+        '201': 
           description: You liked the photo.
           content:
             application/json:
