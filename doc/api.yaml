@@ -273,6 +273,7 @@ paths:
           application/json:
             schema:
               type: object
+              description: Only necessary values for user to be returned
               properties:
                 username: {$ref: '#/components/schemas/username'}
                 userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
@@ -348,6 +349,7 @@ paths:
           application/json:
             schema:
               type: object
+              description: Necessary return values for uploading photos
               properties:
                 photofile: {$ref: '#/components/schemas/photofile'}
                 userid: {$ref: '#/components/schemas/userid'}
@@ -397,6 +399,7 @@ paths:
           application/json:
             schema:
               type: object
+              description: Object to return from liking
               properties:
                 username: {$ref: '#/components/schemas/photoid'}
                 userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
@@ -444,6 +447,7 @@ paths:
           application/json:
             schema:
               type: object
+              description: Information about the comment and who posted it
               properties:
                 comment: {$ref: '#/components/schemas/commentcontent'}
                 userid: {$ref: '#/components/schemas/userid'} #this is used to check that the user trying to change the username is actually the owner of the profile
