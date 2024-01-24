@@ -44,10 +44,6 @@ type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
 
-	doLogin(username string) (string, error)
-	setMyUserName(username string) error
-	getUserName() ()
-
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
 }

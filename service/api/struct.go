@@ -2,8 +2,12 @@ package api
 
 import (
 	"time"
-	"WASAPhoto/serivce/database"
+	"github.com/zoematr/WASAPhoto/service/database"
 )
+
+type UserId struct{
+	UserId string `json: userid`
+}
 
 type User struct{ 
 	Username   string   `json: username`
@@ -11,10 +15,6 @@ type User struct{
 	Followers  []UserId `json: following`
 	Following  []UserId `json: userid`
 	Banned     []UserId `json: userid`
-}
-
-type UserId struct{
-	UserId string `json: userid`
 }
 
 type Username struct{
@@ -55,7 +55,7 @@ type CommentId struct{
 }
 
 type CommentContent struct{
-	CommentId string `json: commentcontent`
+	CommentContent string `json: commentcontent`
 }
 
 // now functions to convert the types defined before into a type of the database package
@@ -64,9 +64,9 @@ func (u User) ToDatabase() database.User {
 	return database.UserId{
 		Username:  u.Username,
 		UserId:    u.UserId,
-		Followers: u.Followers
-		Following: u.Following
-		Banned:    u.Banned
+		Followers: u.Followers,
+		Following: u.Following,
+		Banned:    u.Banned,
 	}
 }
 
@@ -74,16 +74,16 @@ func (ph Photo) ToDatabase() database.Photo {
 	return database.Photo{
 		PhotoId:   ph.PhotoId,
 		Date:      ph.Date,
-		UserId:    ph.UserId
-		PhotoFile: ph.PhotoFile
+		UserId:    ph.UserId,
+		PhotoFile: ph.PhotoFile,
 	}
 }
 
 func (ph Like) ToDatabase() database.Like {
 	return database.Like{
 		PhotoId: ph.PhotoId,
-		UserId:  ph.UserId
-		LikeId:  h.LikeId
+		UserId:  ph.UserId,
+		LikeId:  h.LikeId,
 	}
 }
 
@@ -125,9 +125,9 @@ func (cid LikeId) ToDatabase() database.LikeId {
 
 func (c Comment) ToDatabase() database.Comment {
 	return database.CompleteComment{
-		CommentId: c.CommentId,
-		PhotoId:   c.PhotoId,
-		UserId:    c.UserId,
-		CommentContent:   c.CommentContent,
+		CommentId:      c.CommentId,
+		PhotoId:        c.PhotoId,
+		UserId:         c.UserId,
+		CommentContent: c.CommentContent,
 	}
 }

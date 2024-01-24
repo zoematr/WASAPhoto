@@ -2,7 +2,6 @@ package database
 
 import (
 	"time"
-	"WASAPhoto/serivce/database"
 )
 
 type User struct{ 
