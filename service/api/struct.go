@@ -5,16 +5,11 @@ import (
 	"github.com/zoematr/WASAPhoto/service/database"
 )
 
-type UserId struct{
-	UserId string `json: userid`
-}
-
 type User struct{ 
 	Username   string   `json: username`
-	UserId     string   `json: userid`
-	Followers  []UserId `json: following`
-	Following  []UserId `json: userid`
-	Banned     []UserId `json: userid`
+	Followers  []string `json: following`
+	Following  []string `json: username`
+	Banned     []string `json: username`
 }
 
 type Username struct{
@@ -23,7 +18,7 @@ type Username struct{
 
 type Photo struct{
 	PhotoId    string    `json: photoid`
-	UserId     string    `json: userid`       
+	Username     string  `json: username`       
 	PhotoFile  string    `json: photofile`
 	Date       time.Time `json: datetime`
 }
@@ -34,7 +29,7 @@ type PhotoId struct{
 
 type Like struct {
 	PhotoId    string `json: photoid`
-	UserId     string `json: userid`
+	Username   string `json: username`
 	LikeId     string `json: likeid`
 }
 
@@ -44,7 +39,7 @@ type LikeId struct{
 
 type Comment struct {
 	PhotoId        string    `json: photoid`
-	UserId         string    `json: userid`
+	Username       string    `json: username`
 	CommentId      string    `json: commentid`
 	Date           time.Time `json: datetime`
 	CommentContent string    `json: commentcontent`
@@ -61,9 +56,8 @@ type CommentContent struct{
 // now functions to convert the types defined before into a type of the database package
 
 func (u User) ToDatabase() database.User {
-	return database.UserId{
+	return database.User{
 		Username:  u.Username,
-		UserId:    u.UserId,
 		Followers: u.Followers,
 		Following: u.Following,
 		Banned:    u.Banned,
@@ -74,28 +68,22 @@ func (ph Photo) ToDatabase() database.Photo {
 	return database.Photo{
 		PhotoId:   ph.PhotoId,
 		Date:      ph.Date,
-		UserId:    ph.UserId,
+		Username:  ph.Username,
 		PhotoFile: ph.PhotoFile,
 	}
 }
 
 func (ph Like) ToDatabase() database.Like {
 	return database.Like{
-		PhotoId: ph.PhotoId,
-		UserId:  ph.UserId,
-		LikeId:  h.LikeId,
+		PhotoId:  ph.PhotoId,
+		Username: ph.Username,
+		LikeId:   ph.LikeId,
 	}
 }
 
 func (phid PhotoId) ToDatabase() database.PhotoId {
 	return database.PhotoId{
 		PhotoId: phid.PhotoId,
-	}
-}
-
-func (uid UserId) ToDatabase() database.UserId {
-	return database.UserId{
-		UserId: uid.UserId,
 	}
 }
 
@@ -124,10 +112,10 @@ func (cid LikeId) ToDatabase() database.LikeId {
 }
 
 func (c Comment) ToDatabase() database.Comment {
-	return database.CompleteComment{
+	return database.Comment{
 		CommentId:      c.CommentId,
 		PhotoId:        c.PhotoId,
-		UserId:         c.UserId,
+		Username:       c.Username,
 		CommentContent: c.CommentContent,
 	}
 }

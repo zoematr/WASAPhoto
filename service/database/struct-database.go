@@ -6,14 +6,9 @@ import (
 
 type User struct{ 
 	Username   string   `json: username`
-	UserId     string   `json: userid`
-	Followers  []UserId `json: following`
-	Following  []UserId `json: userid`
-	Banned     []UserId `json: userid`
-}
-
-type UserId struct{
-	UserId string `json: userid`
+	Followers  []string `json: following`
+	Following  []string `json: userid`
+	Banned     []string `json: userid`
 }
 
 type Username struct{
@@ -22,7 +17,7 @@ type Username struct{
 
 type Photo struct{
 	PhotoId    string    `json: photoid`
-	UserId     string    `json: userid`       
+	Username   string    `json: username`       
 	PhotoFile  string    `json: photofile`
 	Date       time.Time `json: datetime`
 }
@@ -33,7 +28,7 @@ type PhotoId struct{
 
 type Like struct {
 	PhotoId    string `json: photoid`
-	UserId     string `json: userid`
+	Username   string `json: username`
 	LikeId     string `json: likeid`
 }
 
@@ -43,7 +38,7 @@ type LikeId struct{
 
 type Comment struct {
 	PhotoId        string    `json: photoid`
-	UserId         string    `json: userid`
+	Username       string    `json: username`
 	CommentId      string    `json: commentid`
 	Date           time.Time `json: datetime`
 	CommentContent string    `json: commentcontent`
@@ -54,5 +49,5 @@ type CommentId struct{
 }
 
 type CommentContent struct{
-	CommentId string `json: commentcontent`
+	CommentContent string `json: commentcontent`
 }
