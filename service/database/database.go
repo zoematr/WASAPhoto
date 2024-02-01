@@ -71,52 +71,51 @@ func New(db *sql.DB) (AppDatabase, error) {
 			);
 		
 		CREATE TABLE IF NOT EXISTS users (
-			userid TEXT NOT NULL PRIMARY KEY, 
-			username TEXT NOT NULL UNIQUE, 
+			username TEXT NOT NULL PRIMARY KEY,  
 			biography TEXT
 			);
 
 		CREATE TABLE IF NOT EXISTS photos (
 			photoid TEXT NOT NULL PRIMARY KEY,
-			userid TEXT NOT NULL,
+			username TEXT NOT NULL,
 			photofile TEXT NOT NULL,
 			numberoflikes INTEGER NOT NULL DEFAULT 0,
-			datetime TEXT NOT NULL DEFAULT "0000-01-01T00:00:00Z"
+			datetime TEXT NOT NULL DEFAULT '0000-01-01T00:00:00Z'
 			photocaption TEXT,
-			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
 			);
 		
 		CREATE TABLE IF NOT EXISTS likes (
 			photoid TEXT NOT NULL, 
-			userid TEXT NOT NULL
-			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE,
+			username TEXT NOT NULL
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
 			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE
-			PRIMARY KEY (photoid, userid)
+			PRIMARY KEY (photoid, username)
 			);
 		
 		CREATE TABLE IF NOT EXISTS comments (
 			commentid TEXT NOT NULL PRIMARY KEY,
 			photoid TEXT NOT NULL, 
-			userid TEXT NOT NULL,
+			username TEXT NOT NULL,
 			content TEXT NOT NULL,
 			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE,
-			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
 			);
 		
 		CREATE TABLE IF NOT EXISTS banned (
-			userid TEXT NOT NULL, 
-			banneduserid TEXT NOT NULL,
-			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE,
-			FOREIGN KEY(banneduserid) REFERENCES users(userid) ON DELETE CASCADE
-			PRIMARY KEY (userid, banneduserid)
+			username TEXT NOT NULL, 
+			bannedusername TEXT NOT NULL,
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
+			FOREIGN KEY(bannedusername) REFERENCES users(username) ON DELETE CASCADE
+			PRIMARY KEY (username, bannedusername)
 			);
 
 		CREATE TABLE IF NOT EXISTS followers (
-			userid TEXT NOT NULL, 
-			followeruserid TEXT NOT NULL,
-			FOREIGN KEY(userid) REFERENCES users(userid) ON DELETE CASCADE,
-			FOREIGN KEY(followeruserid) REFERENCES users(userid) ON DELETE CASCADE
-			PRIMARY KEY (userid, followeruserid)
+			username TEXT NOT NULL, 
+			followerusername TEXT NOT NULL,
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
+			FOREIGN KEY(followerusername) REFERENCES users(username) ON DELETE CASCADE
+			PRIMARY KEY (username, followerusername)
 			);
 		
 		`
