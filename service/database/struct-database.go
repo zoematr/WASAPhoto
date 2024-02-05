@@ -9,6 +9,7 @@ type User struct{
 	Followers  []string `json: following`
 	Following  []string `json: userid`
 	Banned     []string `json: userid`
+	Token      string   `json: token`
 }
 
 // type Username struct{

@@ -17,7 +17,6 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 	// init var User and decode body of request
 	var username string
 	err := json.NewDecoder(r.Body).Decode(&username)
-	fmt.Println(err)
 
 	// if error during decoding, like not parseable JSON or invalid username, respond with 400 bad request
 	if err != nil {
@@ -34,8 +33,9 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 	if err != nil {
 		// user exists, token returned
 		token, err = rt.db.GetToken(username)
-		w.WriteHeader(http.StatusOK)
-		err = json.NewEncoder(w).Encode(map[string]int{"token": token})
+		w.Header().Set("Authorization", fmt.Sprintf("Bearer %d", token))
+    	w.WriteHeader(http.StatusOK)
+    	err = json.NewEncoder(w).Encode(map[string]int{"token": token})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			ctx.Logger.WithError(err).Error("session: can't create response json")

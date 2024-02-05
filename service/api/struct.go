@@ -10,6 +10,7 @@ type User struct{
 	Followers  []string `json: following`
 	Following  []string `json: username`
 	Banned     []string `json: username`
+	Token      string   `json: token`
 }
 
 // type Username struct{
@@ -18,7 +19,7 @@ type User struct{
 
 type Photo struct{
 	PhotoId    string    `json: photoid`
-	Username   string  `json: username`       
+	Username   string    `json: username`       
 	PhotoFile  string    `json: photofile`
 	Date       time.Time `json: datetime`
 }

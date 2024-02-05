@@ -34,3 +34,14 @@ func isNotLogged(auth string) bool {
 
 	return auth == ""
 }
+
+func extractBearer(authorization string) string {
+	// Divido l'intestazione di autorizzazione in token utilizzando lo spazio come delimitatore.
+	var tokens = strings.Split(authorization, " ")
+	// Se ci sono esattamente due token, restituisci il secondo token (il token Bearer) dopo aver rimosso eventuali spazi.
+	if len(tokens) == 2 {
+		return strings.Trim(tokens[1], " ")
+	}
+	// Se non ci sono 2 token restituisco stringa vuota
+	return ""
+}

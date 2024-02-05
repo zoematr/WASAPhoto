@@ -93,3 +93,28 @@ func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
 	}
 	return false, nil
 }
+
+// Database function che restituice il nickname di un utente
+func (db *appdbimpl) GetUsername(user User) (string, error) {
+
+	var username string
+
+	// Utilizza una query SQL SELECT per cercare il nickname dell'utente nella tabella users utilizzando l'identificativo dell'utente (id_user).
+	err := db.c.QueryRow(`SELECT username FROM users WHERE token = ?`, user.Token).Scan(&username)
+	if err != nil {
+		// Error during the execution of the query
+		return "", err
+	}
+	return username, nil
+}
+
+// Database function che permette di modificare il nickname di un utente (user) con un nuovo nickname (newNickname).
+func (db *appdbimpl) ChangeUsername(token string, newusername string) error {
+	// Utilizza una query SQL UPDATE per modificare il nickname dell'utente nella tabella users utilizzando l'identificativo dell'utente (id_user).
+	_, err := db.c.Exec(`UPDATE users SET username = ? WHERE token = ?`, newusername, token)
+	if err != nil {
+		// Error during the execution of the query
+		return err
+	}
+	return nil
+}

@@ -47,6 +47,7 @@ type AppDatabase interface {
 	GetStream(User) ([]Photo, error)
 	ExistsUser(string) (bool,error)
 	GetToken(string) (int, error)
+	ChangeUsername(string, string) (error)
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
