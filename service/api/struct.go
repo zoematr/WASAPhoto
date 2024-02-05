@@ -12,13 +12,13 @@ type User struct{
 	Banned     []string `json: username`
 }
 
-type Username struct{
-	Username string `json: username`
-}
+// type Username struct{
+// 	Username string `json: username`
+// }
 
 type Photo struct{
 	PhotoId    string    `json: photoid`
-	Username     string  `json: username`       
+	Username   string  `json: username`       
 	PhotoFile  string    `json: photofile`
 	Date       time.Time `json: datetime`
 }
@@ -87,11 +87,11 @@ func (phid PhotoId) ToDatabase() database.PhotoId {
 	}
 }
 
-func (uid Username) ToDatabase() database.Username {
-	return database.Username{
-		Username: uid.Username,
-	}
-}
+// func (uid Username) ToDatabase() database.Username {
+// 	return database.Username{
+//		Username: uid.Username,
+//	 }
+// }
 
 func (cc CommentContent) ToDatabase() database.CommentContent {
 	return database.CommentContent{

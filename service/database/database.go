@@ -43,6 +43,7 @@ type AppDatabase interface {
 	//nameFunction(input) (output)
 	GetName() (string, error)
 	SetName(name string) error
+	CreateUser(username string) (error)
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
@@ -80,7 +81,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			username TEXT NOT NULL,
 			photofile TEXT NOT NULL,
 			numberoflikes INTEGER NOT NULL DEFAULT 0,
-			datetime TEXT NOT NULL DEFAULT '0000-01-01T00:00:00Z'
+			datetime TEXT NOT NULL DEFAULT '0000-01-01T00:00:00Z',
 			photocaption TEXT,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
 			);
@@ -119,7 +120,6 @@ func New(db *sql.DB) (AppDatabase, error) {
 			);
 		
 		`
-		
 
 		_, err = db.Exec(sqlStmt)
 		if err != nil {

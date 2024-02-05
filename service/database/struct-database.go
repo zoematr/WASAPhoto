@@ -11,9 +11,9 @@ type User struct{
 	Banned     []string `json: userid`
 }
 
-type Username struct{
-	Username string `json: username`
-}
+// type Username struct{
+// 	Username string `json: username`
+// }
 
 type Photo struct{
 	PhotoId    string    `json: photoid`
