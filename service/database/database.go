@@ -43,7 +43,10 @@ type AppDatabase interface {
 	//nameFunction(input) (output)
 	GetName() (string, error)
 	SetName(name string) error
-	CreateUser(username string) (error)
+	CreateUser(string) (int, error)
+	GetStream(User) ([]Photo, error)
+	ExistsUser(string) (bool,error)
+	GetToken(string) (int, error)
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
@@ -67,13 +70,14 @@ func New(db *sql.DB) (AppDatabase, error) {
 		sqlStmt := `
 
 		CREATE TABLE example_table (
-			id INTEGER NOT NULL PRIMARY KEY, 
+			id INTEGER NOT NULL, 
 			name TEXT
+			UNIQUE(id)
 			);
 		
 		CREATE TABLE IF NOT EXISTS users (
-			username TEXT NOT NULL PRIMARY KEY,  
-			biography TEXT
+			token INTEGER AUTOINCREMENT NOT NULL PRIMARY KEY
+			username TEXT NOT NULL PRIMARY KEY,
 			);
 
 		CREATE TABLE IF NOT EXISTS photos (

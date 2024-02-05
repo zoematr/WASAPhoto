@@ -11,7 +11,7 @@ import (
 // func that handles user login
 func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	// tyoe of content will be json
+	// type of content will be json
 	w.Header().Set("Content-Type", "application/json")
 
 	// init var User and decode body of request
@@ -28,25 +28,18 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Create user, if exist insert in DB
-	err = rt.db.CreateUser(username)
+	// Create user, insert in DB
+	token, err := rt.db.CreateUser(username)
+	// if there is error, like the user exists, returns token
 	if err != nil {
-		// user exists, username returned
+		// user exists, token returned
+		token, err = rt.db.GetToken(username)
 		w.WriteHeader(http.StatusOK)
-		err = json.NewEncoder(w).Encode(username)
+		err = json.NewEncoder(w).Encode(map[string]int{"token": token})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			ctx.Logger.WithError(err).Error("session: can't create response json")
 		}
-		return
-	}
-
-	// if everything works gives 201 code, else 500
-	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(username)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		ctx.Logger.WithError(err).Error("session: can't create response json")
 		return
 	}
 }

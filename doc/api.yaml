@@ -31,6 +31,7 @@ components:
         banned: {$ref: '#/components/schemas/listbanned'}
         followers: {$ref: '#/components/schemas/followers'}
         following: {$ref: '#/components/schemas/following'}
+        token: {$ref: '#/components/schemas/token'}
 
     username: 
       title: username
@@ -40,6 +41,12 @@ components:
       maxLength: 31
       pattern: '^.*?$'
       example: "zoematr12345"
+
+    token: 
+      title: token
+      type: integer
+      description: token of the user used for auth
+      example: 1
     
     listbanned:
       title: listbanned
@@ -112,7 +119,7 @@ components:
       properties:
         commentcontent: {$ref: '#/components/schemas/commentcontent'}
         commentid: {$ref: '#/components/schemas/commentid'} #used to delete a specific comment
-        #the user id is not enough because one user can write multiple comments
+        #the username is not enough because one user can write multiple comments
         username: {$ref: '#/components/schemas/username'}
         datetime: {$ref: '#/components/schemas/datetime'}
 
@@ -219,7 +226,7 @@ paths:
           description: User log-in action successful 
           content:
             application/json: 
-              schema: {$ref: '#/components/schemas/username'}
+              schema: {$ref: '#/components/schemas/token'}
         '400': 
           description: Bad request
         '500': 
