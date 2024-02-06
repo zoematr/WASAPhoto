@@ -10,7 +10,6 @@ import (
 
 // func that handles user login
 func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-
 	// type of content will be json
 	w.Header().Set("Content-Type", "application/json")
 
