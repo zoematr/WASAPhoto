@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
+	"fmt"
 )
 
 // func that handles user login
@@ -25,23 +26,39 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Create user, insert in DB
-	token, err := rt.db.CreateUser(username)
-	// if there is error, like the user exists, returns token
+	// Create usert bc it does not exist
+	userexists, err := rt.db.ExistsUser(username)
+	fmt.Println(userexists)
 	if err != nil {
-		// user exists, token returned
-		token, err = rt.db.GetToken(username)
-		resp := map[string]int{"token": token}
-		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(resp)
-		//consider if there is an error, like the user can't be logged in
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !userexists {
+		token, err := rt.db.CreateUser(username)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "plain/text")
+		err = json.NewEncoder(w).Encode(token)
 		if err != nil {
 			ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
-		}
+			}
 	}
-//	w.WriteHeader(http.StatusOK)
+	
+	// if the user exists, returns token
+	// user exists, token returned
+	token, err := rt.db.GetToken(username)
+	w.Header().Set("Content-Type", "plain/text")
+	err = json.NewEncoder(w).Encode(token)
+	//consider if there is an error, like the user can't be logged in
+	if err != nil {
+		ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+		}
 	return
 }
 

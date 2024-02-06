@@ -5,8 +5,8 @@ info:
     This OpenAPI document describes the functioning of WASAPhoto, a platform that allows the sharing of pictures that will be visible to one's follower. Each user will be presented with a stream of photos (images) in reverse chronological order, with information about when each photo was uploaded (date and time) and how many likes and comments it has. The stream is composed by photos from “following”. Users can place (and later remove) a “like” to photos from other users. Also, users can add comments to any image (even those uploaded by themself). Only authors can remove their comments. Users can ban other users.
   version: "1.0.0"
 
-servers:
-  - url: http://localhost:3000
+#servers:
+#  - url: http://localhost:3000
 
 tags:
   - name: login

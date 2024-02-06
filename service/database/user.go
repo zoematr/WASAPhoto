@@ -2,6 +2,24 @@
 
 package database
 
+import (
+ 	"fmt"
+)
+
+func (db *appdbimpl) GetToken(username string) (int, error) {
+    fmt.Println("executing get token")
+	row := db.c.QueryRow("SELECT token FROM users WHERE username = ?", username)
+	var token int
+    err := row.Scan(&token)
+	fmt.Println("this is the token:")
+	fmt.Println(token)
+    if err != nil {
+        return 0, err
+    }
+    // Return the retrieved token
+    return token, nil
+}
+
 // get user stream
 func (db *appdbimpl) GetStream(user User) ([]Photo, error) {
 	rows, err := db.c.Query(`SELECT * FROM photos WHERE username IN (SELECT username FROM followers WHERE followerusername = ?) ORDER BY datetime DESC`,
@@ -45,15 +63,17 @@ func (db *appdbimpl) GetStream(user User) ([]Photo, error) {
 //insert user in DB
 func (db *appdbimpl) CreateUser(username string) (int, error) {
     // Insert the user into the database
+	fmt.Println("executing create user")
     _, err := db.c.Exec("INSERT INTO users (username) VALUES (?)", username)
+	//fmt.Println(err)
     if err != nil {
+
         return 0, err // can be 0, sqlite autoincrement starts from 1
     }
 
     // Retrieve the token for the inserted user
-    row := db.c.QueryRow("SELECT token FROM users WHERE username = ?", username)
-    var token int
-    err = row.Scan(&token)
+    token, err := db.GetToken(username)
+	//fmt.Println(err)
     if err != nil {
         return 0, err
     }
@@ -62,17 +82,7 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
     return token, nil
 }
 
-func (db *appdbimpl) GetToken(username string) (int, error) {
-    row := db.c.QueryRow("SELECT token FROM users WHERE username = ?", username)
-    var token int
-    err := row.Scan(&token)
-    if err != nil {
-        return 0, err
-    }
 
-    // Return the retrieved token
-    return token, nil
-}
 
 
 // checks if user exists if someone looks.
