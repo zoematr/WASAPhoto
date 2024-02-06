@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
-	"fmt"
 )
 
 // func that handles user login
@@ -42,7 +41,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 			return
 		}
 	}
-	w.WriteHeader(http.StatusOK)
+//	w.WriteHeader(http.StatusOK)
 	return
 }
 

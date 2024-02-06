@@ -225,10 +225,10 @@ paths:
             schema: {$ref: '#/components/schemas/username'}
         required: true 
       responses:
-        '201':
+        '200':
           description: User log-in action successful 
           content:
-            application/json: 
+            text/plain: 
               schema: {$ref: '#/components/schemas/token'}
         '400': 
           description: Bad request
@@ -256,9 +256,6 @@ paths:
       responses: 
         '200':
           description: the username has been successfully changes and it's returned.
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/username'}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -332,9 +329,6 @@ paths:
       responses:
         '201':
           description: Your new photo was uploaded successfully.
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/photoid'}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -377,9 +371,6 @@ paths:
       responses:
         '201': 
           description: You liked the photo.
-          content:
-            application/json:
-              schema: {$ref : '#/components/schemas/like'}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -425,9 +416,6 @@ paths:
       responses:
         '201': 
           description: You added your comment to the photo.
-          content:
-            application/json:
-              schema: {$ref : "#/components/schemas/comment"}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -471,9 +459,6 @@ paths:
       responses:
         '201': 
           description: You just started following the user.
-          content:
-            application/json:
-              schema: {$ref : "#/components/schemas/user"}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -514,9 +499,6 @@ paths:
       responses:
         '201': 
           description: You banned the user.
-          content:
-            application/json:
-              schema: {$ref : "#/components/schemas/user"}
         '403': 
           description: You cannot perform this operation.
       security:
