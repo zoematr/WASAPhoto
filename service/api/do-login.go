@@ -32,13 +32,17 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 	if err != nil {
 		// user exists, token returned
 		token, err = rt.db.GetToken(username)
-		w.Header().Set("Authorization", fmt.Sprintf("Bearer %d", token))
-    	w.WriteHeader(http.StatusOK)
-    	err = json.NewEncoder(w).Encode(map[string]int{"token": token})
+		resp := map[string]int{"token": token}
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(resp)
+		//consider if there is an error, like the user can't be logged in
 		if err != nil {
+			ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 			w.WriteHeader(http.StatusInternalServerError)
-			ctx.Logger.WithError(err).Error("session: can't create response json")
+			return
 		}
-		return
 	}
+	w.WriteHeader(http.StatusOK)
+	return
 }
+
