@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
-	"fmt"
 )
 
 // func that handles user login
@@ -28,7 +27,10 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// Create usert bc it does not exist
 	userexists, err := rt.db.ExistsUser(username)
-	fmt.Println(userexists)
+	// fmt.Println("this is the userexists error")
+	// fmt.Println(err)
+	// fmt.Println("does the user exist?")
+	// fmt.Println(userexists)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

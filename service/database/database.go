@@ -63,22 +63,23 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if db == nil {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
-
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
-	if errors.Is(err, sql.ErrNoRows) {
+	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
+	// fmt.Println("this is the db error")
+	// fmt.Println(err)
+	 if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `
 
-		CREATE TABLE example_table (
+		CREATE TABLE IF NOT EXISTS example_table (
 			id INTEGER NOT NULL, 
-			name TEXT
+			name TEXT,
 			UNIQUE(id)
 			);
 		
 		CREATE TABLE IF NOT EXISTS users (
-			token INTEGER AUTOINCREMENT NOT NULL PRIMARY KEY
-			username TEXT NOT NULL PRIMARY KEY,
+			token INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+			username TEXT UNIQUE NOT NULL
 			);
 
 		CREATE TABLE IF NOT EXISTS photos (
@@ -93,9 +94,9 @@ func New(db *sql.DB) (AppDatabase, error) {
 		
 		CREATE TABLE IF NOT EXISTS likes (
 			photoid TEXT NOT NULL, 
-			username TEXT NOT NULL
+			username TEXT NOT NULL,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
-			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE
+			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE,
 			PRIMARY KEY (photoid, username)
 			);
 		
@@ -112,7 +113,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			username TEXT NOT NULL, 
 			bannedusername TEXT NOT NULL,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
-			FOREIGN KEY(bannedusername) REFERENCES users(username) ON DELETE CASCADE
+			FOREIGN KEY(bannedusername) REFERENCES users(username) ON DELETE CASCADE,
 			PRIMARY KEY (username, bannedusername)
 			);
 
@@ -120,7 +121,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			username TEXT NOT NULL, 
 			followerusername TEXT NOT NULL,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
-			FOREIGN KEY(followerusername) REFERENCES users(username) ON DELETE CASCADE
+			FOREIGN KEY(followerusername) REFERENCES users(username) ON DELETE CASCADE,
 			PRIMARY KEY (username, followerusername)
 			);
 		
