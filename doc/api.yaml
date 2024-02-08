@@ -5,8 +5,10 @@ info:
     This OpenAPI document describes the functioning of WASAPhoto, a platform that allows the sharing of pictures that will be visible to one's follower. Each user will be presented with a stream of photos (images) in reverse chronological order, with information about when each photo was uploaded (date and time) and how many likes and comments it has. The stream is composed by photos from “following”. Users can place (and later remove) a “like” to photos from other users. Also, users can add comments to any image (even those uploaded by themself). Only authors can remove their comments. Users can ban other users.
   version: "1.0.0"
 
-#servers:
-#  - url: http://localhost:3000
+# Request bodies and non-204 responses should define a content object
+
+servers:
+  - url: http://localhost:3000
 
 tags:
   - name: login
@@ -32,7 +34,6 @@ components:
       properties:
         username: {$ref: '#/components/schemas/username'}
         banned: {$ref: '#/components/schemas/listbanned'}
-        followers: {$ref: '#/components/schemas/followers'}
         following: {$ref: '#/components/schemas/following'}
         token: {$ref: '#/components/schemas/token'}
 
@@ -63,14 +64,6 @@ components:
       title: following
       type: array
       description: this is the list of users followed by a user.
-      minItems: 0
-      maxItems: 10000
-      items: {$ref: '#/components/schemas/username'}
-    
-    followers:
-      title: followers
-      type: array
-      description: this is the list of users following a user.
       minItems: 0
       maxItems: 10000
       items: {$ref: '#/components/schemas/username'}
@@ -208,8 +201,6 @@ components:
       schema: {$ref: '#/components/schemas/commentid'}
 
 #PATHS
-
-
 paths:
 
   /session: 
@@ -325,12 +316,16 @@ paths:
               properties:
                 photofile: {$ref: '#/components/schemas/photofile'}
                 username: {$ref: '#/components/schemas/username'}
-
       responses:
         '201':
           description: Your new photo was uploaded successfully.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/photo'}
         '403': 
           description: You cannot perform this operation.
+        '500': 
+          description: internal server error.
       security:
         - bearerAuth: []
 
@@ -338,7 +333,6 @@ paths:
     summary: specific Photo posted by a user
     parameters:
       - $ref : "#/components/parameters/photoid"
-    
     delete:
       operationId: deletePhoto
       tags: ["photo"]
@@ -371,6 +365,9 @@ paths:
       responses:
         '201': 
           description: You liked the photo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/likeid'}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -406,16 +403,14 @@ paths:
         description: Comment details 
         content:
           application/json:
-            schema:
-              type: object
-              description: Information about the comment and who posted it
-              properties:
-                comment: {$ref: '#/components/schemas/commentcontent'}
-                username: {$ref: '#/components/schemas/username'} #this is used to check that the user trying to change the username is actually the owner of the profile
+            schema: {$ref: '#/components/schemas/commentcontent'}
         required: true
       responses:
         '201': 
           description: You added your comment to the photo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/comment'}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -459,6 +454,9 @@ paths:
       responses:
         '201': 
           description: You just started following the user.
+          content:
+            application/json:
+              schema: {$ref : "#/components/schemas/username"}
         '403': 
           description: You cannot perform this operation.
       security:
@@ -499,6 +497,9 @@ paths:
       responses:
         '201': 
           description: You banned the user.
+          content:
+            application/json:
+              schema: {$ref : "#/components/schemas/username"}
         '403': 
           description: You cannot perform this operation.
       security:
