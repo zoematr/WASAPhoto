@@ -31,7 +31,6 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
 	// fmt.Println("this is the db error")
 	// fmt.Println(err)
     if err != nil {
-
         return 0, err // can be 0, sqlite autoincrement starts from 1
     }
 
@@ -41,7 +40,6 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
     if err != nil {
         return 0, err
     }
-
     // Return the retrieved token
     return token, nil
 }
