@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
-	"fmt"
+//	"fmt"
+	"log"
+	"strconv"
 )
 
 // func that handles user login
@@ -28,10 +30,9 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// Create usert bc it does not exist
 	userexists, err := rt.db.ExistsUser(username)
-	// fmt.Println("this is the userexists error")
-	// fmt.Println(err)
-	fmt.Println("does the user exist?")
-	fmt.Println(userexists)
+	userExistsStr := strconv.FormatBool(userexists)
+	log.Printf("does the user exist?")
+	log.Printf(userExistsStr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -47,21 +48,22 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		if err != nil {
 			ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 			w.WriteHeader(http.StatusInternalServerError)
-			return
 			}
+		return
 	}
 	
 	// if the user exists, returns token
 	// user exists, token returned
 	token, err := rt.db.GetToken(username)
-	w.Header().Set("Content-Type", "plain/text")
-	err = json.NewEncoder(w).Encode(token)
-	//consider if there is an error, like the user can't be logged in
 	if err != nil {
 		ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 		}
+	// w.Header().Set("Content-Type", "plain/text")
+	// err = json.NewEncoder(w).Encode(token)
+	// consider if there is an error, like the user can't be logged in
+	w.Header().Set("Authorization", "Bearer "+ strconv.Itoa(token))
 	return
 }
 

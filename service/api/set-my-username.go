@@ -11,31 +11,41 @@ func (rt *_router) SetMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	pathUsername := ps.ByName("username")
 
-	// get the username from path
-	// Verifica l'identità dell'utente per l'operazione, confrontando l'ID dell'utente con l'ID dell'utente nel token Bearer.
-	valid := validateRequestingUser(pathUsername, extractBearer(r.Header.Get("Authorization")))
-	if valid != 0 {
+	// get the username from path and then get the token from the db because i did not manage to do it inside of validaterequestingUser
+	tokenPathUsername, err := rt.db.GetToken(pathUsername)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("set my username: error retrieving token")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	allowed := validateRequestingUser(tokenPathUsername, r.Header.Get("Authorization"))
+	if allowed != 0 {
 		return
 	}
 
 	// Estraggo il nuovo nickname dal corpo della richiesta e decodifica del JSON
 	var newusername string
-	err := json.NewDecoder(r.Body).Decode(&newusername)
+	err = json.NewDecoder(r.Body).Decode(&newusername)
 	// Se c'è un errore nella decodifica del JSON, si risponde con un codice di stato HTTP 400 (Bad Request).
 	if err != nil {
-		ctx.Logger.WithError(err).Error("changeusername: error decoding json")
+		ctx.Logger.WithError(err).Error("set my username: error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	token := extractBearer(r.Header.Get("Authorization"))
+	token := extractToken(r.Header.Get("Authorization"))
 	err = rt.db.ChangeUsername(token, newusername)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("update-username: error executing update query")
+		ctx.Logger.WithError(err).Error("set my username: error executing update query")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	// Respond with 204 http status
-	w.WriteHeader(http.StatusNoContent)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(map[string]string{"username": newusername})
+	if err != nil {
+		ctx.Logger.WithError(err).Error("set my username: error returning the new username")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

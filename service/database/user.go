@@ -122,7 +122,7 @@ func (db *appdbimpl) GetUsername(user User) (string, error) {
 }
 
 // function to change username.
-func (db *appdbimpl) ChangeUsername(token string, newusername string) error {
+func (db *appdbimpl) ChangeUsername(token int, newusername string) error {
 	// query update using the token
 	_, err := db.c.Exec(`UPDATE users SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {

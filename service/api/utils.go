@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"strings"
+	"strconv"
 )
 
 // check correct length
@@ -14,34 +15,39 @@ func validUsername(username string) bool {
 
 
 // Funzione che verifica se l'utente che effettua la richiesta ha un token valido per l'endpoint specificato.Restituisce 0 se è valido,o errore
-func validateRequestingUser(identifier string, bearerToken string) int {
+func validateRequestingUser(dbToken int, auth string) int {
 
-	// Se l'utente che effettua la richiesta ha un token non valido, restituisci un codice di stato HTTP 403
-	if isNotLogged(bearerToken) {
+	// if the user is not logged he is not allowed to perform operation
+	if isNotLogged(auth) {
 		return http.StatusForbidden
 	}
-
-	// Se l'ID dell'utente che effettua la richiesta è diverso da quello nel percorso, restituisci un codice di stato HTTP 401
-	if identifier != bearerToken {
+	bearerToken := extractToken(auth)
+	// if token in the header is different from the token linked to the username in the path, the user requesting is not authorized
+	if dbToken != bearerToken {
 		return http.StatusUnauthorized
 	}
 	return 0
 }
 
-// funzione che verifica se un utente è loggato.
-// Restituisci true se la stringa di autenticazione è vuota (cioè l'utente non è loggato), altrimenti restituisci false
+// gives true if authorization is "", i.e. user not logged in
 func isNotLogged(auth string) bool {
 
 	return auth == ""
 }
 
-func extractBearer(authorization string) string {
-	// Divido l'intestazione di autorizzazione in token utilizzando lo spazio come delimitatore.
+func extractToken(authorization string) int {
+	// Divide the authorization header in token utilizing space as divider
 	var tokens = strings.Split(authorization, " ")
-	// Se ci sono esattamente due token, restituisci il secondo token (il token Bearer) dopo aver rimosso eventuali spazi.
+	// if there are exactly 2 token, give the second token (bearer token) after removing spaces if there are
 	if len(tokens) == 2 {
-		return strings.Trim(tokens[1], " ")
+		tokenstr := strings.TrimSpace(tokens[1])
+		// Convert the token string to an integer
+        token, err := strconv.Atoi(tokenstr)
+		if err != nil {
+			return 0
+		}
+        return token
 	}
-	// Se non ci sono 2 token restituisco stringa vuota
-	return ""
+	// if there are not 2 spaces i give back empty strings
+	return 0
 }
