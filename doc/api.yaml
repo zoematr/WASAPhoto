@@ -1,0 +1,531 @@
+openapi: 3.0.3
+info:
+  title: WASAPhoto
+  description: |-
+    This OpenAPI document describes the functioning of WASAPhoto, a platform that allows the sharing of pictures that will be visible to one's follower. Each user will be presented with a stream of photos (images) in reverse chronological order, with information about when each photo was uploaded (date and time) and how many likes and comments it has. The stream is composed by photos from “following”. Users can place (and later remove) a “like” to photos from other users. Also, users can add comments to any image (even those uploaded by themself). Only authors can remove their comments. Users can ban other users.
+  version: "1.0.0"
+
+# Request bodies and non-204 responses should define a content object
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: login
+  - name: user
+  - name: stream
+  - name: photo
+
+#COMPONENTS
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+#SCHEMAS
+  schemas:
+  #USER
+    user:
+      title: user
+      type: object
+      description: this is the entire user object which includes the username, the identifier and additional information.
+      properties:
+        username: {$ref: '#/components/schemas/username'}
+        banned: {$ref: '#/components/schemas/banned'}
+        following: {$ref: '#/components/schemas/following'}
+        token: {$ref: '#/components/schemas/token'}
+
+    username: 
+      title: username
+      type: string
+      description: this is the username that can be used to search a user and to login.
+      minLength: 3
+      maxLength: 31
+      pattern: '^.*?$'
+      example: "zoematr12345"
+
+    token: 
+      title: token
+      type: integer
+      description: token of the user used for auth
+      example: 1
+    
+    banned:
+      title: banned
+      type: array
+      description: this is the list of users banned by a user.
+      minItems: 0
+      maxItems: 10000
+      items: {$ref: '#/components/schemas/username'}
+    
+    following:
+      title: following
+      type: array
+      description: this is the list of users followed by a user.
+      minItems: 0
+      maxItems: 10000
+      items: {$ref: '#/components/schemas/username'}
+
+  #PHOTO
+    photo:
+      title: photo
+      type: object
+      description: this is the photo object, which includes the picture posted and all the additional relevant information such as the owner, the date and time it was posted, an optional description and the number of likes.
+      properties:
+        username: {$ref: '#/components/schemas/username'}
+        photoid: {$ref: '#/components/schemas/photoid'}
+        photofile: {$ref: '#/components/schemas/photofile'}
+        datetime: {$ref: '#/components/schemas/datetime'}
+
+    photoid:
+      title: photoid
+      type: string
+      description: this is the unique identifier of a photo.
+      pattern: '^.*?$'
+      minLength: 3
+      maxLength: 29
+      example: "01234abcdef1234a1234b1234c012"
+      
+    photofile:
+      title: photofile
+      type: string
+      format: binary
+      description: this is the actual file that is uploaded, so it's a binary sequence that encodes the pixels of the picture.
+      minLength: 73 
+      maxLength: 2147483647
+      example: "10101100101011011010011110001010000100010101011000010111110010100001001010110010101101101001111000101000010001010101100001011111001010000100"
+    
+    datetime:
+      title: datetime
+      type: string
+      description: date and time, used to keep track of when a photo/comment was posted, or a like was added
+      minLength: 20
+      maxLength: 20
+      format: date-time
+      default: 0000-01-01T00:00:00Z
+      example: 2023-11-08T22:38:00Z
+  
+  #COMMENT
+    comment:
+      title: comment
+      type: object
+      description: can be used to comment a picture or a profile
+      properties:
+        commentcontent: {$ref: '#/components/schemas/commentcontent'}
+        commentid: {$ref: '#/components/schemas/commentid'} #used to delete a specific comment
+        #the username is not enough because one user can write multiple comments
+        username: {$ref: '#/components/schemas/username'}
+        datetime: {$ref: '#/components/schemas/datetime'}
+
+    commentid:
+      title: commentid
+      type: string
+      description: unique identifier for a comment
+      pattern: '^.*?$'
+      minLength: 3
+      maxLength: 29
+      example: "01234abcdef1234a1234b1234c012"
+    
+    commentcontent:
+      title: commentcontent
+      type: string
+      description: content of a comment under a photo
+      minLength: 1
+      maxLength: 400
+      pattern: '^.*?$'
+      example: "what a beautiful picture of a sunset!"
+
+#LIKE
+    like:
+      title: like
+      type: object
+      description: can be used to like a picture
+      properties:
+        likeid: {$ref: '#/components/schemas/likeid'}
+        photoid: {$ref: '#/components/schemas/photoid'}
+        username: {$ref: '#/components/schemas/username'}
+    
+    likeid:
+      title: commentid
+      type: string
+      description: unique identifier for a like
+      pattern: '^.*?$'
+      minLength: 3
+      maxLength: 29
+      example: "01234abcdef1234a1234b1234c012"
+
+  parameters:
+
+    username: 
+      name: username
+      in: path
+      required: true
+      description: used to search a user
+      schema: {$ref: '#/components/schemas/username'}
+    
+    likeid:
+      name: likeid
+      in: path
+      required: true
+      description: used to perform the operation concerning a user
+      schema: {$ref: '#/components/schemas/likeid'}
+    
+    followingusername:
+      name: followingusername
+      in: path
+      required: true
+      description: used to perform the operation concerning a user followed by another user
+      schema: {$ref: '#/components/schemas/username'}
+    
+    bannedusername:
+      name: bannedusername
+      in: path
+      required: true
+      description: used to perform the operation concerning a user banned by another user
+      schema: {$ref: '#/components/schemas/username'}
+    
+    photoid:
+      name: photoid
+      in: path
+      required: true
+      description: used to perform specific operations on pictures such as liking it or deleting it.
+      schema: {$ref: '#/components/schemas/photoid'}
+    
+    commentid:
+      name: commentid
+      in: path
+      required: true
+      description: used to perform specific operations on pictures such as liking it or deleting it.
+      schema: {$ref: '#/components/schemas/commentid'}
+
+#PATHS
+paths:
+
+  /session: 
+    post:
+      tags: ["login"]
+      summary: Logs in the user 
+      description: If the user does not exist, it will be created, and an identifier is returned. If the user exists, the user identifier is returned.
+      operationId: doLogin 
+      requestBody:
+        description: User details 
+        content:
+          application/json: 
+            schema: {$ref: '#/components/schemas/username'}
+        required: true 
+      responses:
+        '200':
+          description: User exists and log-in action successful 
+          content:
+            text/plain: 
+              schema: {$ref: '#/components/schemas/token'}
+        '201':
+          description: User created and log-in action successful 
+          content:
+            text/plain: 
+              schema: {$ref: '#/components/schemas/token'}
+        '400': 
+          description: Bad request
+        '500': 
+          description: internal server error
+      security:
+        - bearerAuth: []
+
+  /users/{username}:
+    summary: specific profile of the user corresponding to that username.
+    parameters: 
+      - $ref : "#/components/parameters/username"
+
+    patch: #patch is for changing only partially a resource
+      operationId: setMyUserName
+      tags: ["user"]
+      summary: Change your own username.
+      description: Change the username of one's own profile, with the one provided provided in input. The outcome of the operation is returned (either successful or not authorized). This operation can be performed only by the owner of the profile, so authentication is required.
+      requestBody:
+        description: new username and username to confirm the user's identity
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/username'}
+        required: true
+      responses: 
+        '200':
+          description: the username has been successfully changes and it's returned.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/username'}
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+
+    get:
+      operationId: getUserProfile
+      tags: ["user"]
+      summary: Return a profile.
+      description: It returns the profile corresponding to the username given in input (if it exists), if the user performing the operation is authorized to view it. Authentication is required as it must be ensured that the user can view the desired profile (i.e. if userX can see the profile of userY only if userX is not banned by userY).
+      responses:
+        '200':
+          description: User profile is returned successfully.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/user'}
+        '404':
+          description: User profile is not found.
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+      
+  /users/{username}/mystream/:
+    summary: Stream of picture posted by the followed users.
+    parameters: 
+      - $ref : '#/components/parameters/username'
+
+    #Getting the stream of an account.
+    get:
+      operationId: getMyStream
+      tags: ["stream"]
+      summary: Get the Stream.
+      description: For the user given in input (which is the one requesting the operation, i.e. userX), it returns a stream of pictures posted by the users followed by UserX, in reverse chronological order. Authentication is needed because, as already mentioned, this operation is allowed only to the owner of the profile.
+      responses:
+        '200':
+          description: These are the latest Photos posted by your friends.
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 100000
+                description: Array of Photos of the user's stream.
+                items: {$ref: '#/components/schemas/photo'}
+        '204': 
+          description: No one posted anything yet.   
+        '403':
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+  
+  /photos/:
+    summary: Photos posted on WASAPhoto
+
+    post:
+      operationId: uploadPhoto
+      tags: ["photo"]
+      summary: Post a new picture on your profile
+      description: Given a user requesting the operation, a new picture given in input is posted on his profile. We request for authentication of the user that wants to perform this action, because you can only post pictures on your own profile. 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Necessary return values for uploading photos
+              properties:
+                photofile: {$ref: '#/components/schemas/photofile'}
+                username: {$ref: '#/components/schemas/username'}
+      responses:
+        '201':
+          description: Your new photo was uploaded successfully.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/photo'}
+        '403': 
+          description: You cannot perform this operation.
+        '500': 
+          description: internal server error.
+      security:
+        - bearerAuth: []
+
+  /photos/{photoid}:
+    summary: specific Photo posted by a user
+    parameters:
+      - $ref : "#/components/parameters/photoid"
+    delete:
+      operationId: deletePhoto
+      tags: ["photo"]
+      summary: delete a photo from one's own profile.
+      description: given the username of the owner of the account (i.e. userX) requesting the operation  and the photoid of the pictures that the owner wishes to delete, delete the photo object from the collection of photos posted by userX. We request for authentication of the user that wants to perform this action, since we must make sure that he/she must be the author of the picture.
+      responses:
+        '204': 
+          description: You just deleted your photo.
+        '403': 
+          description: You cannot perform this operation.
+        '404': 
+          description: Photo not found. #if the photoid passed in input does not correspond to any of the photoid's in the collection of photos of the requesting user
+      security:
+        - bearerAuth: []
+
+  /likes/: 
+    summary: likes on photos posted on WASAPhoto
+
+    post: #from what the professor said it should be here to avoid the problem of a user putting multiple likes
+      operationId: likePhoto
+      tags: ["photo"]
+      summary: like a photo.
+      description: Given the photoid and a user requesting the operation, add the username corresponding to the requesting user to the list of users liking that specific picture. We request for authentication of the user that wants to perform this action, since a user must have logged in to like a picture.
+      requestBody:
+        description: user that wants to like the photo and photo that he wants to like
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/photoid'}
+        required: true
+      responses:
+        '201': 
+          description: You liked the photo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/like'}
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+          
+  /likes/{likeid}:
+    summary: specific like of a specific user on a specific photo
+    parameters:
+      - $ref : "#/components/parameters/likeid"
+      
+    delete:
+      operationId: unlikePhoto
+      tags: ["photo"]
+      summary: Unlike a photo.
+      description: Given the likeid and a user requesting the operation, delete the username corresponding to the requesting user to the list of users liking that specific picture. We request for authentication of the user that wants to perform this action, since a user must have liked the picture before.
+      responses:
+        '204': 
+          description: You unliked the photo.
+        '403':
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+    
+  /comments/:
+    summary: all comments on WASAPhoto
+
+    post:
+      operationId: commentPhoto
+      tags: ["photo"]
+      summary: comment a photo.
+      description: Given the photoid and a user requesting the operation, add the comment passed in the request body to the list of comments under that specific photo. We request for authentication of the user that wants to perform this action, since a user must have logged in to comment a picture.
+      requestBody:
+        description: Comment details 
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/commentcontent'}
+        required: true
+      responses:
+        '201': 
+          description: You added your comment to the photo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/comment'}
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+          
+  /comments/{commentid}:
+    summary: specific comment
+    
+    parameters:
+      - $ref : "#/components/parameters/commentid"
+      
+    delete:
+      operationId: uncommentPhoto
+      tags: ["photo"]
+      summary: Uncomment a photo.
+      description: Given the commentid and a user requesting the operation, delete the comment corresponding to the specific commentid from the collection of comments under a specific picture. We request for authentication of the user that wants to perform this action, since the user requesting the operation must be the author of the comment.
+      responses:
+        '204': 
+          description: You deleted your comment.
+        '403': 
+          description: You cannot perform this operation.
+        '404':
+          description: comment not found.
+      security:
+        - bearerAuth: []
+
+  /users/{username}/following/: 
+    parameters: 
+      - $ref : "#/components/parameters/username"
+    post:
+      operationId: followUser
+      tags: ["user"]
+      summary: Follow a another user.
+      description: given the username of the owner of the account (i.e. userX) requesting the operation, follow the user corresponding to the username passed in input and add the corresponding username to the collection of users followed by userX. We request for authentication of the user that wants to perform this action, since we must make sure that the user that the followed user did not ban the author of the request. Also the username of the user requesting the operation must be different from the username corresponding to the username given in input.
+      requestBody:
+        description: username of the user that we want to follow
+        content:
+          application/json:
+            schema: {$ref : "#/components/schemas/username"}
+        required: true
+      responses:
+        '201': 
+          description: You just started following the user.
+          content:
+            application/json:
+              schema: {$ref : "#/components/schemas/username"}
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+  
+  /users/{username}/following/{followingusername}: 
+    parameters: 
+      - $ref : "#/components/parameters/username"
+      - $ref : "#/components/parameters/followingusername"
+    delete:
+      operationId: unfollowUser
+      tags: ["user"]
+      summary: Unfollow another user.
+      description: given the username of the owner of the account (i.e. userX) requesting the operation, unfollow the user corresponding to the username passed in input and delete the corresponding username from the collection of users followed by userX. We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unfollowed user was initially followed. Also the username of the user requesting the operation must be different from the username corresponding to the username given in input.
+      responses:
+        '204': 
+          description: You just unfollowed the user.
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+    
+  /users/{username}/banned/:   
+    parameters: 
+      - $ref : "#/components/parameters/username"
+    
+    post:
+      operationId: banUser
+      tags: ["user"]
+      summary: Ban another user.
+      description: given the username of the owner of the account (i.e. userX) requesting the operation, ban the user corresponding to the username passed in input and add the corresponding username to the collection of users banned by userX. We request for authentication of the user that wants to perform this action, since we have to make sure that the author of the request is the owner of the account. Also the username of the user requesting the operation must be different from the username corresponding to the username given in input.
+      requestBody:
+        description: username of the user that we want to ban
+        content:
+          application/json:
+            schema: {$ref : "#/components/schemas/username"}
+        required: true
+      responses:
+        '201': 
+          description: You banned the user.
+          content:
+            application/json:
+              schema: {$ref : "#/components/schemas/username"}
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
+
+  /users/{username}/banned/{bannedusername}:   
+    parameters: 
+      - $ref : "#/components/parameters/username"
+      - $ref : "#/components/parameters/bannedusername"
+    delete:
+      operationId: unbanUser
+      tags: ["user"]
+      summary: Unban another user.
+      description: given the username of the owner of the account (i.e. userX) requesting the operation, unban the user corresponding to the username passed in input and delete the corresponding username from the collection of users banned by userX. We request for authentication of the user that wants to perform this action, since we must make sure that the user that the unbanned user was initially banned. Also the username of the user requesting the operation must be different from the username corresponding to the username given in input.
+      responses:
+        '204': 
+          description: You just unbanned the user.
+        '403': 
+          description: You cannot perform this operation.
+      security:
+        - bearerAuth: []
