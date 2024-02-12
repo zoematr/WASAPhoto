@@ -8,9 +8,8 @@ import (
 )
 
 func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-
+	
 	pathUsername := ps.ByName("username")
-
 	// get the username from path and then get the token from the db because i did not manage to do it inside of validaterequestingUser
 	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
 	if err != nil {
