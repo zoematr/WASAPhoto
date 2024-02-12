@@ -227,3 +227,41 @@ func (db *appdbimpl) GetPhotos(username string) ([]Photo, error) {
 }
 
 
+func (db *appdbimpl) FollowUser(requesting string, target string) error {
+    // Insert the user into the database
+	// fmt.Println("executing create user")
+    _, err := db.c.Exec("INSERT INTO followers (username, followerusername) VALUES (?,?)", target, requesting)
+    if err != nil {
+        return err
+    }
+    // Return the username of the user followed
+    return nil
+}
+
+func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, error) {
+    var cnt int
+	err := db.c.QueryRow("SELECT COUNT(*) FROM followers WHERE username = ? AND followerusername = ?", target, requesting).Scan(&cnt)
+
+	if err != nil {
+		// Count always returns a row thanks to COUNT(*), so this situation should not happen
+		return true, err
+	}
+    if err != nil {
+		// Count always returns a row thanks to COUNT(*), so this situation should not happen
+		return true, err
+	}
+
+	// If counter 1 then the target was followed
+	if cnt == 1 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (db *appdbimpl) UnfollowUser(requesting string, target string) error {
+    _, err := db.c.Exec("DELETE FROM followers WHERE username = ? AND followerusername = ?", target, requesting)
+    if err != nil {
+        return err
+    }
+    return nil
+}

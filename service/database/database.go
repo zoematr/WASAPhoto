@@ -53,6 +53,9 @@ type AppDatabase interface {
 	GetFollowing(string) ([]string, error)
 	GetPhotos(string) ([]Photo, error)
 	CheckBanned(string, string) (bool, error)
+	FollowUser(string, string) error
+	UnfollowUser(string, string) error
+	WasTargetFollowed(string, string) (bool, error)
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
