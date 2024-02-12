@@ -13,7 +13,6 @@ func (rt *_router) GetStream(w http.ResponseWriter, r *http.Request, ps httprout
 	// estraggo l'id del'utente dal  token Bearer nell'header di autorizzazione della richiesta HTTP.
 	w.Header().Set("Content-Type", "application/json")
 	token := extractToken(r.Header.Get("Authorization"))
-
 	requestingUsername, err := rt.db.GetUsernameFromToken(token)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error retrieving username from token")

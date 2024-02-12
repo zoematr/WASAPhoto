@@ -56,6 +56,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 	// if the user exists, returns token
 	// user exists, token returned
 	token, err := rt.db.GetTokenFromUsername(username)
+	ctx.Logger.Infof("The value of the login token is: %d", token)
 	if err != nil {
 		ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 		w.WriteHeader(http.StatusInternalServerError)

@@ -18,6 +18,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	ctx.Logger.Infof("The value of the token retrieved from username is: %s", tokenPathUsername)
 	allowed := validateRequestingUser(tokenPathUsername, r.Header.Get("Authorization"))
 	if allowed != 0 {
 		return
