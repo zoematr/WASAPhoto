@@ -12,7 +12,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	pathUsername := ps.ByName("username")
 
 	// get the username from path and then get the token from the db because i did not manage to do it inside of validaterequestingUser
-	tokenPathUsername, err := rt.db.GetTokenFromUsername(pathUsername)
+	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("set my username: error retrieving token")
 		w.WriteHeader(http.StatusBadRequest)
