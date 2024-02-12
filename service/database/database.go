@@ -45,9 +45,14 @@ type AppDatabase interface {
 	SetName(name string) error
 	CreateUser(string) (int, error)
 	GetStream(User) ([]Photo, error)
-	ExistsUser(string) (bool,error)
-	GetToken(string) (int, error)
-	ChangeUsername(int, string) (error)
+	ExistsUser(string) (bool, error)
+	GetTokenFromUsername(string) (int, error)
+	ChangeUsername(int, string) error
+	GetUsernameFromToken(int) (string, error)
+	GetFollowers(string) ([]string, error)
+	GetFollowing(string) ([]string, error)
+	GetPhotos(string) ([]Photo, error)
+	CheckBanned(string, string) (bool, error)
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
@@ -86,9 +91,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			photoid TEXT NOT NULL PRIMARY KEY,
 			username TEXT NOT NULL,
 			photofile TEXT NOT NULL,
-			numberoflikes INTEGER NOT NULL DEFAULT 0,
 			datetime TEXT NOT NULL DEFAULT '0000-01-01T00:00:00Z',
-			photocaption TEXT,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
 			);
 		

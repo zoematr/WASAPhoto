@@ -12,6 +12,14 @@ type User struct{
 	Token      string   `json: token`
 }
 
+// user + photos
+type UserProfile struct{    
+	Username   string   `json: username`
+	Followers  []string `json: following`
+	Following  []string `json: username`
+	Photos     []Photo  `json: photos`
+}
+
 // type Username struct{
 // 	Username string `json: username`
 // }

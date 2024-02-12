@@ -6,7 +6,7 @@ package database
 // 	"fmt"
 // )
 
-func (db *appdbimpl) GetToken(username string) (int, error) {
+func (db *appdbimpl) GetTokenFromUsername(username string) (int, error) {
     // fmt.Println("executing get token")
 	row := db.c.QueryRow("SELECT token FROM users WHERE username = ?", username)
 	// fmt.Println("this is the row")
@@ -35,8 +35,8 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
     }
 
     // Retrieve the token for the inserted user
-    token, err := db.GetToken(username)
-	//// fmt.Println(err)
+    token, err := db.GetTokenFromUsername(username)
+	// fmt.Println(err)
     if err != nil {
         return 0, err
     }
@@ -80,7 +80,6 @@ func (db *appdbimpl) GetStream(user User) ([]Photo, error) {
 // 	if err != nil {
 // 		return err
 // 	}
-// 
 // 	return nil
 // }
 
@@ -108,12 +107,12 @@ func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
 }
 
 // gives nickname of a user given the token
-func (db *appdbimpl) GetUsername(user User) (string, error) {
+func (db *appdbimpl) GetUsernameFromToken(token int) (string, error) {
 
 	var username string
 
 	// Utilizza una query SQL SELECT per cercare il nickname dell'utente nella tabella users utilizzando l'identificativo dell'utente (id_user).
-	err := db.c.QueryRow(`SELECT username FROM users WHERE token = ?`, user.Token).Scan(&username)
+	err := db.c.QueryRow(`SELECT username FROM users WHERE token = ?`, token).Scan(&username)
 	if err != nil {
 		// Error during the execution of the query
 		return "", err
@@ -131,3 +130,84 @@ func (db *appdbimpl) ChangeUsername(token int, newusername string) error {
 	}
 	return nil
 }
+
+func (db *appdbimpl) CheckBanned(banner string, banned string) (bool, error) {
+	var count int
+	err := db.c.QueryRow("SELECT COUNT(*) FROM banned WHERE username = ? AND bannedusername = ?", banner, banned).Scan(&count)
+    if err != nil {
+        return false, err
+    }
+    // If count > 0, it means "username" has banned "bannedUsername"
+	if count>0 {
+		return true, nil
+	}
+
+    return false, nil
+}
+
+func (db *appdbimpl) GetFollowers(followed string) ([]string, error) {
+    var followers []string
+    rows, err := db.c.Query(`SELECT followerusername FROM followers WHERE username = ?`, followed)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+    for rows.Next() {
+        var follower string
+        if err := rows.Scan(&follower); err != nil {
+            return nil, err
+        }
+        followers = append(followers, follower)
+    }
+    // Check for errors during row iteration
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+    return followers, nil
+}
+
+func (db *appdbimpl) GetFollowing(follower string) ([]string, error) {
+    var following []string
+    rows, err := db.c.Query(`SELECT username FROM followers WHERE followerusername = ?`, follower)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+    for rows.Next() {
+        var follow string
+        if err := rows.Scan(&follow); err != nil {
+            return nil, err
+        }
+        following = append(following, follow)
+    }
+    // Check for errors during row iteration
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+    return following, nil
+}
+
+func (db *appdbimpl) GetPhotos(username string) ([]Photo, error) {
+    var photos []Photo
+    rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var photo Photo
+        if err := rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date); err != nil {
+            return nil, err
+        }
+        photos = append(photos, photo)
+    }
+
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return photos, nil
+}
+
+

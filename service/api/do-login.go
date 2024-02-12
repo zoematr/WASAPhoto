@@ -28,7 +28,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Create usert bc it does not exist
+
 	userexists, err := rt.db.ExistsUser(username)
 	userExistsStr := strconv.FormatBool(userexists)
 	log.Printf("does the user exist?")
@@ -37,6 +37,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	// Create usert bc it does not exist
 	if !userexists {
 		token, err := rt.db.CreateUser(username)
 		if err != nil {
@@ -54,7 +55,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 	
 	// if the user exists, returns token
 	// user exists, token returned
-	token, err := rt.db.GetToken(username)
+	token, err := rt.db.GetTokenFromUsername(username)
 	if err != nil {
 		ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 		w.WriteHeader(http.StatusInternalServerError)

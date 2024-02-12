@@ -10,7 +10,8 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/", rt.getHelloWorld)
 	rt.router.POST("/session", rt.wrap(rt.handleLogin))
 	//rt.router.GET("/users/:username/mystream/", rt.wrap(rt.GetStream))
-	rt.router.PATCH("/users/:username", rt.wrap(rt.SetMyUsername))
+	rt.router.PATCH("/users/:username", rt.wrap(rt.setMyUsername))
+	rt.router.GET("/users/:username", rt.wrap(rt.getUserProfile))
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 

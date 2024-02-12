@@ -13,6 +13,14 @@ type User struct{
 	Token      string   `json: token`
 }
 
+// user + photos
+type UserProfile struct{    
+	Username   string   `json: username`
+	Followers  []string `json: following`
+	Following  []string `json: username`
+	Photos     []database.Photo  `json: photos`
+}
+
 // type Username struct{
 // 	Username string `json: username`
 // }
@@ -62,6 +70,16 @@ func (u User) ToDatabase() database.User {
 		Followers: u.Followers,
 		Following: u.Following,
 		Banned:    u.Banned,
+		Token:     u.Token,
+	}
+}
+
+func (up UserProfile) ToDatabase() database.UserProfile {
+	return database.UserProfile{
+		Username:  up.Username,
+		Followers: up.Followers,
+		Following: up.Following,
+		Photos:    up.Photos,
 	}
 }
 
