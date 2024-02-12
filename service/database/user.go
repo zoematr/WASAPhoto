@@ -9,14 +9,8 @@ package database
 func (db *appdbimpl) GetTokenFromUsername(username string) (int, error) {
     // fmt.Println("executing get token")
 	row := db.c.QueryRow("SELECT token FROM users WHERE username = ?", username)
-	// fmt.Println("this is the row")
-	// fmt.Println(row)
 	var token int
     err := row.Scan(&token)
-	// fmt.Println("this is the db error")
-	// fmt.Println(err)
-	// fmt.Println("this is the token:")
-	// fmt.Println(token)
     if err != nil {
         return 0, err
     }
@@ -28,12 +22,9 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
     // Insert the user into the database
 	// fmt.Println("executing create user")
     _, err := db.c.Exec("INSERT INTO users (username) VALUES (?)", username)
-	// fmt.Println("this is the db error")
-	// fmt.Println(err)
     if err != nil {
         return 0, err // can be 0, sqlite autoincrement starts from 1
     }
-
     // Retrieve the token for the inserted user
     token, err := db.GetTokenFromUsername(username)
 	// fmt.Println(err)
@@ -124,6 +115,31 @@ func (db *appdbimpl) GetUsernameFromToken(token int) (string, error) {
 func (db *appdbimpl) ChangeUsername(token int, newusername string) error {
 	// query update using the token
 	_, err := db.c.Exec(`UPDATE users SET username = ? WHERE token = ?`, newusername, token)
+	if err != nil {
+		// Error during the execution of the query
+		return err
+	}
+    _, err = db.c.Exec(`UPDATE photos SET username = ? WHERE token = ?`, newusername, token)
+	if err != nil {
+		// Error during the execution of the query
+		return err
+	}
+    _, err = db.c.Exec(`UPDATE likes SET username = ? WHERE token = ?`, newusername, token)
+	if err != nil {
+		// Error during the execution of the query
+		return err
+	}
+    _, err = db.c.Exec(`UPDATE comments SET username = ? WHERE token = ?`, newusername, token)
+	if err != nil {
+		// Error during the execution of the query
+		return err
+	}
+    _, err = db.c.Exec(`UPDATE banned SET username = ? WHERE token = ?`, newusername, token)
+	if err != nil {
+		// Error during the execution of the query
+		return err
+	}
+    _, err = db.c.Exec(`UPDATE followers SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {
 		// Error during the execution of the query
 		return err

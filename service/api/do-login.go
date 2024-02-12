@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 //	"fmt"
-	"log"
+//	"log"
 	"strconv"
 )
 
@@ -30,9 +30,6 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 
 
 	userexists, err := rt.db.ExistsUser(username)
-	userExistsStr := strconv.FormatBool(userexists)
-	log.Printf("does the user exist?")
-	log.Printf(userExistsStr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

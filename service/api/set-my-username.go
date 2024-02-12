@@ -18,8 +18,8 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	ctx.Logger.Infof("The value of the token retrieved from username is: %s", tokenPathUsername)
-	allowed := validateRequestingUser(tokenPathUsername, r.Header.Get("Authorization"))
+	authToken := r.Header.Get("Authorization")
+	allowed := validateRequestingUser(tokenDbPath, authToken)
 	if allowed != 0 {
 		return
 	}
@@ -48,5 +48,5 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+//	w.WriteHeader(http.StatusOK)
 }
