@@ -44,7 +44,7 @@ type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
 	CreateUser(string) (int, error)
-	GetStream(User) ([]Photo, error)
+	GetStream(string) ([]Photo, error)
 	ExistsUser(string) (bool, error)
 	GetTokenFromUsername(string) (int, error)
 	ChangeUsername(int, string) error

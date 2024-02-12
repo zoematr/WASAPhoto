@@ -45,9 +45,9 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
 }
 
 // get user stream
-func (db *appdbimpl) GetStream(user User) ([]Photo, error) {
+func (db *appdbimpl) GetStream(username string) ([]Photo, error) {
 	rows, err := db.c.Query(`SELECT * FROM photos WHERE username IN (SELECT username FROM followers WHERE followerusername = ?) ORDER BY datetime DESC`,
-		user.Username)
+		username)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (db *appdbimpl) GetStream(user User) ([]Photo, error) {
 	var res []Photo
 	for rows.Next() {
 		var photo Photo
-		err = rows.Scan(&photo.PhotoId, &photo.Username, &photo.Date) //  &photo.Comments, &photo.Likes,
+		err = rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date) //  &photo.Comments, &photo.Likes,
 		if err != nil {
 			return nil, err
 		}
