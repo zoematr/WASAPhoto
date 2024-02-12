@@ -7,8 +7,8 @@ info:
 
 # Request bodies and non-204 responses should define a content object
 
-#servers:
-#  - url: http://localhost:3000
+servers:
+  - url: http://localhost:3000
 
 tags:
   - name: login
