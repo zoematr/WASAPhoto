@@ -1,10 +1,10 @@
 package api
 
 import (
-	"encoding/json"
-	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
+	"encoding/json"
 	"net/http"
+	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -48,5 +48,5 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	// w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 }
