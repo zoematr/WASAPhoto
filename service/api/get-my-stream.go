@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"encoding/json"
-	"net/http"
 	"github.com/julienschmidt/httprouter"
+	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
+	"net/http"
 )
 
 func (rt *_router) GetStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {

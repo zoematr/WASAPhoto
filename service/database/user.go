@@ -7,32 +7,32 @@ package database
 // )
 
 func (db *appdbimpl) GetTokenFromUsername(username string) (int, error) {
-    // fmt.Println("executing get token")
+	// fmt.Println("executing get token")
 	row := db.c.QueryRow("SELECT token FROM users WHERE username = ?", username)
 	var token int
-    err := row.Scan(&token)
-    if err != nil {
-        return 0, err
-    }
-    // Return the retrieved token
-    return token, nil
+	err := row.Scan(&token)
+	if err != nil {
+		return 0, err
+	}
+	// Return the retrieved token
+	return token, nil
 }
 
 func (db *appdbimpl) CreateUser(username string) (int, error) {
-    // Insert the user into the database
+	// Insert the user into the database
 	// fmt.Println("executing create user")
-    _, err := db.c.Exec("INSERT INTO users (username) VALUES (?)", username)
-    if err != nil {
-        return 0, err // can be 0, sqlite autoincrement starts from 1
-    }
-    // Retrieve the token for the inserted user
-    token, err := db.GetTokenFromUsername(username)
+	_, err := db.c.Exec("INSERT INTO users (username) VALUES (?)", username)
+	if err != nil {
+		return 0, err // can be 0, sqlite autoincrement starts from 1
+	}
+	// Retrieve the token for the inserted user
+	token, err := db.GetTokenFromUsername(username)
 	// fmt.Println(err)
-    if err != nil {
-        return 0, err
-    }
-    // Return the retrieved token
-    return token, nil
+	if err != nil {
+		return 0, err
+	}
+	// Return the retrieved token
+	return token, nil
 }
 
 // get user stream
@@ -63,20 +63,15 @@ func (db *appdbimpl) GetStream(username string) ([]Photo, error) {
 	return res, nil
 }
 
-
 // func (db *appdbimpl) CreateUser(username string) error {
 // 	_, err := db.c.Exec("INSERT INTO users (username) VALUES (?)",
 // 		username)
-// 
+//
 // 	if err != nil {
 // 		return err
 // 	}
 // 	return nil
 // }
-
-
-
-
 
 // checks if user exists if someone looks.
 func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
@@ -119,27 +114,27 @@ func (db *appdbimpl) ChangeUsername(token int, newusername string) error {
 		// Error during the execution of the query
 		return err
 	}
-    _, err = db.c.Exec(`UPDATE photos SET username = ? WHERE token = ?`, newusername, token)
+	_, err = db.c.Exec(`UPDATE photos SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {
 		// Error during the execution of the query
 		return err
 	}
-    _, err = db.c.Exec(`UPDATE likes SET username = ? WHERE token = ?`, newusername, token)
+	_, err = db.c.Exec(`UPDATE likes SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {
 		// Error during the execution of the query
 		return err
 	}
-    _, err = db.c.Exec(`UPDATE comments SET username = ? WHERE token = ?`, newusername, token)
+	_, err = db.c.Exec(`UPDATE comments SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {
 		// Error during the execution of the query
 		return err
 	}
-    _, err = db.c.Exec(`UPDATE banned SET username = ? WHERE token = ?`, newusername, token)
+	_, err = db.c.Exec(`UPDATE banned SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {
 		// Error during the execution of the query
 		return err
 	}
-    _, err = db.c.Exec(`UPDATE followers SET username = ? WHERE token = ?`, newusername, token)
+	_, err = db.c.Exec(`UPDATE followers SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {
 		// Error during the execution of the query
 		return err
@@ -150,103 +145,102 @@ func (db *appdbimpl) ChangeUsername(token int, newusername string) error {
 func (db *appdbimpl) CheckBanned(banner string, banned string) (bool, error) {
 	var count int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM banned WHERE username = ? AND bannedusername = ?", banner, banned).Scan(&count)
-    if err != nil {
-        return false, err
-    }
-    // If count > 0, it means "username" has banned "bannedUsername"
-	if count>0 {
+	if err != nil {
+		return false, err
+	}
+	// If count > 0, it means "username" has banned "bannedUsername"
+	if count > 0 {
 		return true, nil
 	}
 
-    return false, nil
+	return false, nil
 }
 
 func (db *appdbimpl) GetFollowers(followed string) ([]string, error) {
-    var followers []string
-    rows, err := db.c.Query(`SELECT followerusername FROM followers WHERE username = ?`, followed)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
-    for rows.Next() {
-        var follower string
-        if err := rows.Scan(&follower); err != nil {
-            return nil, err
-        }
-        followers = append(followers, follower)
-    }
-    // Check for errors during row iteration
-    if err := rows.Err(); err != nil {
-        return nil, err
-    }
-    return followers, nil
+	var followers []string
+	rows, err := db.c.Query(`SELECT followerusername FROM followers WHERE username = ?`, followed)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var follower string
+		if err := rows.Scan(&follower); err != nil {
+			return nil, err
+		}
+		followers = append(followers, follower)
+	}
+	// Check for errors during row iteration
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return followers, nil
 }
 
 func (db *appdbimpl) GetFollowing(follower string) ([]string, error) {
-    var following []string
-    rows, err := db.c.Query(`SELECT username FROM followers WHERE followerusername = ?`, follower)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
-    for rows.Next() {
-        var follow string
-        if err := rows.Scan(&follow); err != nil {
-            return nil, err
-        }
-        following = append(following, follow)
-    }
-    // Check for errors during row iteration
-    if err := rows.Err(); err != nil {
-        return nil, err
-    }
-    return following, nil
+	var following []string
+	rows, err := db.c.Query(`SELECT username FROM followers WHERE followerusername = ?`, follower)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var follow string
+		if err := rows.Scan(&follow); err != nil {
+			return nil, err
+		}
+		following = append(following, follow)
+	}
+	// Check for errors during row iteration
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return following, nil
 }
 
 func (db *appdbimpl) GetPhotos(username string) ([]Photo, error) {
-    var photos []Photo
-    rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+	var photos []Photo
+	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var photo Photo
-        if err := rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date); err != nil {
-            return nil, err
-        }
-        photos = append(photos, photo)
-    }
+	for rows.Next() {
+		var photo Photo
+		if err := rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date); err != nil {
+			return nil, err
+		}
+		photos = append(photos, photo)
+	}
 
-    if err := rows.Err(); err != nil {
-        return nil, err
-    }
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
-    return photos, nil
+	return photos, nil
 }
 
-
 func (db *appdbimpl) FollowUser(requesting string, target string) error {
-    // Insert the user into the database
+	// Insert the user into the database
 	// fmt.Println("executing create user")
-    _, err := db.c.Exec("INSERT INTO followers (username, followerusername) VALUES (?,?)", target, requesting)
-    if err != nil {
-        return err
-    }
-    // Return the username of the user followed
-    return nil
+	_, err := db.c.Exec("INSERT INTO followers (username, followerusername) VALUES (?,?)", target, requesting)
+	if err != nil {
+		return err
+	}
+	// Return the username of the user followed
+	return nil
 }
 
 func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, error) {
-    var cnt int
+	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM followers WHERE username = ? AND followerusername = ?", target, requesting).Scan(&cnt)
 
 	if err != nil {
 		// Count always returns a row thanks to COUNT(*), so this situation should not happen
 		return true, err
 	}
-    if err != nil {
+	if err != nil {
 		// Count always returns a row thanks to COUNT(*), so this situation should not happen
 		return true, err
 	}
@@ -259,9 +253,9 @@ func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, 
 }
 
 func (db *appdbimpl) UnfollowUser(requesting string, target string) error {
-    _, err := db.c.Exec("DELETE FROM followers WHERE username = ? AND followerusername = ?", target, requesting)
-    if err != nil {
-        return err
-    }
-    return nil
+	_, err := db.c.Exec("DELETE FROM followers WHERE username = ? AND followerusername = ?", target, requesting)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -4,44 +4,44 @@ import (
 	"time"
 )
 
-type User struct{ 
-	Username   string   `json: username`
-	Followers  []string `json: following`
-	Following  []string `json: userid`
-	Banned     []string `json: userid`
-	Token      string   `json: token`
+type User struct {
+	Username  string   `json: username`
+	Followers []string `json: following`
+	Following []string `json: userid`
+	Banned    []string `json: userid`
+	Token     string   `json: token`
 }
 
 // user + photos
-type UserProfile struct{    
-	Username   string   `json: username`
-	Followers  []string `json: following`
-	Following  []string `json: username`
-	Photos     []Photo  `json: photos`
+type UserProfile struct {
+	Username  string   `json: username`
+	Followers []string `json: following`
+	Following []string `json: username`
+	Photos    []Photo  `json: photos`
 }
 
 // type Username struct{
 // 	Username string `json: username`
 // }
 
-type Photo struct{
-	PhotoId    string    `json: photoid`
-	Username   string    `json: username`       
-	PhotoFile  string    `json: photofile`
-	Date       time.Time `json: datetime`
+type Photo struct {
+	PhotoId   string    `json: photoid`
+	Username  string    `json: username`
+	PhotoFile string    `json: photofile`
+	Date      time.Time `json: datetime`
 }
 
-type PhotoId struct{
+type PhotoId struct {
 	PhotoId string `json: photoid`
 }
 
 type Like struct {
-	PhotoId    string `json: photoid`
-	Username   string `json: username`
-	LikeId     string `json: likeid`
+	PhotoId  string `json: photoid`
+	Username string `json: username`
+	LikeId   string `json: likeid`
 }
 
-type LikeId struct{
+type LikeId struct {
 	LikeId string `json: likeid`
 }
 
@@ -53,10 +53,10 @@ type Comment struct {
 	CommentContent string    `json: commentcontent`
 }
 
-type CommentId struct{
+type CommentId struct {
 	CommentId string `json: commentid`
 }
 
-type CommentContent struct{
+type CommentContent struct {
 	CommentContent string `json: commentcontent`
 }

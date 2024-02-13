@@ -39,7 +39,7 @@ import (
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 
-	// the structure seems to be 
+	// the structure seems to be
 	// nameFunction(input) (output)
 	GetName() (string, error)
 	SetName(name string) error
@@ -76,7 +76,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
 	// fmt.Println("this is the db error")
 	// fmt.Println(err)
-	 if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `
 
 		CREATE TABLE IF NOT EXISTS example_table (

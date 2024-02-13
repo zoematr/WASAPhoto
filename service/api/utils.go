@@ -2,8 +2,8 @@ package api
 
 import (
 	"net/http"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 // check correct length
@@ -12,7 +12,6 @@ func validUsername(username string) bool {
 	var trimmedusername = strings.TrimSpace(username)
 	return len(trimmedusername) >= 3 && len(trimmedusername) <= 31 && trimmedusername != "" && !strings.ContainsAny(trimmedusername, "?_")
 }
-
 
 // Funzione che verifica se l'utente che effettua la richiesta ha un token valido per l'endpoint specificato.Restituisce 0 se è valido,o errore
 func validateRequestingUser(dbToken int, auth string) int {
@@ -42,11 +41,11 @@ func extractToken(authorization string) int {
 	if len(tokens) == 2 {
 		tokenstr := strings.TrimSpace(tokens[1])
 		// Convert the token string to an integer
-        token, err := strconv.Atoi(tokenstr)
+		token, err := strconv.Atoi(tokenstr)
 		if err != nil {
 			return 0
 		}
-        return token
+		return token
 	}
 	// if there are not 2 spaces i give back empty strings
 	return 0

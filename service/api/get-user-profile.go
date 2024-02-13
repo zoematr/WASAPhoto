@@ -1,11 +1,11 @@
 package api
 
 import (
+	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"github.com/zoematr/WASAPhoto/service/database"
-	"encoding/json"
 	"net/http"
-	"github.com/julienschmidt/httprouter"
 )
 
 // Funzione che ritrova tutte le info necessarie del profilo

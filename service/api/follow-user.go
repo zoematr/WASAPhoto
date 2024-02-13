@@ -1,16 +1,16 @@
 package api
 
 import (
-	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
-	"net/http"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
+	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
+	"net/http"
 )
 
 // Funzione per mettere nella lista dei follow di un utente il follow di un'altro utente
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	w.Header().Set("Content-Type", "application/json") 
+	w.Header().Set("Content-Type", "application/json")
 	var usernameTargetUser string
 	err := json.NewDecoder(r.Body).Decode(&usernameTargetUser)
 	_, err = rt.db.ExistsUser(usernameTargetUser)
@@ -26,12 +26,12 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 	bearerToken := extractToken(r.Header.Get("Authorization"))
-	if tokenRequestUser != bearerToken {  // not person logged in
+	if tokenRequestUser != bearerToken { // not person logged in
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
-	if usernameRequestUser == usernameTargetUser {  // user can't follow himself
+	if usernameRequestUser == usernameTargetUser { // user can't follow himself
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

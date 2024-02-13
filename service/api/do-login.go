@@ -1,12 +1,12 @@
 package api
 
 import (
-	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"encoding/json"
-	"net/http"
 	"github.com/julienschmidt/httprouter"
-//	"fmt"
-//	"log"
+	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
+	"net/http"
+	//	"fmt"
+	//	"log"
 	"strconv"
 )
 
@@ -28,7 +28,6 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-
 	userexists, err := rt.db.ExistsUser(username)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -46,10 +45,10 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		if err != nil {
 			ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 			w.WriteHeader(http.StatusInternalServerError)
-			}
+		}
 		return
 	}
-	
+
 	// if the user exists, returns token
 	// user exists, token returned
 	token, err := rt.db.GetTokenFromUsername(username)
@@ -58,11 +57,10 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		ctx.Logger.WithError(err).WithField("username", username).Error("Can't login user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-		}
+	}
 	// w.Header().Set("Content-Type", "plain/text")
 	// err = json.NewEncoder(w).Encode(token)
 	// consider if there is an error, like the user can't be logged in
-	w.Header().Set("Authorization", "Bearer "+ strconv.Itoa(token))
+	w.Header().Set("Authorization", "Bearer "+strconv.Itoa(token))
 	return
 }
-
