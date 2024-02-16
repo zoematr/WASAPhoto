@@ -279,29 +279,29 @@ func (db *appdbimpl) UnbanUser(requesting string, target string) error {
 }
 
 func (db *appdbimpl) BanUser(requesting string, target string) error {
-	wasbanned, err := WasTargetBanned(requesting, target)
+	wasbanned, err := db.WasTargetBanned(requesting, target)
 	if err != nil {
 		return err
 	}
 	if wasbanned == true {
 		return err
 	}
-	wasfollowed, err := WasTargetFollowed(requesting, target)
+	wasfollowed, err := db.WasTargetFollowed(requesting, target)
 	if err != nil {
 		return err
 	}
 	if wasfollowed == true {
-		err = UnfollowUser(requesting, target)
+		err = db.UnfollowUser(requesting, target)
 		if err != nil {
 			return err
 		}
 	}
-	wasfollowed, err = WasTargetFollowed(target, requesting)
+	wasfollowed, err = db.WasTargetFollowed(target, requesting)
 	if err != nil {
 		return err
 	}
 	if wasfollowed == true {
-		err = UnfollowUser(target, requesting)
+		err = db.UnfollowUser(target, requesting)
 		if err != nil {
 			return err
 		}

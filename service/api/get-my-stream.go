@@ -14,7 +14,7 @@ func (rt *_router) GetStream(w http.ResponseWriter, r *http.Request, ps httprout
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
 	allowedUsername := ps.ByName("username")
-	allowedToken := rt.db.GetTokenFromUsername(allowedUsername)
+	allowedToken, err := rt.db.GetTokenFromUsername(allowedUsername)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error retrieving username from token")
 		w.WriteHeader(http.StatusInternalServerError)

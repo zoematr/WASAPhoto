@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"net/http"
@@ -11,7 +10,7 @@ import (
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	usernameTargetUser := ps.ByName("followingusername")
-	_, err = rt.db.ExistsUser(usernameTargetUser)
+	_, err := rt.db.ExistsUser(usernameTargetUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

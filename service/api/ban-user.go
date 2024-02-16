@@ -19,7 +19,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	bearerToken := r.Header.Get("Authorization")
 	w.Header().Set("Content-Type", "application/json")
 	var usernameTargetUser string
-	err := json.NewDecoder(r.Body).Decode(&usernameTargetUser)
+	err = json.NewDecoder(r.Body).Decode(&usernameTargetUser)
 	_, err = rt.db.ExistsUser(usernameTargetUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -29,7 +29,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	// Controlla se l'utente che effettua la richiesta ha il permesso di bannare l'utente specificato. 
 	// (solo l'owner dell'account puo aggiugnere un banned user nel suo account list)
 	allow := validateRequestingUser(tokenRequestUser, bearerToken)
-	if valid != 0 {
+	if allow != 0 {
 		w.WriteHeader(allow)
 		return
 	}
@@ -41,7 +41,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	// Chiama una funzione del database per aggiungere l'utente specificato alla lista degli utenti bannati.
-	err := rt.db.BanUser(usernameRequestUser, usernameTargetUser)
+	err = rt.db.BanUser(usernameRequestUser, usernameTargetUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("ban user/db.BanUser: error executing insert query")
 
