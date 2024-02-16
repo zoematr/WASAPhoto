@@ -13,7 +13,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PATCH("/users/:username", rt.wrap(rt.setMyUsername))
 	rt.router.GET("/users/:username", rt.wrap(rt.getUserProfile))
 	rt.router.POST("/users/:username/following/", rt.wrap(rt.followUser))
-	rt.router.POST("/users/:username/following/:username", rt.wrap(rt.unfollowUser))
+	rt.router.POST("/users/:username/following/:followingusername", rt.wrap(rt.unfollowUser))
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 

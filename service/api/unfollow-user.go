@@ -10,9 +10,7 @@ import (
 // Funzione per mettere nella lista dei follow di un utente il follow di un'altro utente
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	w.Header().Set("Content-Type", "application/json")
-	var usernameTargetUser string
-	err := json.NewDecoder(r.Body).Decode(&usernameTargetUser)
+	usernameTargetUser := ps.ByName("followingusername")
 	_, err = rt.db.ExistsUser(usernameTargetUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

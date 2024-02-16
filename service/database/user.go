@@ -240,11 +240,21 @@ func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, 
 		// Count always returns a row thanks to COUNT(*), so this situation should not happen
 		return true, err
 	}
+	// If counter 1 then the target was followed
+	if cnt == 1 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (db *appdbimpl) WasTargetBanned(requesting string, target string) (bool, error) {
+	var cnt int
+	err := db.c.QueryRow("SELECT COUNT(*) FROM banned WHERE username = ? AND bannedusername = ?", requesting, target).Scan(&cnt)
+
 	if err != nil {
 		// Count always returns a row thanks to COUNT(*), so this situation should not happen
 		return true, err
 	}
-
 	// If counter 1 then the target was followed
 	if cnt == 1 {
 		return true, nil
@@ -259,3 +269,47 @@ func (db *appdbimpl) UnfollowUser(requesting string, target string) error {
 	}
 	return nil
 }
+
+func (db *appdbimpl) UnbanUser(requesting string, target string) error {
+	_, err := db.c.Exec("DELETE FROM banned WHERE username = ? AND bannedusername = ?", requesting, target)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (db *appdbimpl) BanUser(requesting string, target string) error {
+	wasbanned, err := WasTargetBanned(requesting, target)
+	if err != nil {
+		return err
+	}
+	if wasbanned == true {
+		return err
+	}
+	wasfollowed, err := WasTargetFollowed(requesting, target)
+	if err != nil {
+		return err
+	}
+	if wasfollowed == true {
+		err = UnfollowUser(requesting, target)
+		if err != nil {
+			return err
+		}
+	}
+	wasfollowed, err = WasTargetFollowed(target, requesting)
+	if err != nil {
+		return err
+	}
+	if wasfollowed == true {
+		err = UnfollowUser(target, requesting)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = db.c.Exec("INSERT INTO banned (username, bannedusername) VALUES (?,?)", requesting, target)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+

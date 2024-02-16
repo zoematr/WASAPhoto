@@ -56,6 +56,9 @@ type AppDatabase interface {
 	FollowUser(string, string) error
 	UnfollowUser(string, string) error
 	WasTargetFollowed(string, string) (bool, error)
+	WasTargetBanned(string, string) (bool, error)
+	BanUser(string, string) error
+	UnbanUser(string, string) error
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error

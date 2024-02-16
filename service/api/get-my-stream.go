@@ -12,21 +12,22 @@ func (rt *_router) GetStream(w http.ResponseWriter, r *http.Request, ps httprout
 	// imposto il tipo di contenuto della risposta http in json
 	// estraggo l'id del'utente dal  token Bearer nell'header di autorizzazione della richiesta HTTP.
 	w.Header().Set("Content-Type", "application/json")
-	token := extractToken(r.Header.Get("Authorization"))
-	requestingUsername, err := rt.db.GetUsernameFromToken(token)
+	authToken := r.Header.Get("Authorization")
+	allowedUsername := ps.ByName("username")
+	allowedToken := rt.db.GetTokenFromUsername(allowedUsername)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error retrieving username from token")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	// Verifica se è l'utente stesso a vedere la propria home
-	allowed := validateRequestingUser(token, ps.ByName("username"))
+	allowed := validateRequestingUser(allowedToken, authToken)
 	if allowed != 0 {
 		w.WriteHeader(allowed)
 		return
 	}
 
-	photos, err := rt.db.GetStream(requestingUsername)
+	photos, err := rt.db.GetStream(allowedUsername)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
