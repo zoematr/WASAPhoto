@@ -143,18 +143,8 @@ components:
       type: object
       description: can be used to like a picture
       properties:
-        likeid: {$ref: '#/components/schemas/likeid'}
         photoid: {$ref: '#/components/schemas/photoid'}
         username: {$ref: '#/components/schemas/username'}
-    
-    likeid:
-      title: commentid
-      type: string
-      description: unique identifier for a like
-      pattern: '^.*?$'
-      minLength: 3
-      maxLength: 29
-      example: "01234abcdef1234a1234b1234c012"
 
   parameters:
 
@@ -165,15 +155,15 @@ components:
       description: used to search a user
       schema: {$ref: '#/components/schemas/username'}
     
-    likeid:
-      name: likeid
-      in: path
-      required: true
-      description: used to perform the operation concerning a user
-      schema: {$ref: '#/components/schemas/likeid'}
-    
     followingusername:
       name: followingusername
+      in: path
+      required: true
+      description: used to perform the operation concerning a user followed by another user
+      schema: {$ref: '#/components/schemas/username'}
+    
+    likingusername:
+      name: likingusername
       in: path
       required: true
       description: used to perform the operation concerning a user followed by another user
@@ -307,7 +297,7 @@ paths:
       security:
         - bearerAuth: []
   
-  /photos/:
+  /users/{username}/photos/:
     summary: Photos posted on WASAPhoto
 
     post:
@@ -318,12 +308,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              type: object
-              description: Necessary return values for uploading photos
-              properties:
-                photofile: {$ref: '#/components/schemas/photofile'}
-                username: {$ref: '#/components/schemas/username'}
+            schema: {$ref: '#/components/schemas/photofile'}
       responses:
         '201':
           description: Your new photo was uploaded successfully.
@@ -337,7 +322,7 @@ paths:
       security:
         - bearerAuth: []
 
-  /photos/{photoid}:
+  /users/{username}/photos/{photoid}:
     summary: specific Photo posted by a user
     parameters:
       - $ref : "#/components/parameters/photoid"
@@ -356,7 +341,7 @@ paths:
       security:
         - bearerAuth: []
 
-  /likes/: 
+  /users/{username}/photos/{photoid}/likes/: 
     summary: likes on photos posted on WASAPhoto
 
     post: #from what the professor said it should be here to avoid the problem of a user putting multiple likes
@@ -381,10 +366,12 @@ paths:
       security:
         - bearerAuth: []
           
-  /likes/{likeid}:
+  /users/{username}/photos/{photoid}/likes/{likingusername}:
     summary: specific like of a specific user on a specific photo
     parameters:
-      - $ref : "#/components/parameters/likeid"
+      - $ref : "#/components/parameters/username"
+      - $ref : "#/components/parameters/likingusername"
+      - $ref : "#/components/parameters/photoid"
       
     delete:
       operationId: unlikePhoto
@@ -399,9 +386,11 @@ paths:
       security:
         - bearerAuth: []
     
-  /comments/:
+  /users/{username}/photos/{photoid}/comments/:
     summary: all comments on WASAPhoto
-
+    parameters:
+      - $ref : "#/components/parameters/username"
+      - $ref : "#/components/parameters/photoid"
     post:
       operationId: commentPhoto
       tags: ["photo"]
@@ -424,12 +413,12 @@ paths:
       security:
         - bearerAuth: []
           
-  /comments/{commentid}:
+  /users/{username}/photos/{photoid}/comments/{commentid}:
     summary: specific comment
-    
     parameters:
       - $ref : "#/components/parameters/commentid"
-      
+      - $ref : "#/components/parameters/photoid"
+      - $ref : "#/components/parameters/username"
     delete:
       operationId: uncommentPhoto
       tags: ["photo"]

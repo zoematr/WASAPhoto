@@ -15,7 +15,7 @@ func (db *appdbimpl) GetTokenFromUsername(username string) (int, error) {
 		return 0, err
 	}
 	// Return the retrieved token
-	return token, nil
+	return token, err
 }
 
 func (db *appdbimpl) CreateUser(username string) (int, error) {
@@ -312,4 +312,3 @@ func (db *appdbimpl) BanUser(requesting string, target string) error {
 	}
 	return nil
 }
-

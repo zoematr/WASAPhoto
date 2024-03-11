@@ -59,6 +59,9 @@ type AppDatabase interface {
 	WasTargetBanned(string, string) (bool, error)
 	BanUser(string, string) error
 	UnbanUser(string, string) error
+	AddPhoto(Photo) error
+	DeletePhoto(string) error
+	AddLike(string, string) error
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error

@@ -27,7 +27,7 @@ type UserProfile struct {
 type Photo struct {
 	PhotoId   string    `json: photoid`
 	Username  string    `json: username`
-	PhotoFile string    `json: photofile`
+	PhotoFile []byte    `json: photofile`
 	Date      time.Time `json: datetime`
 }
 
