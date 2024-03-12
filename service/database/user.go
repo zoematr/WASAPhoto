@@ -2,28 +2,25 @@
 
 package database
 
-// import (
-// 	"fmt"
-// )
-
+// function that gets token linked to a username from the DB
 func (db *appdbimpl) GetTokenFromUsername(username string) (int, error) {
-	// fmt.Println("executing get token")
+
 	row := db.c.QueryRow("SELECT token FROM users WHERE username = ?", username)
 	var token int
 	err := row.Scan(&token)
 	if err != nil {
 		return 0, err
 	}
-	// Return the retrieved token
+	// Return the token
 	return token, err
 }
 
+// creates a new user and puts it in the database
 func (db *appdbimpl) CreateUser(username string) (int, error) {
 	// Insert the user into the database
-	// fmt.Println("executing create user")
 	_, err := db.c.Exec("INSERT INTO users (username) VALUES (?)", username)
 	if err != nil {
-		return 0, err // can be 0, sqlite autoincrement starts from 1
+		return 0, err // can't be 0, sqlite autoincrement starts from 1
 	}
 	// Retrieve the token for the inserted user
 	token, err := db.GetTokenFromUsername(username)
@@ -63,19 +60,8 @@ func (db *appdbimpl) GetStream(username string) ([]Photo, error) {
 	return res, nil
 }
 
-// func (db *appdbimpl) CreateUser(username string) error {
-// 	_, err := db.c.Exec("INSERT INTO users (username) VALUES (?)",
-// 		username)
-//
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
 // checks if user exists if someone looks.
 func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
-	//  Esegue una query SQL per contare il numero di righe nella tabella degli utenti che corrispondono all'ID utente specificato.
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?",
 		searcheduser).Scan(&cnt)
@@ -92,12 +78,9 @@ func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
 	return false, nil
 }
 
-// gives nickname of a user given the token
+// from the token, gets username in DB
 func (db *appdbimpl) GetUsernameFromToken(token int) (string, error) {
-
 	var username string
-
-	// Utilizza una query SQL SELECT per cercare il nickname dell'utente nella tabella users utilizzando l'identificativo dell'utente (id_user).
 	err := db.c.QueryRow(`SELECT username FROM users WHERE token = ?`, token).Scan(&username)
 	if err != nil {
 		// Error during the execution of the query
@@ -109,32 +92,8 @@ func (db *appdbimpl) GetUsernameFromToken(token int) (string, error) {
 // function to change username.
 func (db *appdbimpl) ChangeUsername(token int, newusername string) error {
 	// query update using the token
+	// doesn't have to be changed in every table because it's a foreign key
 	_, err := db.c.Exec(`UPDATE users SET username = ? WHERE token = ?`, newusername, token)
-	if err != nil {
-		// Error during the execution of the query
-		return err
-	}
-	_, err = db.c.Exec(`UPDATE photos SET username = ? WHERE token = ?`, newusername, token)
-	if err != nil {
-		// Error during the execution of the query
-		return err
-	}
-	_, err = db.c.Exec(`UPDATE likes SET username = ? WHERE token = ?`, newusername, token)
-	if err != nil {
-		// Error during the execution of the query
-		return err
-	}
-	_, err = db.c.Exec(`UPDATE comments SET username = ? WHERE token = ?`, newusername, token)
-	if err != nil {
-		// Error during the execution of the query
-		return err
-	}
-	_, err = db.c.Exec(`UPDATE banned SET username = ? WHERE token = ?`, newusername, token)
-	if err != nil {
-		// Error during the execution of the query
-		return err
-	}
-	_, err = db.c.Exec(`UPDATE followers SET username = ? WHERE token = ?`, newusername, token)
 	if err != nil {
 		// Error during the execution of the query
 		return err
@@ -142,6 +101,7 @@ func (db *appdbimpl) ChangeUsername(token int, newusername string) error {
 	return nil
 }
 
+// checks if a banner banned banned
 func (db *appdbimpl) CheckBanned(banner string, banned string) (bool, error) {
 	var count int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM banned WHERE username = ? AND bannedusername = ?", banner, banned).Scan(&count)
@@ -156,6 +116,7 @@ func (db *appdbimpl) CheckBanned(banner string, banned string) (bool, error) {
 	return false, nil
 }
 
+// function that returns all the followers of a follower
 func (db *appdbimpl) GetFollowers(followed string) ([]string, error) {
 	var followers []string
 	rows, err := db.c.Query(`SELECT followerusername FROM followers WHERE username = ?`, followed)
@@ -177,6 +138,7 @@ func (db *appdbimpl) GetFollowers(followed string) ([]string, error) {
 	return followers, nil
 }
 
+// function that returns all the people followed by a user
 func (db *appdbimpl) GetFollowing(follower string) ([]string, error) {
 	var following []string
 	rows, err := db.c.Query(`SELECT username FROM followers WHERE followerusername = ?`, follower)
@@ -198,6 +160,7 @@ func (db *appdbimpl) GetFollowing(follower string) ([]string, error) {
 	return following, nil
 }
 
+// function that gets all the photos of a user
 func (db *appdbimpl) GetPhotos(username string) ([]Photo, error) {
 	var photos []Photo
 	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
@@ -221,9 +184,9 @@ func (db *appdbimpl) GetPhotos(username string) ([]Photo, error) {
 	return photos, nil
 }
 
+// function to start follow a user
 func (db *appdbimpl) FollowUser(requesting string, target string) error {
-	// Insert the user into the database
-	// fmt.Println("executing create user")
+
 	_, err := db.c.Exec("INSERT INTO followers (username, followerusername) VALUES (?,?)", target, requesting)
 	if err != nil {
 		return err
@@ -232,6 +195,7 @@ func (db *appdbimpl) FollowUser(requesting string, target string) error {
 	return nil
 }
 
+// function to check if a user was already followed
 func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, error) {
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM followers WHERE username = ? AND followerusername = ?", target, requesting).Scan(&cnt)
@@ -247,6 +211,7 @@ func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, 
 	return false, nil
 }
 
+// check if a user is banned by another user
 func (db *appdbimpl) WasTargetBanned(requesting string, target string) (bool, error) {
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM banned WHERE username = ? AND bannedusername = ?", requesting, target).Scan(&cnt)
@@ -262,6 +227,7 @@ func (db *appdbimpl) WasTargetBanned(requesting string, target string) (bool, er
 	return false, nil
 }
 
+// function to unfollow a user
 func (db *appdbimpl) UnfollowUser(requesting string, target string) error {
 	_, err := db.c.Exec("DELETE FROM followers WHERE username = ? AND followerusername = ?", target, requesting)
 	if err != nil {
@@ -270,6 +236,7 @@ func (db *appdbimpl) UnfollowUser(requesting string, target string) error {
 	return nil
 }
 
+// function to unban a user
 func (db *appdbimpl) UnbanUser(requesting string, target string) error {
 	_, err := db.c.Exec("DELETE FROM banned WHERE username = ? AND bannedusername = ?", requesting, target)
 	if err != nil {
@@ -278,6 +245,7 @@ func (db *appdbimpl) UnbanUser(requesting string, target string) error {
 	return nil
 }
 
+// function to ban a user
 func (db *appdbimpl) BanUser(requesting string, target string) error {
 	wasbanned, err := db.WasTargetBanned(requesting, target)
 	if err != nil {

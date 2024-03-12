@@ -5,6 +5,7 @@ import (
 )
 
 func (db *appdbimpl) AddPhoto(p Photo) error {
+    // function to add the photo with the correct photo id
     var lastPhotoID int
 
     // Query the last inserted photo ID
@@ -17,7 +18,7 @@ func (db *appdbimpl) AddPhoto(p Photo) error {
     // Increment the last photo ID to get the new photo ID
     newPhotoID := lastPhotoID + 1
 
-    // Utilize a SQL INSERT query to insert the photo into the database
+    // add db
     _, err = db.c.Exec("INSERT INTO photos (photoid, username, date) VALUES (?, ?, ?)",
     	newPhotoID, p.Username, p.Date)
 
@@ -30,6 +31,7 @@ func (db *appdbimpl) AddPhoto(p Photo) error {
 }
 
 func (db *appdbimpl) AddLike(photoId string, likerUsername string) error {
+    // function to add like
     _, err := db.c.Exec("INSERT INTO photos (username, photoid) VALUES (?, ?, ?)",
     	photoId, likerUsername)
 
@@ -42,6 +44,7 @@ func (db *appdbimpl) AddLike(photoId string, likerUsername string) error {
 }
 
 func (db *appdbimpl) DeleteLike(photoId string, likerUsername string) error {
+    // function to unlike
     _, err := db.c.Exec("DELETE FROM photos WHERE photoid = ? AND username = ?",
     	photoId, likerUsername)
 
@@ -55,10 +58,10 @@ func (db *appdbimpl) DeleteLike(photoId string, likerUsername string) error {
 
 
 func (db *appdbimpl) GetUsernameFromPhotoId(photoid string) (string, error) {
-
+    // function to get username-> author of a picture from the photo id
 	var username string
 
-	// Utilizza una query SQL SELECT per cercare il nickname dell'utente nella tabella users utilizzando l'identificativo dell'utente (id_user).
+	// look for username where id of the photo is the input
 	err := db.c.QueryRow(`SELECT username FROM photos WHERE photoid = ?`, photoid).Scan(&username)
 	if err != nil {
 		// Error during the execution of the query
@@ -68,10 +71,9 @@ func (db *appdbimpl) GetUsernameFromPhotoId(photoid string) (string, error) {
 }
 
 func (db *appdbimpl) GetUsernameFromCommentId(commentid string) (string, error) {
-
+    // function to get username-> author of a comment from the comment id
 	var username string
 
-	// Utilizza una query SQL SELECT per cercare il nickname dell'utente nella tabella users utilizzando l'identificativo dell'utente (id_user).
 	err := db.c.QueryRow(`SELECT username FROM comments WHERE commentid = ?`, commentid).Scan(&username)
 	if err != nil {
 		// Error during the execution of the query
@@ -83,7 +85,7 @@ func (db *appdbimpl) GetUsernameFromCommentId(commentid string) (string, error) 
 
 
 func (db *appdbimpl) DeletePhoto(photoId string) (error) {
-	// Utilizza una query SQL INSERT per inserire la foto nel database.
+	// function to delete photo from db
 	_, err := db.c.Exec("DELETE FROM photos WHERE photoid = ?",
 		photoId)
 
@@ -96,6 +98,8 @@ func (db *appdbimpl) DeletePhoto(photoId string) (error) {
 }
 
 func (db *appdbimpl) AddComment(c Comment) error {
+    // function to comment a photo
+    // data is passed in the struct from the backend
     var lastCommentID int
 
     // Query the last inserted photo ID
@@ -121,7 +125,7 @@ func (db *appdbimpl) AddComment(c Comment) error {
 }
 
 func (db *appdbimpl) DeleteComment(commentid string) (error) {
-	// Utilizza una query SQL INSERT per inserire la foto nel database.
+	// function to delete a comment
 	_, err := db.c.Exec("DELETE FROM comments WHERE commentid = ?",
 		commentid)
 
@@ -152,7 +156,7 @@ func (db *appdbimpl) PhotoExists(searchedphotoid string) (bool, error) {
 }
 
 func (db *appdbimpl) CommentExists(commentid string) (bool, error) {
-	// checks if a photo exists
+	// checks if a comment exists
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM comments WHERE commentid = ?",
 		commentid).Scan(&cnt)
@@ -170,7 +174,7 @@ func (db *appdbimpl) CommentExists(commentid string) (bool, error) {
 }
 
 func (db *appdbimpl) DoesUserLikePhoto(photoid string, likerusername string) (bool, error) {
-	// checks if a photo exists
+	// checks if a user has liked a photo
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM likes WHERE photoid = ? AND username = ?",
 		photoid, likerusername).Scan(&cnt)
