@@ -82,7 +82,7 @@ func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
 
 	if err != nil {
 		// Count always returns a row thanks to COUNT(*), so this situation should not happen
-		return true, err
+		return false, err
 	}
 
 	// If counter 1 then the user exists

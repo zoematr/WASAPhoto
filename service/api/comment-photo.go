@@ -2,13 +2,13 @@ package api
 
 import (
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
-	"encoding/json"
 	"net/http"
+	"time"
 	"github.com/julienschmidt/httprouter"
+	"encoding/json"
 )
 
-// Funzione che gestisce l'upload di una foto
-func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
@@ -39,31 +39,34 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	// check if the photo exists
-	exists, err := rt.db.PhotoExists(targetPhotoId)
-	if exists != true {
-		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	liked, err := rt.db.DoesUserLikePhoto(targetPhotoId, pathRequestUsername)
-	if liked != false {
-		ctx.Logger.WithError(err).Error("delete-photo: you already liked this photo")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-
-	err = rt.db.AddLike(targetPhotoId, pathRequestUsername)
+	var commentContent string
+	err = json.NewDecoder(r.Body).Decode(&commentContent)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("photo-like error")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
+		ctx.Logger.WithError(err).Error("comment photo: failed to decode request body json")
 		return
 	}
 
-	// Invia una risposta con stato "Created" e un oggetto JSON che rappresenta la foto appena caricata.
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(pathRequestUsername)
+	// Controllo la lunghezza del comment(<=400)
+	if len(commentContent) > 400 {
+		w.WriteHeader(http.StatusBadRequest)
+		ctx.Logger.WithError(err).Error("comment is too long")
+		return
+	}
+
+	comment := Comment{
+		Username: pathRequestUsername,
+		Date:  time.Now().UTC(),
+		PhotoId: targetPhotoId,
+		CommentContent: commentContent,
+	}
+
+	err = rt.db.AddComment(comment.ToDatabase())
+	if err != nil {
+		ctx.Logger.WithError(err).Error("comment photo: error addind comment to db")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 }
+

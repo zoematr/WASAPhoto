@@ -2,20 +2,19 @@ package api
 
 import (
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
-	"encoding/json"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 )
 
 // DELETE PHOTO
-func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	
 	// get data from header and path
-	// get the username from path and then get the token from the db because i did not manage to do it inside of validaterequestingUser
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
 	pathUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
+	targetCommentId := ps.ByName("commenid")
 	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
 // verify identity of the user
 	valid := validateRequestingUser(tokenDbPath, authToken)
@@ -26,34 +25,41 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// check if the photo exists
 	exists, err := rt.db.PhotoExists(targetPhotoId)
 	if exists != true {
-		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
+		ctx.Logger.WithError(err).Error("uncomment-photo: the photo does not exist")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	// check if the photo belongs to the user requesting the action
-	usernameTarget, err := rt.db.GetUsernameFromPhotoId(targetPhotoId)
+	// check if the comment exists
+	exists, err = rt.db.CommentExists(targetCommentId)
+	if exists != true {
+		ctx.Logger.WithError(err).Error("uncomment-photo: the comment does not exist")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// check if the comment belongs to the user requesting the action
+	usernameTarget, err := rt.db.GetUsernameFromCommentId(targetCommentId)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("delete-photo: error checking the author of the photo")
+		ctx.Logger.WithError(err).Error("uncomment-photo: error checking author of the comment")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if usernameTarget != pathUsername {
-		ctx.Logger.WithError(err).Error("delete-photo: you cannot remove someone else's photo")
+		ctx.Logger.WithError(err).Error("uncomment-photo: you cannot remove someone else's comment")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	// delete the photo from the db
-	err = rt.db.DeletePhoto(targetPhotoId)
+	// delete the comment from the db
+	err = rt.db.DeleteComment(targetCommentId)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("delete-photo: error removing the photo from the DB")
+		ctx.Logger.WithError(err).Error("uncomment-photo: error removing the comment from the DB")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	// Invia una risposta con stato "Created" e un oggetto JSON che rappresenta la foto appena caricata.
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(pathUsername)
 
 }

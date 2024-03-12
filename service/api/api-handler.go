@@ -19,7 +19,9 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/users/:username/photos/", rt.wrap(rt.uplaodPhoto))
 	rt.router.DELETE("/users/:username/photos/:photoid", rt.wrap(rt.deletePhoto))
 	rt.router.POST("/users/:username/photos/:photoid/likes/", rt.wrap(rt.likePhoto))
-	// rt.router.DELETE("/users/:username/photos/:photoid/likes/:likeid", rt.wrap(rt.unlikePhoto))
+	rt.router.DELETE("/users/:username/photos/:photoid/likes/:likingusername", rt.wrap(rt.unlikePhoto))
+	rt.router.POST("/users/:username/photos/:photoid/comments/", rt.wrap(rt.commentPhoto))
+	rt.router.DELETE("/users/:username/photos/:photoid/comments/:commentid", rt.wrap(rt.uncommentPhoto))
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 
