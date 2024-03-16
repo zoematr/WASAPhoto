@@ -308,7 +308,7 @@ paths:
       description: Given a user requesting the operation, a new picture given in input is posted on his profile. We request for authentication of the user that wants to perform this action, because you can only post pictures on your own profile. 
       requestBody:
         content:
-          application/json:
+          image/*:
             schema: {$ref: '#/components/schemas/photofile'}
       responses:
         '201':
