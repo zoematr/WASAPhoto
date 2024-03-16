@@ -299,7 +299,8 @@ paths:
   
   /users/{username}/photos/:
     summary: Photos posted on WASAPhoto
-
+    parameters: 
+      - $ref : "#/components/parameters/username"
     post:
       operationId: uploadPhoto
       tags: ["photo"]
@@ -326,6 +327,7 @@ paths:
     summary: specific Photo posted by a user
     parameters:
       - $ref : "#/components/parameters/photoid"
+      - $ref : "#/components/parameters/username"
     delete:
       operationId: deletePhoto
       tags: ["photo"]
@@ -343,7 +345,9 @@ paths:
 
   /users/{username}/photos/{photoid}/likes/: 
     summary: likes on photos posted on WASAPhoto
-
+    parameters:
+    - $ref : "#/components/parameters/photoid"
+    - $ref : "#/components/parameters/username"
     post: #from what the professor said it should be here to avoid the problem of a user putting multiple likes
       operationId: likePhoto
       tags: ["photo"]
