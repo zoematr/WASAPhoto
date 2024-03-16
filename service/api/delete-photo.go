@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
-	"encoding/json"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 )
@@ -27,7 +26,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	exists, err := rt.db.PhotoExists(targetPhotoId)
 	if exists != true {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -52,8 +51,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Invia una risposta con stato "Created" e un oggetto JSON che rappresenta la foto appena caricata.
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(pathUsername)
+	// send code 204
+	w.WriteHeader(http.StatusNoContent)
 
 }

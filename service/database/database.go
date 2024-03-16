@@ -70,6 +70,7 @@ type AppDatabase interface {
 	GetUsernameFromCommentId(string) (string, error)
 	DeleteComment(string) error
 	CommentExists(string) (bool, error)
+	GetPhotoFromPhotoId(string) (Photo, error)
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error

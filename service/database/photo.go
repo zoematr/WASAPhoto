@@ -30,6 +30,21 @@ func (db *appdbimpl) AddPhoto(p Photo) error {
     return nil
 }
 
+// TODO CHANGE TO COMPLETE PHOTO
+func (db *appdbimpl) GetPhotoFromPhotoId(photoid string) (Photo, error) {
+    // function to get username-> author of a picture from the photo id
+	var photo Photo
+
+	// look for username where id of the photo is the input
+	err := db.c.QueryRow(`SELECT username, photofile, datetime FROM photos WHERE photoid = ?`, photoid).Scan(&photo.Username, &photo.PhotoFile, &photo.Date)
+	if err != nil {
+		// Error during the execution of the query
+		return photo, err
+	}
+	return photo, nil
+}
+
+
 func (db *appdbimpl) AddLike(photoId string, likerUsername string) error {
     // function to add like
     _, err := db.c.Exec("INSERT INTO photos (username, photoid) VALUES (?, ?, ?)",

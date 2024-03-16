@@ -28,7 +28,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// check if the user is trying to remove someome else's like
 	if targetLikingUsername != pathUsername {
 		ctx.Logger.WithError(err).Error("unlike-photo: you can't remove someone else's like")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -36,14 +36,19 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	exists, err := rt.db.PhotoExists(targetPhotoId)
 	if exists != true {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	liked, err := rt.db.DoesUserLikePhoto(targetPhotoId, pathUsername)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("unlike-photo: error executing db function call")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if liked != true {
 		ctx.Logger.WithError(err).Error("delete-photo: you cannot unlike an unliked photo")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 

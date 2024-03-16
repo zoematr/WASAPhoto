@@ -24,16 +24,16 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	// Estraggo il nuovo nickname dal corpo della richiesta e decodifica del JSON
+	// get new username from request body
 	var newusername string
 	err = json.NewDecoder(r.Body).Decode(&newusername)
-	// Se c'è un errore nella decodifica del JSON, si risponde con un codice di stato HTTP 400 (Bad Request).
 	if err != nil {
 		ctx.Logger.WithError(err).Error("set my username: error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	// change the username in the DB
 	token := extractToken(r.Header.Get("Authorization"))
 	err = rt.db.ChangeUsername(token, newusername)
 	if err != nil {

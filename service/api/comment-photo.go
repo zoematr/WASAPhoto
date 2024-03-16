@@ -63,7 +63,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 
 	err = rt.db.AddComment(comment.ToDatabase())
 	if err != nil {
-		ctx.Logger.WithError(err).Error("comment photo: error addind comment to db")
+		ctx.Logger.WithError(err).Error("comment photo: error adding comment to db")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

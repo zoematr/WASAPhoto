@@ -24,7 +24,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	exists, err := rt.db.ExistsUser(targetUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfile : error executing query")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	if !exists {
@@ -56,7 +56,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	// Recupero la lista dei followers dell'utente richiesto
+	// get followers and following of the requested user
 	followers, err = rt.db.GetFollowers(targetUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfile - GetFollowers: error executing query")
@@ -64,7 +64,6 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	// Recupero la lista dei utenti seguiti dall'utente richiesto
 	following, err = rt.db.GetFollowing(targetUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfilen - GetFollowing: error executing query")
@@ -72,7 +71,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	// Recupera la lista delle foto dell'utente richiesto dal database.
+	// get also list of photos of the user from db
 	photos, err = rt.db.GetPhotos(targetUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfile - GetPhotosList: error executing query")
@@ -80,8 +79,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	// Imposta il codice di stato della risposta HTTP come 200 (OK) e invia un oggetto
-	// JSON che rappresenta il profilo completo dell'utente richiesto come corpo della risposta.
+	// send code 200 and returm the user profile
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(UserProfile{
 		Username:  targetUser,

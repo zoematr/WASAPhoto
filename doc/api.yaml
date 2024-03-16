@@ -247,6 +247,8 @@ paths:
               schema: {$ref: '#/components/schemas/username'}
         '403': 
           description: You cannot perform this operation.
+        '500': 
+          description: internal server error
       security:
         - bearerAuth: []
 
@@ -265,6 +267,8 @@ paths:
           description: User profile is not found.
         '403': 
           description: You cannot perform this operation.
+        '500':
+          description: Internal Server Error
       security:
         - bearerAuth: []
       
@@ -334,12 +338,17 @@ paths:
       summary: delete a photo from one's own profile.
       description: given the username of the owner of the account (i.e. userX) requesting the operation  and the photoid of the pictures that the owner wishes to delete, delete the photo object from the collection of photos posted by userX. We request for authentication of the user that wants to perform this action, since we must make sure that he/she must be the author of the picture.
       responses:
-        '204': 
-          description: You just deleted your photo.
+        '201':
+          description: Your new photo was uploaded successfully.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/photo'}
         '403': 
           description: You cannot perform this operation.
         '404': 
           description: Photo not found. #if the photoid passed in input does not correspond to any of the photoid's in the collection of photos of the requesting user
+        '500' :
+          description: Internal server error
       security:
         - bearerAuth: []
 
@@ -362,11 +371,12 @@ paths:
       responses:
         '201': 
           description: You liked the photo.
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/like'}
         '403': 
           description: You cannot perform this operation.
+        '404':
+          description: The photo is not found.
+        '500':
+          description: Internal Server Error.
       security:
         - bearerAuth: []
           
@@ -387,6 +397,10 @@ paths:
           description: You unliked the photo.
         '403':
           description: You cannot perform this operation.
+        '404':
+          description: Content not found.
+        '500':
+          description: Internal server error
       security:
         - bearerAuth: []
     
