@@ -38,6 +38,18 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
+	// check if the photo exists
+	exists, err := rt.db.PhotoExists(targetPhotoId)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("photo-like error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if exists != true {
+		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 
 	var commentContent string
 	err = json.NewDecoder(r.Body).Decode(&commentContent)
@@ -67,6 +79,9 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	// return 201 and comment
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(comment)
 
 }
 

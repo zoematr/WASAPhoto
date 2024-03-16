@@ -13,9 +13,14 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	w.Header().Set("Content-Type", "application/json")
 	var usernameTargetUser string
 	err := json.NewDecoder(r.Body).Decode(&usernameTargetUser)
-	_, err = rt.db.ExistsUser(usernameTargetUser)
+	exists, err := rt.db.ExistsUser(usernameTargetUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if exists != true {
+		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	usernameRequestUser := ps.ByName("username")
@@ -49,7 +54,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	// Viene aggiunto il follower usando la funzione dal database
+	// add follower in DB
 	err = rt.db.FollowUser(usernameRequestUser, usernameTargetUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("follow user error in query")
@@ -57,9 +62,36 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
+	// get followers and following of the requested user
+	followers, err := rt.db.GetFollowers(usernameTargetUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("getUserProfile - GetFollowers: error executing query")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	following, err := rt.db.GetFollowing(usernameTargetUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("getUserProfilen - GetFollowing: error executing query")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// get also list of photos of the user from db
+	photos, err := rt.db.GetPhotos(usernameTargetUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("getUserProfile - GetPhotosList: error executing query")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	// Respond with 201 http status
 	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "plain/text")
-	_ = json.NewEncoder(w).Encode(usernameTargetUser)
+	_ = json.NewEncoder(w).Encode(UserProfile{
+		Username:  usernameTargetUser,
+		Followers: followers,
+		Following: following,
+		Photos:    photos,
+	})
 
 }

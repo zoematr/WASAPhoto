@@ -40,6 +40,11 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	// check if the photo exists
 	exists, err := rt.db.PhotoExists(targetPhotoId)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("photo-like error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if exists != true {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
@@ -47,6 +52,11 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	liked, err := rt.db.DoesUserLikePhoto(targetPhotoId, pathRequestUsername)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("photo-like error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if liked != false {
 		ctx.Logger.WithError(err).Error("delete-photo: you already liked this photo")
 		w.WriteHeader(http.StatusForbidden)

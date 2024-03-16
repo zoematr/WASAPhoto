@@ -10,9 +10,14 @@ import (
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	usernameTargetUser := ps.ByName("followingusername")
-	_, err := rt.db.ExistsUser(usernameTargetUser)
+	exists, err := rt.db.ExistsUser(usernameTargetUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if exists != true {
+		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	usernameRequestUser := ps.ByName("username")

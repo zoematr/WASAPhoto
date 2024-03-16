@@ -24,17 +24,27 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	// check if the photo exists
 	exists, err := rt.db.PhotoExists(targetPhotoId)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("uncomment-photo: error checking author of the comment")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if exists != true {
 		ctx.Logger.WithError(err).Error("uncomment-photo: the photo does not exist")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	// check if the comment exists
 	exists, err = rt.db.CommentExists(targetCommentId)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("uncomment-photo: error checking author of the comment")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if exists != true {
 		ctx.Logger.WithError(err).Error("uncomment-photo: the comment does not exist")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -59,7 +69,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	// Invia una risposta con stato "Created" e un oggetto JSON che rappresenta la foto appena caricata.
-	w.WriteHeader(http.StatusCreated)
+	// send code 204
+	w.WriteHeader(http.StatusNoContent)
 
 }
