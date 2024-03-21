@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (rt *_router) GetStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	// verify user identity
 	w.Header().Set("Content-Type", "application/json")
