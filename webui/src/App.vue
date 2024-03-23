@@ -80,11 +80,10 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
-import api from "@/services/axios";
+import axios from 'axios'; // Import Axios
 
 // Computed property to get the username from local storage
 const usernameComputed = computed(() => localStorage.getItem('username') || '');
-
 // Ref for file input
 const fileInput = ref(null);
 
@@ -92,22 +91,6 @@ const fileInput = ref(null);
 function triggerFileInput() {
   fileInput.value.click();
 }
-/*
-async function changeUsername() {
-  const newUsername = prompt("Enter your new username:");
-  if (newUsername !== null) {
-    try {
-      const response = await api.patch('/users/'+newUsername,{}, {
-        headers: { Authorization: localStorage.getItem("token") }
-      });
-      localStorage.setItem("username",newUsername);
-      location.reload();
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
-  }
-} */
 
 const newUsername = ref('');
 
@@ -135,6 +118,7 @@ async function logmeout() {
 } 
 
 // Async method to handle image upload
+/*
 async function uploadImage(event) {
   const file = event.target.files[0];
   if (file) {
@@ -142,7 +126,30 @@ async function uploadImage(event) {
     formData.append('image', file);
 
     try {
-      const response = await api.post('/photos/', formData, {  
+      const response = await axios.post(`/users/${usernameComputed.value}/photos/`, formData, {
+        headers: {
+          'Authorization': localStorage.getItem('token'),
+          'Content-Type': 'multipart/form-data' // Set content type for FormData
+        }
+      });
+      alert('Image uploaded successfully!');
+      location.reload(); // Reload the page after successful upload
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error uploading image: ' + error.message); // Display error message
+    }
+  }
+}*/
+// Async method to handle image upload
+async function uploadImage(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const username = localStorage.getItem('username');
+      const response = await axios.post(`/users/${username}/photos/`, formData, {  
         headers: { Authorization: localStorage.getItem("token") }
       });
       alert('Image uploaded successfully!'); 
@@ -154,6 +161,7 @@ async function uploadImage(event) {
     }
   }
 }
+
 </script>
 
 <style>
