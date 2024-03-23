@@ -5,13 +5,12 @@
       :key="image.photoId"
       :photoDetails="image"
     />
-    </div>
+  </div>
 </template>
 
 <script>
 import ImageComponent from '@/components/ImageComponent.vue'; 
 import axios from 'axios';
-import api from "@/services/axios"; 
 
 export default {
   components: {
@@ -19,7 +18,7 @@ export default {
   },
   data() {
     return {
-      images: [] // This array will hold the processed photo objects
+      images: []
     }
   },
   mounted() {
@@ -28,28 +27,34 @@ export default {
   methods: {
     async fetchImages() {
       try {
-        
-        const response = await api.get('/stream',{headers: {
-                        Authorization: localStorage.getItem("token")}
-                    }); // Replace with the full API URL if necessary
-                    this.images = response.data && Array.isArray(response.data)
-        ? response.data.map(photo => ({
-            ...photo,
-            ImageData: `data:image/jpeg;base64,${photo.ImageData}`
-          }))
-        : [];
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  },
+        // Modify the URL to match your backend API endpoint
+        const username = 'replace_with_username'; // Replace with the actual username
+        const response = await axios.get(`/users/${username}/mystream`, {
+          headers: {
+            Authorization: localStorage.getItem("token")
+          },
+          // Ensure responseType is set to 'arraybuffer' to receive binary data
+          responseType: 'arraybuffer'
+        });
+
+        // Process binary image data into a format suitable for displaying
+        this.images = response.data.map(photo => ({
+          ...photo,
+          ImageData: this.arrayBufferToBase64(photo.ImageData)
+        }));
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    },
     arrayBufferToBase64(buffer) {
+      // Convert binary data to base64
       let binary = '';
       let bytes = new Uint8Array(buffer);
       let len = bytes.byteLength;
       for (let i = 0; i < len; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
-      return window.btoa(binary);
+      return 'data:image/jpeg;base64,' + window.btoa(binary);
     }
   }
 }

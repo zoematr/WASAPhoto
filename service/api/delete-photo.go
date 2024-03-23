@@ -1,14 +1,14 @@
 package api
 
 import (
+	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"net/http"
-	"github.com/julienschmidt/httprouter"
 )
 
 // DELETE PHOTO
 func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	
+
 	// get data from header and path
 	// get the username from path and then get the token from the db because i did not manage to do it inside of validaterequestingUser
 	w.Header().Set("Content-Type", "application/json")
@@ -16,7 +16,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	pathUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
 	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
-// verify identity of the user
+	// verify identity of the user
 	valid := validateRequestingUser(tokenDbPath, authToken)
 	if valid != 0 {
 		w.WriteHeader(valid)

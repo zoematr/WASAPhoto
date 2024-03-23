@@ -5,34 +5,34 @@ import (
 )
 
 func (db *appdbimpl) AddPhoto(p Photo) error {
-    // function to add the photo with the correct photo id
-    var lastPhotoID int
+	// function to add the photo with the correct photo id
+	var lastPhotoID int
 
-    // Query the last inserted photo ID
-    err := db.c.QueryRow("SELECT MAX(photoid) FROM photos").Scan(&lastPhotoID)
-    if err != nil && err != sql.ErrNoRows {
-        // Error occurred while querying
-        return err
-    }
+	// Query the last inserted photo ID
+	err := db.c.QueryRow("SELECT MAX(photoid) FROM photos").Scan(&lastPhotoID)
+	if err != nil && err != sql.ErrNoRows {
+		// Error occurred while querying
+		return err
+	}
 
-    // Increment the last photo ID to get the new photo ID
-    newPhotoID := lastPhotoID + 1
+	// Increment the last photo ID to get the new photo ID
+	newPhotoID := lastPhotoID + 1
 
-    // add db
-    _, err = db.c.Exec("INSERT INTO photos (photoid, username, date) VALUES (?, ?, ?)",
-    	newPhotoID, p.Username, p.Date)
+	// add db
+	_, err = db.c.Exec("INSERT INTO photos (photoid, username, date) VALUES (?, ?, ?)",
+		newPhotoID, p.Username, p.Date)
 
-    if err != nil {
-        // Error executing query
-        return err
-    }
+	if err != nil {
+		// Error executing query
+		return err
+	}
 
-    return nil
+	return nil
 }
 
 // TODO CHANGE TO COMPLETE PHOTO
 func (db *appdbimpl) GetPhotoFromPhotoId(photoid string) (Photo, error) {
-    // function to get username-> author of a picture from the photo id
+	// function to get username-> author of a picture from the photo id
 	var photo Photo
 
 	// look for username where id of the photo is the input
@@ -44,36 +44,34 @@ func (db *appdbimpl) GetPhotoFromPhotoId(photoid string) (Photo, error) {
 	return photo, nil
 }
 
-
 func (db *appdbimpl) AddLike(photoId string, likerUsername string) error {
-    // function to add like
-    _, err := db.c.Exec("INSERT INTO photos (username, photoid) VALUES (?, ?, ?)",
-    	photoId, likerUsername)
+	// function to add like
+	_, err := db.c.Exec("INSERT INTO photos (username, photoid) VALUES (?, ?, ?)",
+		photoId, likerUsername)
 
-    if err != nil {
-        // Error executing query
-        return err
-    }
+	if err != nil {
+		// Error executing query
+		return err
+	}
 
-    return nil
+	return nil
 }
 
 func (db *appdbimpl) DeleteLike(photoId string, likerUsername string) error {
-    // function to unlike
-    _, err := db.c.Exec("DELETE FROM photos WHERE photoid = ? AND username = ?",
-    	photoId, likerUsername)
+	// function to unlike
+	_, err := db.c.Exec("DELETE FROM photos WHERE photoid = ? AND username = ?",
+		photoId, likerUsername)
 
-    if err != nil {
-        // Error executing query
-        return err
-    }
+	if err != nil {
+		// Error executing query
+		return err
+	}
 
-    return nil
+	return nil
 }
 
-
 func (db *appdbimpl) GetUsernameFromPhotoId(photoid string) (string, error) {
-    // function to get username-> author of a picture from the photo id
+	// function to get username-> author of a picture from the photo id
 	var username string
 
 	// look for username where id of the photo is the input
@@ -86,7 +84,7 @@ func (db *appdbimpl) GetUsernameFromPhotoId(photoid string) (string, error) {
 }
 
 func (db *appdbimpl) GetUsernameFromCommentId(commentid string) (string, error) {
-    // function to get username-> author of a comment from the comment id
+	// function to get username-> author of a comment from the comment id
 	var username string
 
 	err := db.c.QueryRow(`SELECT username FROM comments WHERE commentid = ?`, commentid).Scan(&username)
@@ -97,9 +95,7 @@ func (db *appdbimpl) GetUsernameFromCommentId(commentid string) (string, error) 
 	return username, err
 }
 
-
-
-func (db *appdbimpl) DeletePhoto(photoId string) (error) {
+func (db *appdbimpl) DeletePhoto(photoId string) error {
 	// function to delete photo from db
 	_, err := db.c.Exec("DELETE FROM photos WHERE photoid = ?",
 		photoId)
@@ -113,33 +109,33 @@ func (db *appdbimpl) DeletePhoto(photoId string) (error) {
 }
 
 func (db *appdbimpl) AddComment(c Comment) error {
-    // function to comment a photo
-    // data is passed in the struct from the backend
-    var lastCommentID int
+	// function to comment a photo
+	// data is passed in the struct from the backend
+	var lastCommentID int
 
-    // Query the last inserted photo ID
-    err := db.c.QueryRow("SELECT MAX(commentid) FROM comments").Scan(&lastCommentID)
-    if err != nil && err != sql.ErrNoRows {
-        // Error occurred while querying
-        return err
-    }
+	// Query the last inserted photo ID
+	err := db.c.QueryRow("SELECT MAX(commentid) FROM comments").Scan(&lastCommentID)
+	if err != nil && err != sql.ErrNoRows {
+		// Error occurred while querying
+		return err
+	}
 
-    // Increment the last photo ID to get the new photo ID
-    newCommentID := lastCommentID + 1
+	// Increment the last photo ID to get the new photo ID
+	newCommentID := lastCommentID + 1
 
-    // Utilize a SQL INSERT query to insert the photo into the database
-    _, err = db.c.Exec("INSERT INTO photos (photoid, username, date, content, commentid) VALUES (?, ?, ?)",
-    	newCommentID, c.Username, c.Date, c.PhotoId, c.CommentContent)
+	// Utilize a SQL INSERT query to insert the photo into the database
+	_, err = db.c.Exec("INSERT INTO photos (photoid, username, date, content, commentid) VALUES (?, ?, ?)",
+		newCommentID, c.Username, c.Date, c.PhotoId, c.CommentContent)
 
-    if err != nil {
-        // Error executing query
-        return err
-    }
+	if err != nil {
+		// Error executing query
+		return err
+	}
 
-    return nil
+	return nil
 }
 
-func (db *appdbimpl) DeleteComment(commentid string) (error) {
+func (db *appdbimpl) DeleteComment(commentid string) error {
 	// function to delete a comment
 	_, err := db.c.Exec("DELETE FROM comments WHERE commentid = ?",
 		commentid)
@@ -205,5 +201,3 @@ func (db *appdbimpl) DoesUserLikePhoto(photoid string, likerusername string) (bo
 	}
 	return false, nil
 }
-
-

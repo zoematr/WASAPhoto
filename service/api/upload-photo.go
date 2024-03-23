@@ -1,15 +1,15 @@
 package api
 
 import (
-	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"bytes"
 	"encoding/json"
+	"github.com/julienschmidt/httprouter"
+	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"image/jpeg"
 	"image/png"
 	"io"
 	"net/http"
 	"time"
-	"github.com/julienschmidt/httprouter"
 )
 
 // Funzione che gestisce l'upload di una foto
@@ -29,11 +29,11 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// Legge il body della richiesta e verifica se ci sono errori durante la lettura.
 	photoFile, err := io.ReadAll(r.Body)
-    if err != nil {
-        ctx.Logger.WithError(err).Error("photo-upload: error reading image data")
-        w.WriteHeader(http.StatusInternalServerError)
-        return
-    }
+	if err != nil {
+		ctx.Logger.WithError(err).Error("photo-upload: error reading image data")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	// Reimposta il body della richiesta in modo da poterlo leggere di nuovo in seguito
 	// Dopo aver letto il body bisogna riassegnare un io.ReadCloser per poterlo rileggere
@@ -53,8 +53,8 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	r.Body = io.NopCloser(bytes.NewBuffer(photoFile))
 
 	photo := Photo{
-		Username: pathUsername,
-		Date:  time.Now().UTC(),
+		Username:  pathUsername,
+		Date:      time.Now().UTC(),
 		PhotoFile: photoFile,
 	}
 
@@ -71,7 +71,7 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 }
 
-// Funzione per controllare se il formato della foto è png o jpeg.Ritorno l'estenzione del formato e un errore 
+// Funzione per controllare se il formato della foto è png o jpeg.Ritorno l'estenzione del formato e un errore
 func checkFormatPhoto(body io.ReadCloser, newReader io.ReadCloser, ctx reqcontext.RequestContext) error {
 
 	_, errJpg := jpeg.Decode(body)

@@ -1,12 +1,11 @@
 package api
 
 import (
+	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"net/http"
-	"github.com/julienschmidt/httprouter"
-	"encoding/json"
 )
-
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	ctx.Logger.Infof("start")
@@ -40,7 +39,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-	
+
 	ctx.Logger.Infof("checks done, user not banned yet")
 	err = rt.db.BanUser(usernameRequestUser, usernameTargetUser)
 	if err != nil {

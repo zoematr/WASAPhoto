@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"encoding/json"
-	"net/http"
 	"github.com/julienschmidt/httprouter"
+	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
+	"net/http"
 )
 
 // LIKE PHOTO
@@ -62,7 +62,6 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-
 
 	err = rt.db.AddLike(targetPhotoId, pathRequestUsername)
 	if err != nil {

@@ -1,14 +1,14 @@
 package api
 
 import (
+	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"net/http"
-	"github.com/julienschmidt/httprouter"
 )
 
 // DELETE PHOTO
 func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	
+
 	// get data from header and path
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
@@ -16,7 +16,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	targetPhotoId := ps.ByName("photoid")
 	targetCommentId := ps.ByName("commenid")
 	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
-// verify identity of the user
+	// verify identity of the user
 	valid := validateRequestingUser(tokenDbPath, authToken)
 	if valid != 0 {
 		w.WriteHeader(valid)
