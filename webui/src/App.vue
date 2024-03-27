@@ -59,12 +59,14 @@
                   Log out
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" @click="changeUsername">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#file-text"/></svg>
-                  Change Username
-                </a>
-              </li>
+              <h1>Change Username</h1>
+              <form @submit.prevent="changeUsername">
+                <div class="form-group">
+                  <label for="newUsername">New Username</label>
+                  <input type="text" v-model="newUsername" class="form-control" id="newUsername" placeholder="Enter new username" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Change Username</button>
+              </form>
             </ul>
           </div>
         </nav>
@@ -77,90 +79,90 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref, computed } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
+import instance from './services/axios.js';
 import axios from 'axios'; // Import Axios
 
-// Computed property to get the username from local storage
-const usernameComputed = computed(() => localStorage.getItem('username') || '');
-// Ref for file input
-const fileInput = ref(null);
-
-// Method to trigger file input
-function triggerFileInput() {
-  fileInput.value.click();
-}
-
-const newUsername = ref('');
-
-async function changeUsername() {
-  try {
-    const response = await axios.patch(`/users/${localStorage.getItem('username')}`, { newusername: newUsername.value }, {
-      headers: {
-        'Authorization': localStorage.getItem('token'),
-        'Content-Type': 'application/json'
-      }
+export default {
+  setup() {
+    // Computed property to get the username from local storage
+    const usernameComputed = computed(() => {
+      const username = localStorage.getItem("username") || "";
+      console.log("Username:", username);
+      return username;
     });
-    // Handle success response
-    console.log(response.data);
-  } catch (error) {
+    // Ref for file input
+    const fileInput = ref(null);
+    // ref 
+    const newUsername = ref('');
+
+    // Method to trigger file input
+    function triggerFileInput() {
+      fileInput.value.click();
+    }
+
+    async function changeUsername() {
+      console.log("Change username function called");
+      console.log("Username computed value:", usernameComputed.value);
+      try {
+        const response = await instance.patch(`/users/${usernameComputed.value}`, { newusername: newUsername.value }, {
+          headers: {
+            'Authorization': localStorage.getItem('token'),
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (error) {
     // Handle error response
-    console.error('Error changing username:', error.response.data);
-  }
-}
-
-async function logmeout() {
-  localStorage.setItem("username","");
-  localStorage.setItem("token","");
-  alert('You have logged out successfully! Now you can only search people, not interact with profiles.'); 
-  location.reload();
-} 
-
-// Async method to handle image upload
-/*
-async function uploadImage(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      const response = await axios.post(`/users/${usernameComputed.value}/photos/`, formData, {
-        headers: {
-          'Authorization': localStorage.getItem('token'),
-          'Content-Type': 'multipart/form-data' // Set content type for FormData
+        if (error.response && error.response.data && error.response.data.message) {
+          console.error('Error changing username:', error.response.data.message);
+        } else {
+          console.error('Error changing username:', error);
         }
-      });
-      alert('Image uploaded successfully!');
-      location.reload(); // Reload the page after successful upload
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Error uploading image: ' + error.message); // Display error message
+      }
     }
-  }
-}*/
-// Async method to handle image upload
-async function uploadImage(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const formData = new FormData();
-    formData.append('image', file);
 
-    try {
-      const username = localStorage.getItem('username');
-      const response = await axios.post(`/users/${username}/photos/`, formData, {  
-        headers: { Authorization: localStorage.getItem("token") }
-      });
-      alert('Image uploaded successfully!'); 
+
+    async function logmeout() {
+      localStorage.setItem("username","");
+      localStorage.setItem("token","");
+      alert('You have logged out successfully! Now you can only search people, not interact with profiles.'); 
       location.reload();
-      // Handle the response, e.g., showing a success message
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      // Handle the error, e.g., showing an error message
     }
-  }
-}
+
+    async function uploadImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+          const username = localStorage.getItem('username');
+          const response = await instance.post(`/users/${username}/photos/`, formData, {  
+            headers: { Authorization: localStorage.getItem("token") }
+          });
+          alert('Image uploaded successfully!'); 
+          location.reload();
+          // Handle the response, e.g., showing a success message
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          // Handle the error, e.g., showing an error message
+        }
+      }
+    }
+
+    return {
+      usernameComputed,
+      fileInput,
+      newUsername,
+      triggerFileInput,
+      changeUsername,
+      logmeout,
+      uploadImage,
+    };
+  },
+};
 
 </script>
 

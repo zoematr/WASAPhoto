@@ -33,9 +33,20 @@ export default {
   },
 });
         // Check if the response status is 200 or 201
+        console.log("this resp");
+        console.log(response.data);
+
+
         if (response.status === 200 || response.status === 201) {
           // Store token in local storage
-          localStorage.setItem("token", response.data);
+          const token = response.data;
+          /* const authorizationHeader = response.headers['Authorization'];
+          console.log("this is the aut "+authorizationHeader);
+          if (authorizationHeader) {
+            const token = authorizationHeader.split(" ")[1];
+          console.log("this is the token frontend")
+          console.log(token) */
+          localStorage.setItem("token",token);
           // Store username in local storage
           localStorage.setItem("username", this.username);
           // Set token in axios defaults for future requests
