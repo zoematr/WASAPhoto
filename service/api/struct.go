@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+type UsernameUpdate struct {
+    NewUsername string `json:"newusername"`
+}
+
 type User struct {
 	Username  string   `json: username`
 	Followers []string `json: following`

@@ -15,21 +15,18 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	ctx.Logger.Infof("this is the username from the path: %s", pathUsername)
 	// get the username from path and then get the token from the db because i did not manage to do it inside of validaterequestingUser
 	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
-	ctx.Logger.Infof("this is the token from the path: %v", tokenDbPath)
 	authToken := r.Header.Get("Authorization")
 	if err != nil {
 		ctx.Logger.WithError(err).Error("set my username: error retrieving token")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	ctx.Logger.Infof("this is the dbtoken %d", tokenDbPath)
-	ctx.Logger.Infof("this is the auth string %s", authToken)
-	ctx.Logger.Infof("this is the extraced token %d", extractToken(authToken))
 	allowed := validateRequestingUser(tokenDbPath, authToken)
 	if allowed != 0 {
 		ctx.Logger.Infof("the user is not allowed to change the username")
 		return
 	}
+	ctx.Logger.Infof("the user is authenticated")
 
 	// get new username from request body
 	ctx.Logger.Infof("the request body is about to be read")
@@ -42,13 +39,14 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	ctx.Logger.Infof("this is the request body: %s", string(body))
 
-	var newusername string
-	err = json.Unmarshal(body, &newusername)
+	var usernameUpdate UsernameUpdate
+	err = json.Unmarshal(body, &usernameUpdate)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("set my username: error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	newusername := usernameUpdate.NewUsername
 
 	// change the username in the DB
 	token := extractToken(r.Header.Get("Authorization"))
@@ -66,5 +64,4 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }

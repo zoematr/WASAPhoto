@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import instance from '../services/axios.js';
 import api from "@/services/axios"; 
 import router from '@/router';
 
@@ -23,11 +23,15 @@ export default {
       storedUsername: localStorage.getItem("username") || '' 
     }
   },
+  mounted(){
+    storedUsername: localStorage.getItem("username");
+
+  },
   methods: {
     async login() {
       try {
         const inputUsername = `"${this.username}"`;
-        const response = await this.$axios.post('/session', inputUsername, {
+        const response = await instance.post('/session', inputUsername, {
   headers: {
     'Content-Type': 'text/plain', // Set content type to text/plain
   },
@@ -50,7 +54,7 @@ export default {
           // Store username in local storage
           localStorage.setItem("username", this.username);
           // Set token in axios defaults for future requests
-          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data}`;
+          instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           // Redirect to home after successful login
           router.push('/');
           // Reload the page to ensure the token is properly set

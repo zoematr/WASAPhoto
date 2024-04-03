@@ -1,4 +1,4 @@
-<!-- ChangeUsername.vue -->
+<!-- ChangeUsernameComponent.vue -->
 <template>
   <div>
     <h1>Change Username</h1>

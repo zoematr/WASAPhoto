@@ -59,7 +59,7 @@
                   Log out
                 </a>
               </li>
-              <h1>Change Username</h1>
+              <h1 class="small">Change Username</h1>
               <form @submit.prevent="changeUsername">
                 <div class="form-group">
                   <label for="newUsername">New Username</label>
@@ -83,7 +83,6 @@
 import { ref, computed } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 import instance from './services/axios.js';
-import axios from 'axios'; // Import Axios
 
 export default {
   setup() {
@@ -107,12 +106,14 @@ export default {
       console.log("Change username function called");
       console.log("Username computed value:", usernameComputed.value);
       try {
-        const response = await instance.patch(`/users/${usernameComputed.value}`, { newusername: newUsername.value }, {
+        const response = await instance.patch(`/users/${usernameComputed.value}`, JSON.stringify({ newusername: newUsername.value }), {
           headers: {
-            'Authorization': localStorage.getItem('token'),
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
+        localStorage.setItem("username", newUsername.value)
+        window.location.reload();
       } catch (error) {
     // Handle error response
         if (error.response && error.response.data && error.response.data.message) {
@@ -167,4 +168,7 @@ export default {
 </script>
 
 <style>
+  .small {
+    font-size: 1.2rem;
+  }
 </style>

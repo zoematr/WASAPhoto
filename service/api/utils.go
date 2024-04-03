@@ -15,7 +15,6 @@ func validUsername(username string) bool {
 
 // checks if user requesting is the one logged in
 func validateRequestingUser(dbToken int, auth string) int {
-
 	// if the user is not logged he is not allowed to perform operation
 	if isNotLogged(auth) {
 		return http.StatusForbidden
@@ -38,7 +37,15 @@ func isNotLogged(auth string) bool {
 func extractToken(authorization string) int {
 	// Divide the authorization header in token utilizing space as divider
 	var tokens = strings.Split(authorization, " ")
-	// if there are exactly 2 token, give the second token (bearer token) after removing spaces if there are
+	// if there is exactly 1 token, return it as the bearer token
+	if len(tokens) == 1 {
+		token, err := strconv.Atoi(tokens[0])
+		if err != nil {
+			return 0
+		}
+		return token
+	}
+	// if there are exactly 2 tokens, give the second token (bearer token) after removing spaces if there are
 	if len(tokens) == 2 {
 		tokenstr := strings.TrimSpace(tokens[1])
 		// Convert the token string to an integer
@@ -48,6 +55,7 @@ func extractToken(authorization string) int {
 		}
 		return token
 	}
-	// if there are not 2 spaces i give back empty strings
+	// if there are not 1 or 2 tokens, return 0
 	return 0
 }
+

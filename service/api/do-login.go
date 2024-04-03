@@ -48,6 +48,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		}
 		return
 	}
+	ctx.Logger.Infof("The user exists and it's being logged in ")
 
 	// if the user exists, returns token
 	// user exists, token returned
@@ -72,6 +73,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 			ctx.Logger.Infof("The auth header doesnt exists")
 		}*/
 	w.WriteHeader(http.StatusOK)
+	ctx.Logger.Infof("The token is being encoded in the response body")
 	_ = json.NewEncoder(w).Encode(token)
 	return
 
