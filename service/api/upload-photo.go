@@ -48,10 +48,8 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-
 	// Invia una risposta con stato "Created" e un oggetto JSON che rappresenta la foto appena caricata.
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(photo)
 
 }
-

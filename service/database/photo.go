@@ -20,7 +20,7 @@ func (db *appdbimpl) AddPhoto(p Photo) error {
 
 	// add db
 	_, err = db.c.Exec("INSERT INTO photos (photoid, username, datetime, photofile) VALUES (?, ?, ?, ?)",
-        newPhotoID, p.Username, p.Date, p.PhotoFile)
+		newPhotoID, p.Username, p.Date, p.PhotoFile)
 
 	if err != nil {
 		// Error executing query

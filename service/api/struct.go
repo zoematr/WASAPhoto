@@ -6,7 +6,7 @@ import (
 )
 
 type UsernameUpdate struct {
-    NewUsername string `json:"newusername"`
+	NewUsername string `json:"newusername"`
 }
 
 type User struct {

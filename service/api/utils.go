@@ -58,4 +58,3 @@ func extractToken(authorization string) int {
 	// if there are not 1 or 2 tokens, return 0
 	return 0
 }
-
