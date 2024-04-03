@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
-	"image/jpeg"
-	"image/png"
 	"io"
 	"net/http"
 	"time"
@@ -35,21 +33,6 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Reimposta il body della richiesta in modo da poterlo leggere di nuovo in seguito
-	// Dopo aver letto il body bisogna riassegnare un io.ReadCloser per poterlo rileggere
-	r.Body = io.NopCloser(bytes.NewBuffer(photoFile))
-
-	// verifico se il contenuto del body è una immagine png o jpeg (in caso di errore:400 badrequest)
-	err = checkFormatPhoto(r.Body, io.NopCloser(bytes.NewBuffer(photoFile)), ctx)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		ctx.Logger.WithError(err).Error("photo-upload: body contains file that is neither jpg or png")
-		// controllaerrore
-		_ = json.NewEncoder(w).Encode(err)
-		return
-	}
-
-	// Reimposta nuovamente il corpo della richiesta per poterlo leggere di nuovo.
 	r.Body = io.NopCloser(bytes.NewBuffer(photoFile))
 
 	photo := Photo{
@@ -65,24 +48,10 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+
 	// Invia una risposta con stato "Created" e un oggetto JSON che rappresenta la foto appena caricata.
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(pathUsername)
+	_ = json.NewEncoder(w).Encode(photo)
 
 }
 
-// Funzione per controllare se il formato della foto è png o jpeg.Ritorno l'estenzione del formato e un errore
-func checkFormatPhoto(body io.ReadCloser, newReader io.ReadCloser, ctx reqcontext.RequestContext) error {
-
-	_, errJpg := jpeg.Decode(body)
-	if errJpg != nil {
-
-		body = newReader
-		_, errPng := png.Decode(body)
-		if errPng != nil {
-			return errPng
-		}
-		return nil
-	}
-	return nil
-}

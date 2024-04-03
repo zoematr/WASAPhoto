@@ -9,7 +9,7 @@ func (db *appdbimpl) AddPhoto(p Photo) error {
 	var lastPhotoID int
 
 	// Query the last inserted photo ID
-	err := db.c.QueryRow("SELECT MAX(photoid) FROM photos").Scan(&lastPhotoID)
+	err := db.c.QueryRow("SELECT COALESCE(MAX(photoid), 0) FROM photos").Scan(&lastPhotoID)
 	if err != nil && err != sql.ErrNoRows {
 		// Error occurred while querying
 		return err
@@ -19,8 +19,8 @@ func (db *appdbimpl) AddPhoto(p Photo) error {
 	newPhotoID := lastPhotoID + 1
 
 	// add db
-	_, err = db.c.Exec("INSERT INTO photos (photoid, username, date) VALUES (?, ?, ?)",
-		newPhotoID, p.Username, p.Date)
+	_, err = db.c.Exec("INSERT INTO photos (photoid, username, datetime, photofile) VALUES (?, ?, ?, ?)",
+        newPhotoID, p.Username, p.Date, p.PhotoFile)
 
 	if err != nil {
 		// Error executing query

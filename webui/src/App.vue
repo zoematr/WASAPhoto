@@ -8,7 +8,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
     </header>
-    <input type="file" ref="fileInput" hidden @change="uploadImage" accept="image/*" />
+    <input type="file" ref="fileInput" hidden @change="uploadPhoto" accept="image/*" />
     <div class="container-fluid">
       <div class="row">
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
@@ -132,7 +132,8 @@ export default {
       location.reload();
     }
 
-    async function uploadImage(event) {
+
+    async function uploadPhoto(event) {
       const file = event.target.files[0];
       if (file) {
         const formData = new FormData();
@@ -153,6 +154,7 @@ export default {
       }
     }
 
+
     return {
       usernameComputed,
       fileInput,
@@ -160,7 +162,7 @@ export default {
       triggerFileInput,
       changeUsername,
       logmeout,
-      uploadImage,
+      uploadPhoto,
     };
   },
 };
