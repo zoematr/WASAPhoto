@@ -17,12 +17,15 @@ type User struct {
 	Token     string   `json: token`
 }
 
-// user + photos
+// user + photos + if already following or already banned
 type UserProfile struct {
-	Username  string           `json: username`
-	Followers []string         `json: following`
-	Following []string         `json: username`
-	Photos    []database.Photo `json: photos`
+	Username        string           `json: username`
+	Followers       []string         `json: following`
+	Following       []string         `json: username`
+	Photos          []database.Photo `json: photos`
+	AlreadyFollowed bool             `json: alreadyfollowed`
+	AlreadyBanned   bool             `json: alreadybanned`
+	
 }
 
 // type Username struct{
@@ -35,6 +38,16 @@ type Photo struct {
 	PhotoFile []byte    `json: photofile`
 	Date      time.Time `json: datetime`
 }
+
+type CompletePhoto struct {
+	PhotoId      string    `json: photoid`
+	Username     string    `json: username`
+	PhotoFile    []byte    `json: photofile`
+	Date         time.Time `json: datetime`
+	AlreadyLiked bool      `json: alreadyliked`
+}
+
+
 
 type PhotoId struct {
 	PhotoId string `json: photoid`

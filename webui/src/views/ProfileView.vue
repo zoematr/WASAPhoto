@@ -69,7 +69,7 @@ export default {
 
     async toggleBan() {
     try {
-      const url = `/users/${this.username}/bans/`;
+      const url = `/users/${this.username}/ban/`;
       if (this.userProfile.IsBanning) {
         await api.delete(url, { headers: { Authorization: localStorage.getItem("token") } });
       } else {
