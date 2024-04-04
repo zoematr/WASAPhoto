@@ -78,7 +78,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	// get also list of photos of the user from db
-	photos, err := rt.db.GetPhotos(usernameTargetUser)
+	photos, err := rt.db.GetPhotos(usernameTargetUser, usernameRequestUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfile - GetPhotosList: error executing query")
 		w.WriteHeader(http.StatusInternalServerError)

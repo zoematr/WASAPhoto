@@ -19,13 +19,13 @@ type User struct {
 
 // user + photos + if already following or already banned
 type UserProfile struct {
-	Username        string           `json: username`
-	Followers       []string         `json: followers`
-	Following       []string         `json: followingb`
-	Photos          []database.Photo `json: photos`
-	AlreadyFollowed bool             `json: alreadyfollowed`
-	AlreadyBanned   bool             `json: alreadybanned`
-	OwnProfile      bool             `json: ownprofile`
+	Username        string                   `json: username`
+	Followers       []string                 `json: followers`
+	Following       []string                 `json: followingb`
+	Photos          []database.CompletePhoto `json: photos`
+	AlreadyFollowed bool                     `json: alreadyfollowed`
+	AlreadyBanned   bool                     `json: alreadybanned`
+	OwnProfile      bool                     `json: ownprofile`
 }
 
 type Photo struct {

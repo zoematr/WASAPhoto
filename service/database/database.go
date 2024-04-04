@@ -44,14 +44,14 @@ type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
 	CreateUser(string) (int, error)
-	GetStream(string) ([]Photo, error)
+	GetStream(string) ([]CompletePhoto, error)
 	ExistsUser(string) (bool, error)
 	GetTokenFromUsername(string) (int, error)
 	ChangeUsername(int, string) error
 	GetUsernameFromToken(int) (string, error)
 	GetFollowers(string) ([]string, error)
 	GetFollowing(string) ([]string, error)
-	GetPhotos(string) ([]Photo, error)
+	GetPhotos(string, string) ([]CompletePhoto, error)
 	CheckBanned(string, string) (bool, error)
 	FollowUser(string, string) error
 	UnfollowUser(string, string) error
@@ -70,7 +70,9 @@ type AppDatabase interface {
 	GetUsernameFromCommentId(string) (string, error)
 	DeleteComment(string) error
 	CommentExists(string) (bool, error)
-	GetPhotoFromPhotoId(string) (Photo, error)
+	GetPhotoFromPhotoId(string) (Photo, error) // TODO change to complete photo
+	GetLikes(CompletePhoto) error
+	GetComments(CompletePhoto) error
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error

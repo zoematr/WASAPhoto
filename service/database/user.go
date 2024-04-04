@@ -32,33 +32,8 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
 	return token, nil
 }
 
-// get user stream
-func (db *appdbimpl) GetStream(username string) ([]Photo, error) {
-	rows, err := db.c.Query(`SELECT * FROM photos WHERE username IN (SELECT username FROM followers WHERE followerusername = ?) ORDER BY datetime DESC`,
-		username)
-	if err != nil {
-		return nil, err
-	}
-	// Wait for the func to finish before closing rows
-	defer func() { _ = rows.Close() }()
 
-	// Read all the users in the resulset
-	var res []Photo
-	for rows.Next() {
-		var photo Photo
-		err = rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date) //  &photo.Comments, &photo.Likes,
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, photo)
-	}
 
-	if rows.Err() != nil {
-		return nil, err
-	}
-	// gives back slice of Photo which is the stream.
-	return res, nil
-}
 
 // checks if user exists if someone looks.
 func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
@@ -160,29 +135,7 @@ func (db *appdbimpl) GetFollowing(follower string) ([]string, error) {
 	return following, nil
 }
 
-// function that gets all the photos of a user
-func (db *appdbimpl) GetPhotos(username string) ([]Photo, error) {
-	var photos []Photo
-	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var photo Photo
-		if err := rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date); err != nil {
-			return nil, err
-		}
-		photos = append(photos, photo)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return photos, nil
-}
 
 // function to start follow a user
 func (db *appdbimpl) FollowUser(requesting string, target string) error {

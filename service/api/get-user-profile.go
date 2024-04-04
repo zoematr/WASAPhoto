@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// Funzione che ritrova tutte le info necessarie del profilo
+// gives back a user profile
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	authString := (r.Header.Get("Authorization"))
 	if isNotLogged(authString) {
@@ -23,7 +23,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 	var followers []string
 	var following []string
-	var photos []database.Photo
+	var photos []database.CompletePhoto
 	alreadyfollowing := false // used later to check if the requesting user already follows the target, then he can't be able to refollow him but just to unfollow
 	alreadybanned := false    // same as above but for banned
 	owner := false            // if the user that is searched is also the owner of the profile, then they can't follow or ban themselves
@@ -86,7 +86,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// get also list of photos of the user from db
-	photos, err = rt.db.GetPhotos(targetUser)
+	photos, err = rt.db.GetPhotos(targetUser, userRequesting)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfile - GetPhotosList: error executing query")
 		w.WriteHeader(http.StatusInternalServerError)

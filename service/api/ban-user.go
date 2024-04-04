@@ -64,7 +64,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	// get also list of photos of the user from db
-	photos, err := rt.db.GetPhotos(usernameTargetUser)
+	photos, err := rt.db.GetPhotos(usernameTargetUser, usernameRequestUser)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfile - GetPhotosList: error executing query")
 		w.WriteHeader(http.StatusInternalServerError)

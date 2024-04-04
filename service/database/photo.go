@@ -125,7 +125,7 @@ func (db *appdbimpl) AddComment(c Comment) error {
 
 	// Utilize a SQL INSERT query to insert the photo into the database
 	_, err = db.c.Exec("INSERT INTO photos (photoid, username, date, content, commentid) VALUES (?, ?, ?)",
-		newCommentID, c.Username, c.Date, c.PhotoId, c.CommentContent)
+		newCommentID, c.Username, c.PhotoId, c.CommentContent)
 
 	if err != nil {
 		// Error executing query
@@ -200,4 +200,141 @@ func (db *appdbimpl) DoesUserLikePhoto(photoid string, likerusername string) (bo
 		return true, nil
 	}
 	return false, nil
+}
+
+// get user stream
+func (db *appdbimpl) GetStream(username string) ([]CompletePhoto, error) {
+	rows, err := db.c.Query(`SELECT * FROM photos WHERE username IN (SELECT username FROM followers WHERE followerusername = ?) ORDER BY datetime DESC`,
+		username)
+	if err != nil {
+		return nil, err
+	}
+	// Wait for the func to finish before closing rows
+	defer func() { _ = rows.Close() }()
+
+	// Read all the users in the resulset
+	var res []CompletePhoto
+	for rows.Next() {
+		var photo CompletePhoto
+		photo.AlreadyLiked = false
+		err = rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date)
+		if err != nil {
+			return nil, err
+		}
+		err = db.GetLikes(photo)
+		if err != nil {
+			return nil, err
+		}
+		err = db.GetComments(photo)
+		if err != nil {
+			return nil, err
+		}
+		isliked, err := db.DoesUserLikePhoto(photo.PhotoId, username)
+		if err != nil {
+			return nil, err
+		}
+		if isliked {
+			photo.AlreadyLiked = true
+		}	
+		res = append(res, photo)
+	}
+
+	if rows.Err() != nil {
+		return nil, err
+	}
+	// gives back slice of Photo which is the stream.
+	return res, nil
+}
+
+func (db *appdbimpl) GetLikes(photo CompletePhoto) (error) {
+	rows, err := db.c.Query(`SELECT * FROM likes WHERE photoid = ?`,
+		photo.PhotoId)
+	if err != nil {
+		return err
+	}
+	// Wait for the func to finish before closing rows
+	defer func() { _ = rows.Close() }()
+
+	// Read all the likes in the resulset
+	var likes []Like
+	for rows.Next() {
+		var l Like
+		err = rows.Scan(&l.PhotoId, &l.Username)
+		if err != nil {
+			return err
+		}
+		likes = append(likes, l)
+	}
+
+	if rows.Err() != nil {
+		return err
+	}
+	photo.Likes = likes
+	return nil
+}
+
+func (db *appdbimpl) GetComments(photo CompletePhoto) (error) {
+	rows, err := db.c.Query(`SELECT * FROM comments WHERE photoid = ?`,
+		photo.PhotoId)
+	if err != nil {
+		return err
+	}
+	// Wait for the func to finish before closing rows
+	defer func() { _ = rows.Close() }()
+
+	// Read all the likes in the resulset
+	var comments []Comment
+	for rows.Next() {
+		var c Comment
+		err = rows.Scan(&c.CommentId, &c.PhotoId, &c.Username, &c.CommentContent)
+		if err != nil {
+			return err
+		}
+		comments = append(comments, c)
+	}
+
+	if rows.Err() != nil {
+		return err
+	}
+	photo.Comments = comments
+	return nil
+}
+
+// function that gets all the photos of a user
+func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePhoto, error) {  // TO DO check if the photos are liked by a user
+	var photos []CompletePhoto
+	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var photo CompletePhoto
+		if err := rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date); err != nil {
+			return nil, err
+		}
+		err = db.GetLikes(photo)
+		if err != nil {
+			return nil, err
+		}
+		err = db.GetComments(photo)
+		if err != nil {
+			return nil, err
+		}
+		isliked, err := db.DoesUserLikePhoto(photo.PhotoId, requesting)
+		if err != nil {
+			return nil, err
+		}
+		if isliked {
+			photo.AlreadyLiked = true
+		}
+		photos = append(photos, photo)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return photos, nil
 }
