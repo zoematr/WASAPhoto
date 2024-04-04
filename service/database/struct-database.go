@@ -14,10 +14,13 @@ type User struct {
 
 // user + photos
 type UserProfile struct {
-	Username  string   `json: username`
-	Followers []string `json: following`
-	Following []string `json: username`
-	Photos    []Photo  `json: photos`
+	Username        string           `json: username`
+	Followers       []string         `json: followers`
+	Following       []string         `json: followingb`
+	Photos          []database.Photo `json: photos`
+	AlreadyFollowed bool             `json: alreadyfollowed`
+	AlreadyBanned   bool             `json: alreadybanned`
+	OwnProfile      bool             `json: ownprofile`
 }
 
 // type Username struct{
@@ -31,18 +34,20 @@ type Photo struct {
 	Date      time.Time `json: datetime`
 }
 
-type PhotoId struct {
-	PhotoId string `json: photoid`
+type CompletePhoto struct {
+	PhotoId      string             `json: photoid`
+	Username     string             `json: username`
+	PhotoFile    []byte             `json: photofile`
+	Date         time.Time          `json: datetime`
+	AlreadyLiked bool               `json: alreadyliked`
+	Likes        []database.Like    `json: likes`
+	Comments     []database.Comment `json: comments`
 }
 
 type Like struct {
 	PhotoId  string `json: photoid`
 	Username string `json: username`
 	LikeId   string `json: likeid`
-}
-
-type LikeId struct {
-	LikeId string `json: likeid`
 }
 
 type Comment struct {
@@ -53,6 +58,11 @@ type Comment struct {
 	CommentContent string    `json: commentcontent`
 }
 
+/*
+type LikeId struct {
+	LikeId string `json: likeid`
+}
+
 type CommentId struct {
 	CommentId string `json: commentid`
 }
@@ -60,3 +70,8 @@ type CommentId struct {
 type CommentContent struct {
 	CommentContent string `json: commentcontent`
 }
+
+type PhotoId struct {
+	PhotoId string `json: photoid`
+}
+*/

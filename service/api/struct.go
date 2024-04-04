@@ -21,7 +21,7 @@ type User struct {
 type UserProfile struct {
 	Username        string           `json: username`
 	Followers       []string         `json: followers`
-	Following       []string         `json: following`
+	Following       []string         `json: followingb`
 	Photos          []database.Photo `json: photos`
 	AlreadyFollowed bool             `json: alreadyfollowed`
 	AlreadyBanned   bool             `json: alreadybanned`
@@ -91,10 +91,13 @@ func (u User) ToDatabase() database.User {
 
 func (up UserProfile) ToDatabase() database.UserProfile {
 	return database.UserProfile{
-		Username:  up.Username,
-		Followers: up.Followers,
-		Following: up.Following,
-		Photos:    up.Photos,
+		Username:        up.Username,
+		Followers:       up.Followers,
+		Following:       up.Following,
+		Photos:          up.Photos,
+		AlreadyFollowed: p.AlreadyFollowed,
+		AlreadyBanned:   p.AlreadyBanned,
+		OwnProfile:      p.OwnProfile,
 	}
 }
 
@@ -104,6 +107,18 @@ func (ph Photo) ToDatabase() database.Photo {
 		Date:      ph.Date,
 		Username:  ph.Username,
 		PhotoFile: ph.PhotoFile,
+	}
+}
+
+func (cph CompletePhoto) ToDatabase() database.CompletePhoto {
+	return database.CompletePhoto{
+		PhotoId:      cph.PhotoId,
+		Date:         cph.Date,
+		Username:     cph.Username,
+		PhotoFile:    cph.PhotoFile,
+		AlreadyLiked: cph.AlreadyLiked,
+		Likes:        cph.Likes,
+		Comments:     cph.Comments,
 	}
 }
 
