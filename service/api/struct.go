@@ -95,9 +95,9 @@ func (up UserProfile) ToDatabase() database.UserProfile {
 		Followers:       up.Followers,
 		Following:       up.Following,
 		Photos:          up.Photos,
-		AlreadyFollowed: p.AlreadyFollowed,
-		AlreadyBanned:   p.AlreadyBanned,
-		OwnProfile:      p.OwnProfile,
+		AlreadyFollowed: up.AlreadyFollowed,
+		AlreadyBanned:   up.AlreadyBanned,
+		OwnProfile:      up.OwnProfile,
 	}
 }
 

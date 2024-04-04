@@ -14,13 +14,13 @@ type User struct {
 
 // user + photos
 type UserProfile struct {
-	Username        string           `json: username`
-	Followers       []string         `json: followers`
-	Following       []string         `json: followingb`
-	Photos          []database.Photo `json: photos`
-	AlreadyFollowed bool             `json: alreadyfollowed`
-	AlreadyBanned   bool             `json: alreadybanned`
-	OwnProfile      bool             `json: ownprofile`
+	Username        string   `json: username`
+	Followers       []string `json: followers`
+	Following       []string `json: followingb`
+	Photos          []Photo  `json: photos`
+	AlreadyFollowed bool     `json: alreadyfollowed`
+	AlreadyBanned   bool     `json: alreadybanned`
+	OwnProfile      bool     `json: ownprofile`
 }
 
 // type Username struct{
@@ -35,13 +35,13 @@ type Photo struct {
 }
 
 type CompletePhoto struct {
-	PhotoId      string             `json: photoid`
-	Username     string             `json: username`
-	PhotoFile    []byte             `json: photofile`
-	Date         time.Time          `json: datetime`
-	AlreadyLiked bool               `json: alreadyliked`
-	Likes        []database.Like    `json: likes`
-	Comments     []database.Comment `json: comments`
+	PhotoId      string    `json: photoid`
+	Username     string    `json: username`
+	PhotoFile    []byte    `json: photofile`
+	Date         time.Time `json: datetime`
+	AlreadyLiked bool      `json: alreadyliked`
+	Likes        []Like    `json: likes`
+	Comments     []Comment `json: comments`
 }
 
 type Like struct {
