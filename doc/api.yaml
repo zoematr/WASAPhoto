@@ -579,7 +579,7 @@ paths:
           description: You banned the user.
           content:
             application/json:
-              schema: {$ref : "#/components/schemas/username"}
+              schema: {$ref : "#/components/schemas/user"}
         '403': 
           description: You cannot perform this operation.
         '404':
