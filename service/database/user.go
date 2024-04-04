@@ -32,9 +32,6 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
 	return token, nil
 }
 
-
-
-
 // checks if user exists if someone looks.
 func (db *appdbimpl) ExistsUser(searcheduser string) (bool, error) {
 	var cnt int
@@ -134,8 +131,6 @@ func (db *appdbimpl) GetFollowing(follower string) ([]string, error) {
 	}
 	return following, nil
 }
-
-
 
 // function to start follow a user
 func (db *appdbimpl) FollowUser(requesting string, target string) error {

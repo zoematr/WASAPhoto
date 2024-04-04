@@ -235,7 +235,7 @@ func (db *appdbimpl) GetStream(username string) ([]CompletePhoto, error) {
 		}
 		if isliked {
 			photo.AlreadyLiked = true
-		}	
+		}
 		res = append(res, photo)
 	}
 
@@ -246,7 +246,7 @@ func (db *appdbimpl) GetStream(username string) ([]CompletePhoto, error) {
 	return res, nil
 }
 
-func (db *appdbimpl) GetLikes(photo CompletePhoto) (error) {
+func (db *appdbimpl) GetLikes(photo CompletePhoto) error {
 	rows, err := db.c.Query(`SELECT * FROM likes WHERE photoid = ?`,
 		photo.PhotoId)
 	if err != nil {
@@ -273,7 +273,7 @@ func (db *appdbimpl) GetLikes(photo CompletePhoto) (error) {
 	return nil
 }
 
-func (db *appdbimpl) GetComments(photo CompletePhoto) (error) {
+func (db *appdbimpl) GetComments(photo CompletePhoto) error {
 	rows, err := db.c.Query(`SELECT * FROM comments WHERE photoid = ?`,
 		photo.PhotoId)
 	if err != nil {
@@ -301,7 +301,7 @@ func (db *appdbimpl) GetComments(photo CompletePhoto) (error) {
 }
 
 // function that gets all the photos of a user
-func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePhoto, error) {  // TO DO check if the photos are liked by a user
+func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePhoto, error) { // TO DO check if the photos are liked by a user
 	var photos []CompletePhoto
 	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
 	if err != nil {
