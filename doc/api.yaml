@@ -35,7 +35,32 @@ components:
         username: {$ref: '#/components/schemas/username'}
         banned: {$ref: '#/components/schemas/banned'}
         following: {$ref: '#/components/schemas/following'}
-        token: {$ref: '#/components/schemas/token'}
+        followers: {$ref: '#/components/schemas/followers'}
+        photos: {$ref: '#/components/schemas/photos'}
+    
+    photos: 
+      title: photos
+      type: array
+      description: list of photos
+      minItems: 0
+      maxItems: 10000
+      items: {$ref: '#/components/schemas/photo'}
+
+    likes: 
+      title: likes
+      type: array
+      description: list of likes
+      minItems: 0
+      maxItems: 10000
+      items: {$ref: '#/components/schemas/like'}
+
+    comments: 
+      title: comments
+      type: array
+      description: list of comments
+      minItems: 0
+      maxItems: 10000
+      items: {$ref: '#/components/schemas/comment'}
 
     username: 
       title: username
@@ -68,6 +93,15 @@ components:
       maxItems: 10000
       items: {$ref: '#/components/schemas/username'}
 
+    followers:
+      title: followers
+      type: array
+      description: this is the list of users that follow a user.
+      minItems: 0
+      maxItems: 10000
+      items: {$ref: '#/components/schemas/username'}
+
+
   #PHOTO
     photo:
       title: photo
@@ -78,6 +112,8 @@ components:
         photoid: {$ref: '#/components/schemas/photoid'}
         photofile: {$ref: '#/components/schemas/photofile'}
         datetime: {$ref: '#/components/schemas/datetime'}
+        likes: {$ref: '#/components/schemas/likes'}
+        comments: {$ref: '#/components/schemas/comments'}
 
     photoid:
       title: photoid

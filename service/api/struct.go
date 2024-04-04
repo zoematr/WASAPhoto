@@ -20,17 +20,13 @@ type User struct {
 // user + photos + if already following or already banned
 type UserProfile struct {
 	Username        string           `json: username`
-	Followers       []string         `json: following`
-	Following       []string         `json: username`
+	Followers       []string         `json: followers`
+	Following       []string         `json: following`
 	Photos          []database.Photo `json: photos`
 	AlreadyFollowed bool             `json: alreadyfollowed`
 	AlreadyBanned   bool             `json: alreadybanned`
-	
+	OwnProfile      bool             `json: ownprofile`
 }
-
-// type Username struct{
-// 	Username string `json: username`
-// }
 
 type Photo struct {
 	PhotoId   string    `json: photoid`
@@ -40,27 +36,19 @@ type Photo struct {
 }
 
 type CompletePhoto struct {
-	PhotoId      string    `json: photoid`
-	Username     string    `json: username`
-	PhotoFile    []byte    `json: photofile`
-	Date         time.Time `json: datetime`
-	AlreadyLiked bool      `json: alreadyliked`
-}
-
-
-
-type PhotoId struct {
-	PhotoId string `json: photoid`
+	PhotoId      string             `json: photoid`
+	Username     string             `json: username`
+	PhotoFile    []byte             `json: photofile`
+	Date         time.Time          `json: datetime`
+	AlreadyLiked bool               `json: alreadyliked`
+	Likes        []database.Like    `json: likes`
+	Comments     []database.Comment `json: comments`
 }
 
 type Like struct {
 	PhotoId  string `json: photoid`
 	Username string `json: username`
 	LikeId   string `json: likeid`
-}
-
-type LikeId struct {
-	LikeId string `json: likeid`
 }
 
 type Comment struct {
@@ -71,13 +59,23 @@ type Comment struct {
 	CommentContent string    `json: commentcontent`
 }
 
+/*
 type CommentId struct {
 	CommentId string `json: commentid`
+}
+
+type LikeId struct {
+	LikeId string `json: likeid`
+}
+
+type PhotoId struct {
+	PhotoId string `json: photoid`
 }
 
 type CommentContent struct {
 	CommentContent string `json: commentcontent`
 }
+*/
 
 // now functions to convert the types defined before into a type of the database package
 
@@ -117,18 +115,13 @@ func (ph Like) ToDatabase() database.Like {
 	}
 }
 
-func (phid PhotoId) ToDatabase() database.PhotoId {
-	return database.PhotoId{
-		PhotoId: phid.PhotoId,
-	}
-}
-
 // func (uid Username) ToDatabase() database.Username {
 // 	return database.Username{
 //		Username: uid.Username,
 //	 }
 // }
 
+/*
 func (cc CommentContent) ToDatabase() database.CommentContent {
 	return database.CommentContent{
 		CommentContent: cc.CommentContent,
@@ -146,6 +139,13 @@ func (cid LikeId) ToDatabase() database.LikeId {
 		LikeId: cid.LikeId,
 	}
 }
+
+func (phid PhotoId) ToDatabase() database.PhotoId {
+	return database.PhotoId{
+		PhotoId: phid.PhotoId,
+	}
+}
+*/
 
 func (c Comment) ToDatabase() database.Comment {
 	return database.Comment{
