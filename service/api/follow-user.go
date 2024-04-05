@@ -41,9 +41,8 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
- 
-	alreadybanned := false    // used to give back to the frontend
-	owner := false            // if the user that is searched is also the owner of the profile, then they can't follow or ban themselves
+	alreadybanned := false // used to give back to the frontend
+	owner := false         // if the user that is searched is also the owner of the profile, then they can't follow or ban themselves
 
 	// check if banned
 	banned, err := rt.db.CheckBanned(usernameTargetUser, usernameRequestUser)
@@ -112,17 +111,16 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	alreadyfollowing = true
 
-
 	// Respond with 201 http status
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(UserProfile{
-		Username:  usernameTargetUser,
-		Followers: followers,
-		Following: following,
-		Photos:    photos,
+		Username:        usernameTargetUser,
+		Followers:       followers,
+		Following:       following,
+		Photos:          photos,
 		AlreadyFollowed: alreadyfollowing,
-		AlreadyBanned: alreadybanned,
-		OwnProfile: owner,
+		AlreadyBanned:   alreadybanned,
+		OwnProfile:      owner,
 	})
 
 }

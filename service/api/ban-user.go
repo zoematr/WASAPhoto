@@ -85,17 +85,15 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		alreadyfollowing = true
 	}
 
-
-
 	// Respond with 201 http status
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(UserProfile{
-		Username:  usernameTargetUser,
-		Followers: followers,
-		Following: following,
-		Photos:    photos,
+		Username:        usernameTargetUser,
+		Followers:       followers,
+		Following:       following,
+		Photos:          photos,
 		AlreadyFollowed: alreadyfollowing,
-		AlreadyBanned: alreadybanned,
-		OwnProfile: owner,
+		AlreadyBanned:   alreadybanned,
+		OwnProfile:      owner,
 	})
 }
