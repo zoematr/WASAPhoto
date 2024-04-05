@@ -111,9 +111,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	alreadyfollowing = true
-	if usernameRequestUser == usernameTargetUser {
-		owner = true
-	}
+
 
 	// Respond with 201 http status
 	w.WriteHeader(http.StatusCreated)
