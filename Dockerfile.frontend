@@ -10,6 +10,6 @@ RUN npm run build-prod
 FROM nginx:stable
 COPY --from=builder /app/webui/dist /usr/share/nginx/html
 
-#i think this is already in the container but im not gonna risk it
+#should be already in the container but just to make sure
 EXPOSE 5173
 CMD ["nginx", "-g", "daemon off;"]

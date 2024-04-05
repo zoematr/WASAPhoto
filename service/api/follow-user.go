@@ -41,6 +41,10 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
+ 
+	alreadybanned := false    // used to give back to the frontend
+	owner := false            // if the user that is searched is also the owner of the profile, then they can't follow or ban themselves
+
 	// check if banned
 	banned, err := rt.db.CheckBanned(usernameTargetUser, usernameRequestUser)
 	if err != nil {
@@ -51,6 +55,27 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	if banned {
 		// User was banned, can't perform the follow action
 		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	banned, err = rt.db.CheckBanned(usernameRequestUser, usernameTargetUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("follow-user/rt.db.BannedUserCheck: error executing query")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if banned {
+		alreadybanned = true
+	}
+	var alreadyfollowing bool
+	wasFollowed, err := rt.db.WasTargetFollowed(usernameRequestUser, usernameTargetUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error getting token requesting user")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if wasFollowed {
+		ctx.Logger.Infof("follow-user: you cannot follow a user that you already follow!")
 		return
 	}
 
@@ -85,6 +110,11 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
+	alreadyfollowing = true
+	if usernameRequestUser == usernameTargetUser {
+		owner = true
+	}
+
 	// Respond with 201 http status
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(UserProfile{
@@ -92,6 +122,9 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		Followers: followers,
 		Following: following,
 		Photos:    photos,
+		AlreadyFollowed: alreadyfollowing,
+		AlreadyBanned: alreadybanned,
+		OwnProfile: owner,
 	})
 
 }
