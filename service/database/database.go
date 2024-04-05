@@ -70,7 +70,7 @@ type AppDatabase interface {
 	GetUsernameFromCommentId(string) (string, error)
 	DeleteComment(string) error
 	CommentExists(string) (bool, error)
-	GetPhotoFromPhotoId(string) (Photo, error) // TODO change to complete photo
+	GetPhotoFromPhotoId(string) (CompletePhoto, error)
 	GetLikes(CompletePhoto) error
 	GetComments(CompletePhoto) error
 
