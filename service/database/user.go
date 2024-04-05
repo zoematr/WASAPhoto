@@ -202,16 +202,6 @@ func (db *appdbimpl) BanUser(requesting string, target string) error {
 	if wasbanned == true {
 		return err
 	}
-	wasfollowed, err := db.WasTargetFollowed(requesting, target)
-	if err != nil {
-		return err
-	}
-	if wasfollowed == true {
-		err = db.UnfollowUser(requesting, target)
-		if err != nil {
-			return err
-		}
-	}
 	wasfollowed, err = db.WasTargetFollowed(target, requesting)
 	if err != nil {
 		return err

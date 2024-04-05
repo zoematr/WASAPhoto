@@ -19,6 +19,9 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	bearerToken := r.Header.Get("Authorization")
 	w.Header().Set("Content-Type", "application/json")
 	var usernameTargetUser string
+	var alreadybanned bool
+	var alreadyfollowing bool
+	var owner bool
 	err = json.NewDecoder(r.Body).Decode(&usernameTargetUser)
 	exists, err := rt.db.ExistsUser(usernameTargetUser)
 	if err != nil {
@@ -47,6 +50,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	alreadybanned = true
 
 	// get followers and following of the requested user
 	followers, err := rt.db.GetFollowers(usernameTargetUser)
@@ -71,6 +75,18 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	wasFollowed, err := rt.db.WasTargetFollowed(usernameRequestUser, usernameTargetUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error checking if the requesting user follows the target")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if wasFollowed {
+		alreadyfollowing = true
+	}
+
+
+
 	// Respond with 201 http status
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(UserProfile{
@@ -78,5 +94,8 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		Followers: followers,
 		Following: following,
 		Photos:    photos,
+		AlreadyFollowed: alreadyfollowing,
+		AlreadyBanned: alreadybanned,
+		OwnProfile: owner,
 	})
 }
