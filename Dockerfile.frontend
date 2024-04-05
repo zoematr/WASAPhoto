@@ -1,0 +1,15 @@
+FROM node:lts as builder
+WORKDIR /app/
+
+
+COPY webui webui
+WORKDIR /app/webui
+RUN npm run build-prod
+
+# Stage 2: Serve the application from Nginx
+FROM nginx:stable
+COPY --from=builder /app/webui/dist /usr/share/nginx/html
+
+#i think this is already in the container but im not gonna risk it
+EXPOSE 5173
+CMD ["nginx", "-g", "daemon off;"]
