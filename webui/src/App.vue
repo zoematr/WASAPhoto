@@ -24,12 +24,6 @@
                 </RouterLink>
               </li>
               <li class="nav-item">
-                <RouterLink :to="'/user/' + usernameComputed" class="nav-link">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#home"/></svg>
-                  My Profile
-                </RouterLink>
-              </li>
-              <li class="nav-item">
                 <RouterLink to="/stream" class="nav-link">
                   <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
                   My stream
@@ -128,7 +122,7 @@ export default {
     async function logmeout() {
       localStorage.setItem("username","");
       localStorage.setItem("token","");
-      alert('You have logged out successfully! Now you can only search people, not interact with profiles.'); 
+      alert('You have logged out! Goodbye'); 
       location.reload();
     }
 
@@ -144,7 +138,7 @@ export default {
           const response = await instance.post(`/users/${username}/photos/`, formData, {  
             headers: { Authorization: localStorage.getItem("token") }
           });
-          alert('Image uploaded successfully!'); 
+          alert('You posted your photo!'); 
           location.reload();
           // Handle the response, e.g., showing a success message
         } catch (error) {
