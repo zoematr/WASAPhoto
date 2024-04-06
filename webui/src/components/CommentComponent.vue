@@ -18,7 +18,7 @@
 </template>
   
 <script>
-import api from "@/services/axios"; 
+import instance from "../services/axios"; 
 
 export default {
   props: {
@@ -44,7 +44,7 @@ export default {
   methods: {
     async fetchComments() {
       try {
-        const response = await api.get(`photos/${this.photoId}/comments/`,{headers: {
+        const response = await instance.get(`photos/${this.photoId}/comments/`,{headers: {
                         Authorization: localStorage.getItem("token")}
                     });
         this.comments = Array.isArray(response.data) ? response.data : [];
@@ -54,7 +54,7 @@ export default {
     },
     async deleteComment(commentId) {
       try {
-        await api.delete(`/comments/${commentId}`,{headers: {
+        await instance.delete(`/comments/${commentId}`,{headers: {
                         Authorization: localStorage.getItem("token")}
                     });
         this.comments = this.comments.filter(comment => comment.commentId !== commentId);
@@ -72,7 +72,7 @@ export default {
           content: this.newComment,
           // Include other necessary fields if required
         };
-        await api.post(`photos/${this.photoId}/comments/`,payload,{headers: {
+        await instance.post(`photos/${this.photoId}/comments/`,payload,{headers: {
                         Authorization: localStorage.getItem("token")}
                     });
         this.newComment = ''; // Reset the text area

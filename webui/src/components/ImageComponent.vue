@@ -13,8 +13,8 @@
   </template>
   
   <script>
-  import api from "@/services/axios"; 
-  import CommentComponent from '@/components/CommentComponent.vue';
+  import instance from "../services/axios"; 
+  import CommentComponent from '../components/CommentComponent.vue';
   export default {
     props: {
       photoDetails: {
@@ -58,7 +58,7 @@
         async deletePhoto() {
       try {
         const url = `/photos/${this.photoDetails.photoId}`;
-        await api.delete(url, {
+        await instance.delete(url, {
           headers: {
             Authorization: localStorage.getItem("token")
           }
@@ -74,12 +74,12 @@
         try {
           const url = `/photos/${this.photoDetails.photoId}/likes/`;
           if (this.Liking) {
-            await api.delete(url,{headers: {
+            await instance.delete(url,{headers: {
                         Authorization: localStorage.getItem("token")}
                     });
                     this.localLikesCount = this.localLikesCount -1
           } else {
-            await api.post(url,{},{headers: {
+            await instance.post(url,{},{headers: {
                         Authorization: localStorage.getItem("token")}
                     });
                     this.localLikesCount = this.localLikesCount +1

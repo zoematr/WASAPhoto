@@ -30,9 +30,9 @@
                 </RouterLink>
               </li>
               <li class="nav-item">
-                <RouterLink to="/user/" class="nav-link">
+                <RouterLink to="/users/" class="nav-link">
                   <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
-                  A users profile
+                  Search users
                 </RouterLink>
               </li>
             </ul>
@@ -136,7 +136,10 @@ export default {
         try {
           const username = localStorage.getItem('username');
           const response = await instance.post(`/users/${username}/photos/`, formData, {  
-            headers: { Authorization: localStorage.getItem("token") }
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
           });
           alert('You posted your photo!'); 
           location.reload();

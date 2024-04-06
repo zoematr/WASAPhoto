@@ -7,7 +7,7 @@ import ChangeUsername from '../components/ChangeUsernameComponent.vue';
 const routes = [
   {path: '/', name: 'Login', component: LoginView},
   {path: '/stream', name: 'Stream', component: StreamView},
-  {path: '/user/:username?', name: 'UserProfile', component: ProfileView},
+  {path: '/users/:username?', name: 'UserProfile', component: ProfileView},
   {path: '/change-username', name: 'ChangeUsername', component: ChangeUsername}
 ]
 
