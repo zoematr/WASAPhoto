@@ -1,8 +1,5 @@
 package database
 
-import (
-	"time"
-)
 
 type User struct {
 	Username  string   `json: username`
@@ -31,14 +28,14 @@ type Photo struct {
 	PhotoId   string    `json: photoid`
 	Username  string    `json: username`
 	PhotoFile []byte    `json: photofile`
-	Date      time.Time `json: datetime`
+	Date      string    `json: datetime`
 }
 
 type CompletePhoto struct {
 	PhotoId      string    `json: photoid`
 	Username     string    `json: username`
 	PhotoFile    []byte    `json: photofile`
-	Date         time.Time `json: datetime`
+	Date         string    `json: datetime`
 	AlreadyLiked bool      `json: alreadyliked`
 	Likes        []Like    `json: likes`
 	Comments     []Comment `json: comments`

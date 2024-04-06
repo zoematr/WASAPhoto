@@ -59,7 +59,7 @@
                   <label for="newUsername">New Username</label>
                   <input type="text" v-model="newUsername" class="form-control" id="newUsername" placeholder="Enter new username" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Change Username</button>
+                <button type="submit">Change Username</button>
               </form>
             </ul>
           </div>
@@ -169,5 +169,14 @@ export default {
 <style>
   .small {
     font-size: 1.2rem;
+  }
+
+  button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  font-size: 16px;
+  cursor: pointer;
   }
 </style>

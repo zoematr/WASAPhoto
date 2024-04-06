@@ -5,7 +5,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"net/http"
-	"time"
 )
 
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -68,7 +67,6 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 
 	comment := Comment{
 		Username:       pathRequestUsername,
-		Date:           time.Now().UTC(),
 		PhotoId:        targetPhotoId,
 		CommentContent: commentContent,
 	}

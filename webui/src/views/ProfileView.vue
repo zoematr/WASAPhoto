@@ -1,8 +1,10 @@
 <template>
   <div>
-    <div class="search-bar">
-      <input v-model="username" placeholder="Search Username" @keyup.enter="searchUser">
-      <button @click="searchUser">Search</button>
+    <div v-if="!searched">
+      <div class="search-bar">
+        <input v-model="username" placeholder="Search Username" @keyup.enter="searchUser">
+        <button @click="searchUser">Search</button>
+      </div>
     </div>
     <div v-if="userProfile">
       <h2>{{ userProfile.Username }}</h2>
@@ -20,6 +22,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import instance from '../services/axios.js';
@@ -68,7 +71,6 @@ input[type='text'] {
 }
 
 button {
-  padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
   border: none;

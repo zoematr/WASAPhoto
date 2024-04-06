@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/zoematr/WASAPhoto/service/database"
-	"time"
 )
 
 type UsernameUpdate struct {
@@ -32,14 +31,14 @@ type Photo struct {
 	PhotoId   string    `json: photoid`
 	Username  string    `json: username`
 	PhotoFile []byte    `json: photofile`
-	Date      time.Time `json: datetime`
+	Date      string    `json: datetime`
 }
 
 type CompletePhoto struct {
 	PhotoId      string             `json: photoid`
 	Username     string             `json: username`
 	PhotoFile    []byte             `json: photofile`
-	Date         time.Time          `json: datetime`
+	Date         string             `json: datetime`
 	AlreadyLiked bool               `json: alreadyliked`
 	Likes        []database.Like    `json: likes`
 	Comments     []database.Comment `json: comments`
@@ -55,7 +54,6 @@ type Comment struct {
 	PhotoId        string    `json: photoid`
 	Username       string    `json: username`
 	CommentId      string    `json: commentid`
-	Date           time.Time `json: datetime`
 	CommentContent string    `json: commentcontent`
 }
 

@@ -37,7 +37,7 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	photo := Photo{
 		Username:  pathUsername,
-		Date:      time.Now().UTC(),
+		Date:      time.Now().UTC().Format("2006-01-02T15:04:05Z"),
 		PhotoFile: photoFile,
 	}
 
