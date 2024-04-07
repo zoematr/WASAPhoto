@@ -24,7 +24,7 @@ func (db *appdbimpl) CreateUser(username string) (int, error) {
 	}
 	// Retrieve the token for the inserted user
 	token, err := db.GetTokenFromUsername(username)
-	// fmt.Println(err)
+
 	if err != nil {
 		return 0, err
 	}
@@ -147,7 +147,6 @@ func (db *appdbimpl) FollowUser(requesting string, target string) error {
 func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, error) {
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM followers WHERE username = ? AND followerusername = ?", target, requesting).Scan(&cnt)
-
 	if err != nil {
 		// Count always returns a row thanks to COUNT(*), so this situation should not happen
 		return true, err
@@ -155,8 +154,10 @@ func (db *appdbimpl) WasTargetFollowed(requesting string, target string) (bool, 
 	// If counter 1 then the target was followed
 	if cnt == 1 {
 		return true, nil
+	} else {
+		return false, nil
 	}
-	return false, nil
+
 }
 
 // check if a user is banned by another user

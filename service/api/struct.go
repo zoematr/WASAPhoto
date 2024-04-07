@@ -8,6 +8,10 @@ type UsernameUpdate struct {
 	NewUsername string `json:"newusername"`
 }
 
+type UsernameReqBody struct {
+	Username string `json:"username"`
+}
+
 type User struct {
 	Username  string   `json: username`
 	Followers []string `json: following`
@@ -28,10 +32,10 @@ type UserProfile struct {
 }
 
 type Photo struct {
-	PhotoId   string    `json: photoid`
-	Username  string    `json: username`
-	PhotoFile []byte    `json: photofile`
-	Date      string    `json: datetime`
+	PhotoId   string `json: photoid`
+	Username  string `json: username`
+	PhotoFile []byte `json: photofile`
+	Date      string `json: datetime`
 }
 
 type CompletePhoto struct {
@@ -51,10 +55,10 @@ type Like struct {
 }
 
 type Comment struct {
-	PhotoId        string    `json: photoid`
-	Username       string    `json: username`
-	CommentId      string    `json: commentid`
-	CommentContent string    `json: commentcontent`
+	PhotoId        string `json: photoid`
+	Username       string `json: username`
+	CommentId      string `json: commentid`
+	CommentContent string `json: commentcontent`
 }
 
 /*

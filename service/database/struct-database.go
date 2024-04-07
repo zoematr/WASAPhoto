@@ -1,6 +1,5 @@
 package database
 
-
 type User struct {
 	Username  string   `json: username`
 	Followers []string `json: following`
@@ -25,10 +24,10 @@ type UserProfile struct {
 // }
 
 type Photo struct {
-	PhotoId   string    `json: photoid`
-	Username  string    `json: username`
-	PhotoFile []byte    `json: photofile`
-	Date      string    `json: datetime`
+	PhotoId   string `json: photoid`
+	Username  string `json: username`
+	PhotoFile []byte `json: photofile`
+	Date      string `json: datetime`
 }
 
 type CompletePhoto struct {

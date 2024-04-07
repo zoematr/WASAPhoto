@@ -10,6 +10,7 @@ import (
 
 // gives back a user profile
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	ctx.Logger.Infof("getUserProfile is being called")
 	authString := (r.Header.Get("Authorization"))
 	if isNotLogged(authString) {
 		ctx.Logger.Infof("get-user-profile: log in to see the profiles of other users!")
@@ -24,9 +25,8 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	var followers []string
 	var following []string
 	var photos []database.CompletePhoto
-	alreadyfollowing := false // used later to check if the requesting user already follows the target, then he can't be able to refollow him but just to unfollow
-	alreadybanned := false    // same as above but for banned
-	owner := false            // if the user that is searched is also the owner of the profile, then they can't follow or ban themselves
+	alreadybanned := false // same as above but for banned
+	owner := false         // if the user that is searched is also the owner of the profile, then they can't follow or ban themselves
 
 	// check if targetuser exists
 	exists, err := rt.db.ExistsUser(targetUser)
@@ -37,7 +37,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	if !exists {
 		ctx.Logger.WithError(err).Error("getUserProfile : the user does not exist")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -70,13 +70,20 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	ctx.Logger.Infof("this is userReq %s", userRequesting)
+	ctx.Logger.Infof("this is targetUser %s", targetUser)
 
-	for _, follower := range followers {
-		if follower == userRequesting {
-			alreadyfollowing = true
-			break
-		}
+	var alreadyfollowing bool
+	wasFollowed, err := rt.db.WasTargetFollowed(userRequesting, targetUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error checking if the target was followed")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+	if wasFollowed {
+		alreadyfollowing = true
+	}
+	ctx.Logger.Infof("this is already following %b", alreadyfollowing)
 
 	following, err = rt.db.GetFollowing(targetUser)
 	if err != nil {

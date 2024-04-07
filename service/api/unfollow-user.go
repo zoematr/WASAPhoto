@@ -46,5 +46,5 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	// UNFOLLOW
 	_ = rt.db.UnfollowUser(usernameRequestUser, usernameTargetUser)
 	// Respond with 204 http status
-	w.WriteHeader(http.StatusNoContent)
+	return
 }

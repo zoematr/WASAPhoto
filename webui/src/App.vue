@@ -82,9 +82,9 @@ export default {
   setup() {
     // Computed property to get the username from local storage
     const usernameComputed = computed(() => {
-      const username = localStorage.getItem("username") || "";
-      console.log("Username:", username);
-      return username;
+    const username = localStorage.getItem("username") || "";
+    console.log("Username:", username);
+    return username;
     });
     // Ref for file input
     const fileInput = ref(null);

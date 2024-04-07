@@ -1,21 +1,24 @@
 <template>
-  <div>
-    <div v-if="!searched">
+  <div class="container">
+    <div class="search-bar-container">
       <div class="search-bar">
-        <input v-model="username" placeholder="Search Username" @keyup.enter="searchUser">
+        <input v-model="searchedUsername" placeholder="Search Username" @keyup.enter="searchUser">
         <button @click="searchUser">Search</button>
+      </div>
+      <div v-if="userProfile" class="user-info">
+        <p class="username">{{ userProfile.Username }}</p>
+        <div v-if="!userProfile.OwnProfile" class="button-row">
+          <button v-if="userProfile && !isOwnProfile" @click="toggleFollow">
+            {{ userProfile.AlreadyFollowed ? 'Unfollow' : 'Follow' }}
+          </button>
+          <button v-if="userProfile && !isOwnProfile" @click="toggleBan">
+            {{ userProfile.AlreadyBanned ? 'Unban' : 'Ban' }}
+          </button>
+        </div>
       </div>
     </div>
     <div v-if="userProfile">
-      <h2>{{ userProfile.Username }}</h2>
-      <p>Followers: {{ userProfile.Followers.length }}</p>
-      <p>Following: {{ userProfile.Following.length }}</p>
-      <div v-for="photo in userProfile.Photos" :key="photo.PhotoId">
-        <img :src="'data:image/jpeg;base64,' + photo.PhotoFile" alt="Photo">
-        <p>{{ photo.Date }}</p>
-        <p>Likes: {{ photo.Likes.length }}</p>
-        <p>Comments: {{ photo.Comments.length }}</p>
-      </div>
+      <!-- Display user's photos -->
     </div>
     <div v-else-if="searched && !userProfile">
       <p>User not found</p>
@@ -30,36 +33,101 @@ import instance from '../services/axios.js';
 export default {
   data() {
     return {
-      username: '',
+      searchedUsername: '', // dont confuse with username (of the logged in user)
+      username: localStorage.getItem('username'),
       userProfile: null,
       searched: false
     }
   },
   methods: {
     async searchUser() {
-      this.searched = true
+      this.searched = true;
       try {
-        const response = await instance.get(`/users/${this.username}`, {
+        const response = await instance.get(`/users/${this.searchedUsername}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        this.userProfile = response.data
+        console.log("this is the response data")
+        console.log(response.data)
+        this.userProfile = response.data;
       } catch (error) {
-        console.error(error)
+        console.error(error);
+        // Optionally, you can reset userProfile to null here
+        this.userProfile = null;
+        // Preserve the searchedUsername when an error occurs
+        // This prevents the input field from being cleared
+        // You may also want to display a relevant error message to the user
+        // For simplicity, I'm logging the error here
+        console.error('Error occurred while searching for user:', error);
+      }
+    },
+
+    async toggleFollow() {
+      try {
+        if (this.userProfile.AlreadyFollowed) {
+          await this.unfollowUser();
+        } else {
+          await this.followUser();
+        }
+        // Update AlreadyFollowed based on the action performed
+        this.userProfile.AlreadyFollowed = !this.userProfile.AlreadyFollowed;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async followUser() {
+      try {
+        console.log(this.searchedUsername)
+        const response = await instance.post(`/users/${this.username}/following/`, JSON.stringify({ username: this.searchedUsername }), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        this.userProfile = response.data;
+        this.userProfile.AlreadyFollowed = true;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async unfollowUser() {
+      try {
+        await instance.delete(`/users/${this.username}/following/${this.searchedUsername}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        // Update AlreadyFollowed directly
+        this.userProfile.AlreadyFollowed = false;
+      } catch (error) {
+        console.error(error);
       }
     }
+
+
   }
 }
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 20px;
+}
+
+.search-bar-container {
+  margin-bottom: 20px;
+}
+
 .search-bar {
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 input[type='text'] {
@@ -83,8 +151,13 @@ button:hover {
   background-color: #3e8e41;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
+.username {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
 }
 </style>

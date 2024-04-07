@@ -312,7 +312,7 @@ func (db *appdbimpl) GetComments(photo CompletePhoto) error {
 
 // function that gets all the photos of a user
 func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePhoto, error) { // TO DO check if the photos are liked by a user
-	
+
 	var photos []CompletePhoto
 	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
 	if err != nil {
