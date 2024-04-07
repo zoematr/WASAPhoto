@@ -13,16 +13,6 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	ctx.Logger.Infof("followUser is being called")
 	w.Header().Set("Content-Type", "application/json")
 	var usernameTargetUser string
-	/*exists, err := rt.db.ExistsUser(usernameTargetUser)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if exists != true {
-		ctx.Logger.WithError(err).Error("follow-user: the user doesn't exist!")
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}*/
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("set my username: error reading request body")

@@ -106,7 +106,52 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+
+    async toggleBan() {
+      try {
+        if (this.userProfile.AlreadyBanned) {
+          await this.unbanUser();
+        } else {
+          await this.banUser();
+        }
+        // Call searchUser again to update userProfile with the latest data
+        await this.searchUser();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async banUser() {
+      try {
+        console.log(this.searchedUsername)
+        const response = await instance.post(`/users/${this.username}/banned/`, JSON.stringify({ username: this.searchedUsername }), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        this.userProfile = response.data;
+        this.userProfile.AlreadyBanned = true;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async unbanUser() {
+      try {
+        await instance.delete(`/users/${this.username}/banned/${this.searchedUsername}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        this.userProfile.AlreadyBanned = false;
+      } catch (error) {
+        console.error(error);
+      }
     }
+
+
   },
   created() {
     if (this.searchedUsername) {

@@ -5,6 +5,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
 	"net/http"
+	"io/ioutil"
 )
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -22,7 +23,23 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	var alreadybanned bool
 	var alreadyfollowing bool
 	var owner bool
-	err = json.NewDecoder(r.Body).Decode(&usernameTargetUser)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("set my username: error reading request body")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	ctx.Logger.Infof("this is the request body: %s", string(body))
+
+	var target UsernameReqBody
+	err = json.Unmarshal(body, &target)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("set my username: error decoding json")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	usernameTargetUser = target.Username
 	exists, err := rt.db.ExistsUser(usernameTargetUser)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
