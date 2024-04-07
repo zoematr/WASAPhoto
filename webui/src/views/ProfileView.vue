@@ -71,8 +71,8 @@ export default {
         } else {
           await this.followUser();
         }
-        // Update AlreadyFollowed based on the action performed
-        this.userProfile.AlreadyFollowed = !this.userProfile.AlreadyFollowed;
+        // Call searchUser again to update userProfile with the latest data
+        await this.searchUser();
       } catch (error) {
         console.error(error);
       }
@@ -107,8 +107,11 @@ export default {
         console.error(error);
       }
     }
-
-
+  },
+  created() {
+    if (this.searchedUsername) {
+      this.searchUser();
+    }
   }
 }
 </script>
