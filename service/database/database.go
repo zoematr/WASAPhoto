@@ -110,7 +110,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 		CREATE TABLE IF NOT EXISTS photos (
 			photoid TEXT NOT NULL PRIMARY KEY,
 			username TEXT NOT NULL,
-			photofile TEXT NOT NULL,
+			photofile VARBINARY(100000) NOT NULL,
 			datetime TEXT NOT NULL DEFAULT '0000-01-01T00:00:00Z',
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
 			);

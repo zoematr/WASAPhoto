@@ -18,7 +18,7 @@
       </div>
     </div>
     <div v-if="userProfile">
-      <!-- Display user's photos -->
+      <PhotoComponent :photos="userProfile.Photos" />
     </div>
     <div v-else-if="searched && !userProfile">
       <p>User not found</p>
@@ -29,8 +29,12 @@
 
 <script>
 import instance from '../services/axios.js';
+import PhotoComponent from '../components/PhotoComponent.vue';
 
 export default {
+  components: {
+    PhotoComponent
+  },
   data() {
     return {
       searchedUsername: '', // dont confuse with username (of the logged in user)
@@ -54,12 +58,7 @@ export default {
         this.userProfile = response.data;
       } catch (error) {
         console.error(error);
-        // Optionally, you can reset userProfile to null here
-        this.userProfile = null;
-        // Preserve the searchedUsername when an error occurs
-        // This prevents the input field from being cleared
-        // You may also want to display a relevant error message to the user
-        // For simplicity, I'm logging the error here
+        this.userProfile = null
         console.error('Error occurred while searching for user:', error);
       }
     },
