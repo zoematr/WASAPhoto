@@ -96,6 +96,25 @@ export default {
       fileInput.value.click();
     }
 
+    async function uploadPhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        try {
+          const username = localStorage.getItem('username');
+          const response = await instance.post(`/users/${username}/photos/`, { photofile: file }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          alert('You posted your photo!');
+          location.reload();
+        } catch (error) {
+          console.error('Error uploading image:', error);
+        }
+      }
+    }
+
     async function changeUsername() {
       console.log("Change username function called");
       console.log("Username computed value:", usernameComputed.value);
@@ -109,7 +128,6 @@ export default {
         localStorage.setItem("username", newUsername.value)
         window.location.reload();
       } catch (error) {
-    // Handle error response
         if (error.response && error.response.data && error.response.data.message) {
           console.error('Error changing username:', error.response.data.message);
         } else {
@@ -118,37 +136,11 @@ export default {
       }
     }
 
-
     async function logmeout() {
       localStorage.setItem("username","");
       localStorage.setItem("token","");
       alert('You have logged out! Goodbye'); 
       location.reload();
-    }
-
-
-    async function uploadPhoto(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('image', file);
-
-        try {
-          const username = localStorage.getItem('username');
-          const response = await instance.post(`/users/${username}/photos/`, formData, {  
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-          });
-          alert('You posted your photo!'); 
-          location.reload();
-          // Handle the response, e.g., showing a success message
-        } catch (error) {
-          console.error('Error uploading image:', error);
-          // Handle the error, e.g., showing an error message
-        }
-      }
     }
 
 

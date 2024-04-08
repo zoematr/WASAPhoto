@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
-	"net/http"
 	"io/ioutil"
+	"net/http"
 )
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
