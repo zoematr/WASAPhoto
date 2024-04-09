@@ -8,6 +8,10 @@ type UsernameUpdate struct {
 	NewUsername string `json:"newusername"`
 }
 
+type PhotoInput struct {
+	PhotoFile string `json:"photofile"`
+}
+
 type UsernameReqBody struct {
 	Username string `json:"username"`
 }

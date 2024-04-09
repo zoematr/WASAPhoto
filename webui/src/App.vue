@@ -95,30 +95,51 @@ export default {
     function triggerFileInput() {
       fileInput.value.click();
     }
-
+    
     async function uploadPhoto(event) {
       const file = event.target.files[0];
-      if (file) {
-        try {
-          const username = localStorage.getItem('username');
-          const response = await instance.post(`/users/${username}/photos/`, { photofile: file }, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-          });
-          alert('You posted your photo!');
-          location.reload();
-        } catch (error) {
-          console.error('Error uploading image:', error);
+      
+      // Create a new FileReader to read the file data
+      const reader = new FileReader();
+      
+      // Define an onload function for the reader
+      reader.onload = async function () {
+        // Convert the file data to base64
+        const fileBase64 = reader.result.split(',')[1];
+        console.log("Base64 encoded photo:", fileBase64);
+        
+        if (fileBase64) {
+          try {
+            // Send the base64-encoded photo data to the backend
+            const username = localStorage.getItem('username');
+            const response = await instance.post(`/users/${username}/photos/`, { photofile: fileBase64 }, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
+            });
+            alert('You posted your photo!');
+            location.reload();
+          } catch (error) {
+            console.error('Error uploading image:', error);
+          }
         }
-      }
+      };
+      
+      // Define an onerror function for the reader
+      reader.onerror = function (error) {
+        console.log('Error reading file:', error);
+      };
+      
+      // Read the file as a data URL (base64)
+      reader.readAsDataURL(file);
     }
 
     async function changeUsername() {
       console.log("Change username function called");
       console.log("Username computed value:", usernameComputed.value);
       try {
+        
         const response = await instance.patch(`/users/${usernameComputed.value}`, JSON.stringify({ newusername: newUsername.value }), {
           headers: {
             'Content-Type': 'application/json',

@@ -47,7 +47,16 @@ export default {
     },
     formatDate(dateString) {
       const date = new Date(dateString);
-      return date.toLocaleDateString();
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false // Use 24-hour format
+      };
+      return date.toLocaleString(undefined, options);
     }
   }
 }
@@ -70,7 +79,7 @@ export default {
 }
 
 .photo-info {
-  background-color: rgba(242, 115, 206, 0.5);
+  background-color: rgba(50, 48, 50, 0.5);
   color: white;
   padding: 5px;
 }

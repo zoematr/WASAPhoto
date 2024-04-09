@@ -1,11 +1,10 @@
 package api
 
 import (
-	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"github.com/zoematr/WASAPhoto/service/api/reqcontext"
-	"io"
 	"net/http"
 	"time"
 )
@@ -24,17 +23,20 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(valid)
 		return
 	}
-
-	// Legge il body della richiesta e verifica se ci sono errori durante la lettura.
-	photoFile, err := io.ReadAll(r.Body)
+	var photoInput PhotoInput
+	err = json.NewDecoder(r.Body).Decode(&photoInput)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("photo-upload: error reading image data")
-		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.WithError(err).Error("photo-upload: error decoding json")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	r.Body = io.NopCloser(bytes.NewBuffer(photoFile))
-
+	// Decode the base64-encoded photo data into binary
+	photoFile, err := base64.StdEncoding.DecodeString(photoInput.PhotoFile)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("photo-upload: error decoding json")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	photo := Photo{
 		Username:  pathUsername,
 		Date:      time.Now().UTC().Format("2006-01-02T15:04:05Z"),
