@@ -3,8 +3,10 @@
     <div v-for="photo in sortedPhotos" :key="photo.PhotoId" class="photo-item">
       <img :src="getPhotoDataURL(photo.PhotoFile)" alt="Photo" class="photo">
       <div class="photo-info">
-        <p>{{ photo.Username }}</p>
-        <p>{{ formatDate(photo.Date) }}</p>
+        <div class="info-line">
+          <p class="username">{{ photo.Username }}</p>
+          <p class="date">{{ formatDate(photo.Date) }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -94,8 +96,19 @@ export default {
 }
 
 .photo-info {
-  background-color: rgba(54, 51, 53, 0.5);
+  background-color: rgba(42, 41, 41, 0.5);
   color: white;
   padding: 5px;
 }
+
+.info-line {
+  display: flex;
+  justify-content: space-between;
+}
+
+.username,
+.date {
+  margin: 0;
+}
 </style>
+
