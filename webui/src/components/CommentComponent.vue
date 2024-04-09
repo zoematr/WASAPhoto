@@ -1,96 +1,81 @@
 <template>
-  <div class="popup-container" v-if="showPopup">
-    <div v-if="comments.length > 0">
-      <div class="comment" v-for="comment in comments" :key="comment.commentId">
-        <p><strong>{{ comment.commenter }}</strong></p>
-        <p>{{ comment.content }}</p>
-        <button v-if="comment.commenter === currentUser" @click="deleteComment(comment.commentId)">Delete</button>
+  <div class="comment-component">
+    <div class="comment-input">
+      <input v-model="commentText" type="text" placeholder="Enter your comment">
+      <button class="comment-button" @click="postComment">Comment</button>
+    </div>
+    <div class="comment-list">
+      <div v-for="(comment, index) in comments" :key="index" class="comment-item">
+        {{ comment.UserAuthorOfComment }}: {{ comment.CommentContent }}
       </div>
-    </div>
-    <div v-else>
-      <p>No comments yet.</p>
-    </div>
-    <div class="add-comment">
-      <textarea v-model="newComment" placeholder="Write a comment..."></textarea>
-      <button @click="postComment">Post Comment</button>
     </div>
   </div>
 </template>
-  
-<script>
-import instance from "../services/axios"; 
 
+<script>
+import instance from '../services/axios.js';
 export default {
-  props: {
-    photoId: {
-      type: String,
-      required: true
-    },
-    showPopup: {
-      type: Boolean,
-      required: true
-    }
-  },
   data() {
     return {
-      comments: [],
-      currentUser: localStorage.getItem('username'),
-      newComment: '' // Data property for the new comment text
+      commentText: ''
     };
   },
-  mounted() {
-    this.fetchComments();
-  },
   methods: {
-    async fetchComments() {
-      try {
-        const response = await instance.get(`photos/${this.photoId}/comments/`,{headers: {
-                        Authorization: localStorage.getItem("token")}
-                    });
-        this.comments = Array.isArray(response.data) ? response.data : [];
-      } catch (error) {
-        console.error('Error fetching comments:', error);
+    async postComment(photo) {
+      if (this.isValidComment(this.commentText)) {
+        // call api function
+        this.commentPhoto(photo, this.commentText);
+        // clear input field
+        this.commentText = '';
+      } else {
+        alert('Oops! The comment has to be between 1 and 400 characters long.');
       }
     },
-    async deleteComment(commentId) {
-      try {
-        await instance.delete(`/comments/${commentId}`,{headers: {
-                        Authorization: localStorage.getItem("token")}
-                    });
-        this.comments = this.comments.filter(comment => comment.commentId !== commentId);
-      } catch (error) {
-        console.error('Error deleting comment:', error);
-      }
+    async isValidComment(comment) {
+      return comment.length > 0 && comment.length <= 400;
     },
-    async postComment() {
+    async commentPhoto(photo, commentcontent) {
       try {
-        if (this.newComment.trim() === '') {
-          alert('Please enter a comment.');
-          return;
-        }
-        const payload = {
-          content: this.newComment,
-          // Include other necessary fields if required
-        };
-        await instance.post(`photos/${this.photoId}/comments/`,payload,{headers: {
-                        Authorization: localStorage.getItem("token")}
-                    });
-        this.newComment = ''; // Reset the text area
-        this.fetchComments(); // Refresh comments list
+        await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/`, { commentcontent },  {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        alert('You commented the photo!');
+        location.reload();
       } catch (error) {
-        console.error('Error posting comment:', error);
+          console.error('Error commenting the photo:', error);
       }
     }
   }
-};
+}
 </script>
-  
-  <style>
 
-  .add-comment textarea {
-  width: 100%; /* Adjust as needed */
-  height: 100px; /* Adjust as needed */
+<style scoped>
+.comment-component {
+  margin-top: 10px;
 }
 
-  </style>
-  
+.comment-input {
+  display: flex;
+}
+
+.comment-input input {
+  flex: 1;
+}
+
+.comment-button {
+  margin-left: 0px;
+}
+
+.comment-list {
+  margin-top: 10px;
+  max-height: 200px; /* Set a maximum height to limit the container size */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.comment-item {
+  margin-bottom: 5px;
+}
+</style>

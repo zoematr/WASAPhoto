@@ -7,13 +7,20 @@
           <p class="username">{{ photo.Username }}</p>
           <p class="date">{{ formatDate(photo.Date) }}</p>
         </div>
+        <comment-component :comments="photo.Comments"></comment-component>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import instance from '../services/axios.js';
+import CommentComponent from './CommentComponent.vue';
+
 export default {
+  components: {
+    CommentComponent
+  },
   props: {
     photos: {
       type: Array,
@@ -22,20 +29,18 @@ export default {
   },
   computed: {
     sortedPhotos() {
-      // Sort photos by Date in reverse chronological order (so i have and instagram kind of thing)
+      // sort photos in reverse chronological order
       return this.photos.slice().sort((a, b) => new Date(b.Date) - new Date(a.Date));
     }
   },
   methods: {
     getPhotoDataURL(photoFile) {
       try {
-        // Check if photoFile is not null or undefined
         if (!photoFile) {
           console.error('Photo file is null or undefined:', photoFile);
-          return ''; // Return empty string if photoFile is not valid
+          return '';
         }
 
-        // Convert Base64 string to binary data
         const binaryData = atob(photoFile);
         const byteArray = new Uint8Array(binaryData.length);
         for (let i = 0; i < binaryData.length; i++) {
@@ -67,7 +72,7 @@ export default {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false // Use 24-hour format
+        hour12: false 
       };
       return date.toLocaleString(undefined, options);
     }
@@ -109,6 +114,9 @@ export default {
 .username,
 .date {
   margin: 0;
+}
+.comment-section {
+  margin-top: 10px;
 }
 </style>
 
