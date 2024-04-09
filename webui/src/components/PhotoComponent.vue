@@ -27,10 +27,15 @@ export default {
           return ''; // Return empty string if photoFile is not valid
         }
 
-        // Convert binary photo data to Base64
-        const binaryData = photoFile;
-        console.log(binaryData)
-        const blob = new Blob([binaryData]);
+        // Convert Base64 string to binary data
+        const binaryData = atob(photoFile);
+        const byteArray = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          byteArray[i] = binaryData.charCodeAt(i);
+        }
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+
+        // Create blob URL for the image
         const imageUrl = URL.createObjectURL(blob);
 
         // Check if imageUrl is not null or empty
