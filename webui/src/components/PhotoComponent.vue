@@ -1,6 +1,6 @@
 <template>
   <div class="photo-container">
-    <div v-for="photo in photos" :key="photo.PhotoId" class="photo-item">
+    <div v-for="photo in sortedPhotos" :key="photo.PhotoId" class="photo-item">
       <img :src="getPhotoDataURL(photo.PhotoFile)" alt="Photo" class="photo">
       <div class="photo-info">
         <p>{{ photo.Username }}</p>
@@ -16,6 +16,12 @@ export default {
     photos: {
       type: Array,
       required: true
+    }
+  },
+  computed: {
+    sortedPhotos() {
+      // Sort photos by Date in reverse chronological order (so i have and instagram kind of thing)
+      return this.photos.slice().sort((a, b) => new Date(b.Date) - new Date(a.Date));
     }
   },
   methods: {
@@ -69,22 +75,26 @@ export default {
 
 <style scoped>
 .photo-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust the minmax width to your preference */
+  gap: 10px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 500px; /* Set a maximum height to limit the container size */
 }
 
 .photo-item {
-  margin: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .photo {
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: auto;
   object-fit: cover;
 }
 
 .photo-info {
-  background-color: rgba(50, 48, 50, 0.5);
+  background-color: rgba(54, 51, 53, 0.5);
   color: white;
   padding: 5px;
 }
