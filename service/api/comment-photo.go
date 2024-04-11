@@ -8,8 +8,7 @@ import (
 )
 
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-
-	w.Header().Set("Content-Type", "application/json")
+	ctx.Logger.Infof("Comment-photo is being called in the backend")
 	authToken := r.Header.Get("Authorization")
 	pathRequestUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
@@ -20,9 +19,11 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(valid)
 		return
 	}
+	ctx.Logger.Infof("this is the db token", tokenDbPath)
+	ctx.Logger.Infof("this is the auth token")
 	targetUsername, err := rt.db.GetUsernameFromPhotoId(targetPhotoId)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("like photo: error executing db function call")
+		ctx.Logger.WithError(err).Error("comment photo: error executing db function call")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -79,6 +80,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	// return 201 and comment
 	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(comment)
 
 }

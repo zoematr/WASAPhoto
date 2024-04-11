@@ -147,6 +147,7 @@ export default {
           }
         });
         localStorage.setItem("username", newUsername.value)
+        alert('You successfully changed your username!');
         window.location.reload();
       } catch (error) {
         if (error.response && error.response.data && error.response.data.message) {

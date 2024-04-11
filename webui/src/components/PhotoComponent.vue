@@ -7,7 +7,12 @@
           <p class="username">{{ photo.Username }}</p>
           <p class="date">{{ formatDate(photo.Date) }}</p>
         </div>
-        <comment-component :comments="photo.Comments"></comment-component>
+        <div class="comment-input">
+          <input v-model="commentText" type="text" placeholder="Enter your comment">
+          <button class="comment-button" @click="commentPhoto(photo)">Comment</button>
+
+        </div>
+        <comment-component :comments="photo.Comments" ref="commentComponent"></comment-component>
       </div>
     </div>
   </div>
@@ -26,6 +31,11 @@ export default {
       type: Array,
       required: true
     }
+  },
+  data() {
+    return {
+      commentText: ''
+    };
   },
   computed: {
     sortedPhotos() {
@@ -75,6 +85,32 @@ export default {
         hour12: false 
       };
       return date.toLocaleString(undefined, options);
+    },
+    async isValidComment(commenttext) {
+      return commenttext.length > 0 && commenttext.length <= 400;
+    },
+    async commentPhoto(photo) {
+      if (this.isValidComment(this.commentText)) {
+        console.log(this.commentText)
+        console.log(photo.Username)
+        console.log(photo.PhotoId)
+        console.log("this is the token", localStorage.getItem('token'))
+        try {
+          await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/`, { commentcontent: this.commentText },  {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          alert('You commented the photo!');
+          location.reload();
+          this.commentText = '';
+        } catch (error) {
+          console.error('Error commenting the photo:', error);
+        }
+      } else {
+        alert('Oops! The comment has to be between 1 and 400 characters long.');
+      }
     }
   }
 }
