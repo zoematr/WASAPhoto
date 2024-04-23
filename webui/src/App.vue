@@ -22,7 +22,7 @@
               </div>
               <form @submit.prevent="login">
                 <div class="form-group">
-                  <input type="text" v-model="inputUsername" class="form-control" id="inputUsername" placeholder="Enter yout username" required>
+                  <input type="text" v-model="inputUsername" class="form-control" id="inputUsername" placeholder="Enter your username" required>
                 </div>
                 <button type="submit">Login</button>
               </form>
