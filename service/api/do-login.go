@@ -13,7 +13,7 @@ import (
 // func that handles user login
 func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// type of content will be json
-	w.Header().Set("Content-Type", "application/json")
+	ctx.Logger.Infof("handleLogin was called in the backend")
 
 	// init var User and decode body of request
 	var username string
@@ -21,6 +21,7 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// if error during decoding, like not parseable JSON or invalid username, respond with 400 bad request
 	if err != nil {
+		ctx.Logger.WithError(err).Error("login: error decoding body")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	} else if !validUsername(username) {

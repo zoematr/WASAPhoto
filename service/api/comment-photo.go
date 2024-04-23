@@ -10,24 +10,14 @@ import (
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	ctx.Logger.Infof("Comment-photo is being called in the backend")
 	authToken := r.Header.Get("Authorization")
-	pathRequestUsername := ps.ByName("username")
+	targetUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
-	tokenDbPath, err := rt.db.GetTokenFromUsername(pathRequestUsername)
+	requestUsername, err := rt.db.GetUsernameFromToken(extractToken(authToken))
 	// Verifica l'identità dell'utente che effettua la richiesta
-	valid := validateRequestingUser(tokenDbPath, authToken)
-	if valid != 0 {
-		w.WriteHeader(valid)
-		return
-	}
-	ctx.Logger.Infof("this is the db token", tokenDbPath)
-	ctx.Logger.Infof("this is the auth token")
-	targetUsername, err := rt.db.GetUsernameFromPhotoId(targetPhotoId)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("comment photo: error executing db function call")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	banned, err := rt.db.CheckBanned(targetUsername, pathRequestUsername)
+	ctx.Logger.Infof("this is authToken", authToken)
+	ctx.Logger.Infof("this is the comment requestingUser %s", requestUsername)
+
+	banned, err := rt.db.CheckBanned(targetUsername, requestUsername)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("like photo: error executing db function call")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -67,7 +57,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	comment := Comment{
-		Username:       pathRequestUsername,
+		Username:       requestUsername,
 		PhotoId:        targetPhotoId,
 		CommentContent: commentContent,
 	}

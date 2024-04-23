@@ -14,15 +14,18 @@
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
           <div class="position-sticky pt-3 sidebar-sticky">
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-              <span>General</span>
             </h6>
             <ul class="nav flex-column">
-              <li class="nav-item">
-                <RouterLink to="/" class="nav-link">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#home"/></svg>
-                  Home
-                </RouterLink>
-              </li>
+              <div class="banner">
+                <p v-if="storedUsername">Welcome, {{ usernameComputed }}</p>
+                <p v-else>Welcome, Guest</p>
+              </div>
+              <form @submit.prevent="login">
+                <div class="form-group">
+                  <input type="text" v-model="inputUsername" class="form-control" id="inputUsername" placeholder="Enter yout username" required>
+                </div>
+                <button type="submit">Login</button>
+              </form>
               <li class="nav-item">
                 <RouterLink to="/stream" class="nav-link">
                   <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
@@ -36,7 +39,6 @@
                 </RouterLink>
               </li>
             </ul>
-
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
               <span>Actions menu</span>
             </h6>
@@ -56,7 +58,6 @@
               <h1 class="small">Change Username</h1>
               <form @submit.prevent="changeUsername">
                 <div class="form-group">
-                  <label for="newUsername">New Username</label>
                   <input type="text" v-model="newUsername" class="form-control" id="newUsername" placeholder="Enter new username" required>
                 </div>
                 <button type="submit">Change Username</button>
@@ -64,7 +65,6 @@
             </ul>
           </div>
         </nav>
-
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <RouterView />
         </main>
@@ -79,16 +79,19 @@ import { RouterLink, RouterView } from 'vue-router';
 import instance from './services/axios.js';
 
 export default {
+  data() {
+    return {
+      storedUsername: localStorage.getItem("username") || '' 
+    }
+  },
   setup() {
     // Computed property to get the username from local storage
     const usernameComputed = computed(() => {
-    const username = localStorage.getItem("username") || "";
-    console.log("Username:", username);
-    return username;
+      const username = localStorage.getItem("username") || "";
+      console.log("Username:", username);
+      return username;
     });
-    // Ref for file input
     const fileInput = ref(null);
-    // ref 
     const newUsername = ref('');
 
     // Method to trigger file input
@@ -158,6 +161,45 @@ export default {
       }
     }
 
+    async function login() {
+      try {
+        console.log("this is the inputUsername");
+        console.log(inputUsername.value);
+        const username = `"${inputUsername.value}"`;
+
+        const response = await instance.post('/session', username, {
+          headers: {
+            'Content-Type': 'text/plain'
+          }
+        });
+
+        if (response.status === 200 || response.status === 201) {
+          // Store token in local storage
+          const token = response.data;
+          console.log(token)
+          localStorage.setItem("token",token);
+          console.log("login: this is the token", token)
+          // Store username in local storage
+          localStorage.setItem("username", inputUsername.value);
+          console.log("this is usernameComputed.value")
+          console.log(usernameComputed.value)
+          // Set token in axios defaults for future requests
+          instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          // Redirect to home after successful login
+          // router.push('/stream');
+          // router.push('/');
+          // Reload the page to ensure the token is properly set
+          location.reload();
+        } else {
+          // Handle other status codes if needed
+          console.error("Login failed:", response.statusText);
+        }
+      } catch (error) {
+        // Handle error responses
+        console.error("Login failed:", error);
+      }
+    }
+
     async function logmeout() {
       localStorage.setItem("username","");
       localStorage.setItem("token","");
@@ -174,6 +216,7 @@ export default {
       changeUsername,
       logmeout,
       uploadPhoto,
+      login,
     };
   },
 };
@@ -182,7 +225,7 @@ export default {
 
 <style>
   .small {
-    font-size: 1.2rem;
+    font-size: 1.0rem;
   }
 
   button {

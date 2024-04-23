@@ -34,7 +34,8 @@ export default {
   },
   data() {
     return {
-      commentText: ''
+      commentText: '',
+      storedUsername: localStorage.getItem("username") 
     };
   },
   computed: {
@@ -99,7 +100,7 @@ export default {
           await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/`, { commentcontent: this.commentText },  {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
             }
           });
           alert('You commented the photo!');
