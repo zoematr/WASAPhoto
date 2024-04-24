@@ -97,56 +97,56 @@ func New(db *sql.DB) (AppDatabase, error) {
 		sqlStmt := `
 
 		CREATE TABLE IF NOT EXISTS example_table (
-			id INTEGER NOT NULL, 
+			id INTEGER NOT NULL,
 			name TEXT,
 			UNIQUE(id)
-			);
+		);
 		
 		CREATE TABLE IF NOT EXISTS users (
 			token INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 			username TEXT UNIQUE NOT NULL
-			);
-
+		);
+		
 		CREATE TABLE IF NOT EXISTS photos (
-			photoid TEXT NOT NULL PRIMARY KEY,
+			photoid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 			username TEXT NOT NULL,
 			photofile VARBINARY(100000) NOT NULL,
 			datetime TEXT NOT NULL DEFAULT '0000-01-01T00:00:00Z',
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
-			);
+		);
 		
 		CREATE TABLE IF NOT EXISTS likes (
-			photoid TEXT NOT NULL, 
+			photoid INTEGER NOT NULL,
 			username TEXT NOT NULL,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
 			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE,
 			PRIMARY KEY (photoid, username)
-			);
+		);
 		
 		CREATE TABLE IF NOT EXISTS comments (
-			commentid TEXT NOT NULL PRIMARY KEY,
-			photoid TEXT NOT NULL, 
+			commentid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+			photoid INTEGER NOT NULL,
 			username TEXT NOT NULL,
 			content TEXT NOT NULL,
 			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
-			);
+		);
 		
 		CREATE TABLE IF NOT EXISTS banned (
-			username TEXT NOT NULL, 
+			username TEXT NOT NULL,
 			bannedusername TEXT NOT NULL,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
 			FOREIGN KEY(bannedusername) REFERENCES users(username) ON DELETE CASCADE,
 			PRIMARY KEY (username, bannedusername)
-			);
-
+		);
+		
 		CREATE TABLE IF NOT EXISTS followers (
-			username TEXT NOT NULL, 
+			username TEXT NOT NULL,
 			followerusername TEXT NOT NULL,
 			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
 			FOREIGN KEY(followerusername) REFERENCES users(username) ON DELETE CASCADE,
 			PRIMARY KEY (username, followerusername)
-			);
+		);
 		
 		`
 

@@ -41,16 +41,19 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	var c Content
 	var commentContent string
-	err = json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&commentContent)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		ctx.Logger.WithError(err).Error("comment photo: failed to decode request body json")
 		return
 	}
-	commentContent = c.CommentContent
 	// Controllo la lunghezza del comment(<=400)
+	if len(commentContent) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		ctx.Logger.WithError(err).Error("comment is too short")
+		return
+	}
 	if len(commentContent) > 400 {
 		w.WriteHeader(http.StatusBadRequest)
 		ctx.Logger.WithError(err).Error("comment is too long")
@@ -62,7 +65,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		PhotoId:        targetPhotoId,
 		CommentContent: commentContent,
 	}
-
+	ctx.Logger.Infof("this is the content of the comment", commentContent)
 	err = rt.db.AddComment(comment.ToDatabase())
 	if err != nil {
 		ctx.Logger.WithError(err).Error("comment photo: error adding comment to db")

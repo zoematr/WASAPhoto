@@ -9,8 +9,7 @@
         </div>
         <div class="comment-input">
           <input v-model="commentText" type="text" placeholder="Enter your comment">
-          <button class="comment-button" @click="commentPhoto(photo)">Comment</button>
-
+          <button class="comment-button" @click="commentPhoto(photo, commentText)">Comment</button>
         </div>
         <comment-component :comments="photo.Comments" ref="commentComponent"></comment-component>
       </div>
@@ -87,24 +86,28 @@ export default {
       };
       return date.toLocaleString(undefined, options);
     },
+
     async isValidComment(commenttext) {
-      return commenttext.length > 0 && commenttext.length <= 400;
+      return commenttext.length > 1 && commenttext.length <= 400;
     },
-    async commentPhoto(photo) {
-      if (this.isValidComment(this.commentText)) {
+
+    async commentPhoto(photo, commentText) {
+      if (this.isValidComment(commentText)) {
         console.log(this.commentText)
         console.log(photo.Username)
         console.log(photo.PhotoId)
         console.log("this is the token", localStorage.getItem('token'))
         try {
-          await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/`, { commentcontent: this.commentText },  {
+          const response = await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/`, commentText ,  {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('token')}`,
             }
           });
+          // const newComment = response.data;
+          // photo.Comments.push(newComment);
           alert('You commented the photo!');
-          location.reload();
+          // location.reload();
           this.commentText = '';
         } catch (error) {
           console.error('Error commenting the photo:', error);

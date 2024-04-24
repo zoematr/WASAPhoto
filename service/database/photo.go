@@ -1,26 +1,9 @@
 package database
 
-import (
-	"database/sql"
-)
-
 func (db *appdbimpl) AddPhoto(p Photo) error {
-	// function to add the photo with the correct photo id
-	var lastPhotoID int
-
-	// Query the last inserted photo ID
-	err := db.c.QueryRow("SELECT COALESCE(MAX(photoid), 0) FROM photos").Scan(&lastPhotoID)
-	if err != nil && err != sql.ErrNoRows {
-		// Error occurred while querying
-		return err
-	}
-
-	// Increment the last photo ID to get the new photo ID
-	newPhotoID := lastPhotoID + 1
-
 	// add db
-	_, err = db.c.Exec("INSERT INTO photos (photoid, username, datetime, photofile) VALUES (?, ?, ?, ?)",
-		newPhotoID, p.Username, p.Date, p.PhotoFile)
+	_, err := db.c.Exec("INSERT INTO photos (username, datetime, photofile) VALUES (?, ?, ?)",
+		p.Username, p.Date, p.PhotoFile)
 
 	if err != nil {
 		// Error executing query
@@ -119,28 +102,9 @@ func (db *appdbimpl) DeletePhoto(photoId string) error {
 }
 
 func (db *appdbimpl) AddComment(c Comment) error {
-	// function to comment a photo
-	// data is passed in the struct from the backend
-	var lastCommentID sql.NullInt64
-
-	// Query the last inserted photo ID
-	err := db.c.QueryRow("SELECT MAX(commentid) FROM comments").Scan(&lastCommentID)
-	if err != nil && err != sql.ErrNoRows {
-		// Error occurred while querying
-		return err
-	}
-
-	// Increment the last photo ID to get the new photo ID
-	var newCommentID int
-	if lastCommentID.Valid {
-		newCommentID = int(lastCommentID.Int64) + 1
-	} else {
-		newCommentID = 1
-	}
-
 	// Utilize a SQL INSERT query to insert the comment into the database
-	_, err = db.c.Exec("INSERT INTO comments (commentid, username, photoid, content) VALUES (?, ?, ?, ?)",
-		newCommentID, c.Username, c.PhotoId, c.CommentContent)
+	_, err := db.c.Exec("INSERT INTO comments (username, photoid, content) VALUES (?, ?, ?)",
+		c.Username, c.PhotoId, c.CommentContent)
 
 	if err != nil {
 		// Error executing query
@@ -316,7 +280,7 @@ func (db *appdbimpl) GetComments(photo CompletePhoto) error {
 }
 
 // function that gets all the photos of a user
-func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePhoto, error) { // TO DO check if the photos are liked by a user
+func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePhoto, error) {
 
 	var photos []CompletePhoto
 	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
