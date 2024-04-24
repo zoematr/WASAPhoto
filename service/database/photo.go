@@ -121,7 +121,7 @@ func (db *appdbimpl) DeletePhoto(photoId string) error {
 func (db *appdbimpl) AddComment(c Comment) error {
 	// function to comment a photo
 	// data is passed in the struct from the backend
-	var lastCommentID int
+	var lastCommentID sql.NullInt64
 
 	// Query the last inserted photo ID
 	err := db.c.QueryRow("SELECT MAX(commentid) FROM comments").Scan(&lastCommentID)
@@ -131,10 +131,15 @@ func (db *appdbimpl) AddComment(c Comment) error {
 	}
 
 	// Increment the last photo ID to get the new photo ID
-	newCommentID := lastCommentID + 1
+	var newCommentID int
+	if lastCommentID.Valid {
+		newCommentID = int(lastCommentID.Int64) + 1
+	} else {
+		newCommentID = 1
+	}
 
-	// Utilize a SQL INSERT query to insert the photo into the database
-	_, err = db.c.Exec("INSERT INTO photos (photoid, username, date, content, commentid) VALUES (?, ?, ?)",
+	// Utilize a SQL INSERT query to insert the comment into the database
+	_, err = db.c.Exec("INSERT INTO comments (commentid, username, photoid, content) VALUES (?, ?, ?, ?)",
 		newCommentID, c.Username, c.PhotoId, c.CommentContent)
 
 	if err != nil {

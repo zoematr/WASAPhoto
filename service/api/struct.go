@@ -16,6 +16,10 @@ type UsernameReqBody struct {
 	Username string `json:"username"`
 }
 
+type Content struct {
+	CommentContent string `json:"content"`
+}
+
 type User struct {
 	Username  string   `json: username`
 	Followers []string `json: following`

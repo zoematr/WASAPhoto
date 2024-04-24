@@ -41,14 +41,15 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	var c Content
 	var commentContent string
-	err = json.NewDecoder(r.Body).Decode(&commentContent)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		ctx.Logger.WithError(err).Error("comment photo: failed to decode request body json")
 		return
 	}
-
+	commentContent = c.CommentContent
 	// Controllo la lunghezza del comment(<=400)
 	if len(commentContent) > 400 {
 		w.WriteHeader(http.StatusBadRequest)

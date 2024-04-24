@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginComponent from '../components/LoginComponent.vue'
+// import LoginComponent from '../components/LoginComponent.vue'
 import StreamView from '../views/StreamView.vue'
 import ProfileView from '../views/ProfileView.vue'
-import ChangeUsername from '../components/ChangeUsernameComponent.vue';
+// import ChangeUsername from '../components/ChangeUsernameComponent.vue';
 
 const routes = [
   //{path: '/', name: 'Login', component: LoginComponent},
