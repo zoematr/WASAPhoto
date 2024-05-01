@@ -13,7 +13,6 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	targetUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
 	requestUsername, err := rt.db.GetUsernameFromToken(extractToken(authToken))
-	// Verifica l'identità dell'utente che effettua la richiesta
 	ctx.Logger.Infof("this is authToken", authToken)
 	ctx.Logger.Infof("this is the comment requestingUser %s", requestUsername)
 

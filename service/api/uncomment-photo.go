@@ -12,17 +12,10 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	// get data from header and path
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
-	pathUsername := ps.ByName("username")
+	requestingUser, err := rt.db.GetUsernameFromToken(extractToken(authToken))
 	targetPhotoId := ps.ByName("photoid")
 	targetCommentId := ps.ByName("commenid")
-	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
-	// verify identity of the user
-	valid := validateRequestingUser(tokenDbPath, authToken)
-	if valid != 0 {
-		ctx.Logger.WithError(err).Error("uncomment-photo: user is not allowed to perform actions if not logged as the author of the action")
-		w.WriteHeader(valid)
-		return
-	}
+
 	// check if the photo exists
 	exists, err := rt.db.PhotoExists(targetPhotoId)
 	if err != nil {
@@ -50,13 +43,13 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// check if the comment belongs to the user requesting the action
-	usernameTarget, err := rt.db.GetUsernameFromCommentId(targetCommentId)
+	authorComment, err := rt.db.GetUsernameFromCommentId(targetCommentId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("uncomment-photo: error checking author of the comment")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if usernameTarget != pathUsername {
+	if authorComment != requestingUser {
 		ctx.Logger.WithError(err).Error("uncomment-photo: you cannot remove someone else's comment!")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
