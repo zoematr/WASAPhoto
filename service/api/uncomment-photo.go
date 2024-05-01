@@ -14,7 +14,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	authToken := r.Header.Get("Authorization")
 	requestingUser, err := rt.db.GetUsernameFromToken(extractToken(authToken))
 	targetPhotoId := ps.ByName("photoid")
-	targetCommentId := ps.ByName("commenid")
+	targetCommentId := ps.ByName("commentid")
 
 	// check if the photo exists
 	exists, err := rt.db.PhotoExists(targetPhotoId)
@@ -30,6 +30,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// check if the comment exists
+	ctx.Logger.Infof(targetCommentId)
 	exists, err = rt.db.CommentExists(targetCommentId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("uncomment-photo: error checking if the comments exists")

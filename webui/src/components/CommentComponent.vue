@@ -29,7 +29,8 @@ export default {
       return localStorage.getItem("username");
     },
     deleteComment(comment) {
-      this.$emit("delete-comment", comment);
+      console.log(comment.CommentId)
+      this.$emit("delete-comment", comment.CommentId);
     },
   },
 };

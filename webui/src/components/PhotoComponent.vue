@@ -16,7 +16,7 @@
               <button class="comment-button" @click="commentPhoto(photo, commentText)">Comment</button>
             </div>
           </div>
-          <comment-component :comments="photo.Comments" ref="commentComponent" @delete-comment="handleDeleteComment(photo, comment)"></comment-component>
+          <comment-component :comments="photo.Comments" ref="commentComponent" @delete-comment="CommentDelete($event, photo)"></comment-component>
         </div>
       </div>
     </div>
@@ -123,9 +123,12 @@ export default {
         alert('Oops! The comment has to be between 1 and 400 characters long.');
       }
     },
-    async handleDeleteComment(photo, comment){
+    CommentDelete(commentid, photo) {
+      this.handleDeleteComment(commentid, photo);
+    },
+    async handleDeleteComment(commentid, photo){
       try {
-        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/${comment.CommentId}`,  {
+        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/${commentid}`,  {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
