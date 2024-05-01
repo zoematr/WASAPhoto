@@ -1,21 +1,28 @@
 <template>
   <div class="photo-container">
     <div v-for="photo in sortedPhotos" :key="photo.PhotoId" class="photo-item">
-      <img :src="getPhotoDataURL(photo.PhotoFile)" alt="Photo" class="photo">
-      <div class="photo-info">
-        <div class="info-line">
-          <p class="username">{{ photo.Username }}</p>
-          <p class="date">{{ formatDate(photo.Date) }}</p>
+      <div class="photo-wrapper">
+        <div class="photo-img">
+          <img :src="getPhotoDataURL(photo.PhotoFile)" alt="Photo" class="photo">
         </div>
-        <div class="comment-input">
-          <input v-model="commentText" type="text" placeholder="Enter your comment">
-          <button class="comment-button" @click="commentPhoto(photo, commentText)">Comment</button>
+        <div class="photo-info-wrapper">
+          <div class="photo-info">
+            <div class="info-line">
+              <p class="username">{{ photo.Username }}</p>
+              <p class="date">{{ formatDate(photo.Date) }}</p>
+            </div>
+            <div class="comment-input">
+              <input v-model="commentText" type="text" placeholder="Enter your comment">
+              <button class="comment-button" @click="commentPhoto(photo, commentText)">Comment</button>
+            </div>
+          </div>
+          <comment-component :comments="photo.Comments" ref="commentComponent"></comment-component>
         </div>
-        <comment-component :comments="photo.Comments" ref="commentComponent"></comment-component>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import instance from '../services/axios.js';
@@ -123,13 +130,28 @@ export default {
 <style scoped>
 .photo-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust the minmax width to your preference */
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Adjust the minmax width to your preference */
   gap: 10px;
   overflow-y: auto; /* Enable vertical scrolling */
   max-height: 500px; /* Set a maximum height to limit the container size */
 }
 
 .photo-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-wrapper {
+  display: flex;
+}
+
+.photo-img {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.photo-info-wrapper {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -155,8 +177,8 @@ export default {
 .date {
   margin: 0;
 }
-.comment-section {
+
+.comment-input {
   margin-top: 10px;
 }
 </style>
-

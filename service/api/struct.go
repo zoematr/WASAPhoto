@@ -67,7 +67,7 @@ type Like struct {
 type Comment struct {
 	PhotoId        string `json: photoid`
 	Username       string `json: username`
-	CommentId      string `json: commentid`
+	CommentId      int64  `json: commentid`
 	CommentContent string `json: commentcontent`
 }
 

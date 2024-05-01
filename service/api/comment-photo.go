@@ -66,12 +66,14 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		CommentContent: commentContent,
 	}
 	ctx.Logger.Infof("this is the content of the comment", commentContent)
-	err = rt.db.AddComment(comment.ToDatabase())
+	commentid, err := rt.db.AddComment(comment.ToDatabase())
 	if err != nil {
 		ctx.Logger.WithError(err).Error("comment photo: error adding comment to db")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	comment.CommentId = commentid
+	ctx.Logger.Infof("this is the commentid", comment.CommentId)
 	// return 201 and comment
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")

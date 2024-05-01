@@ -29,11 +29,13 @@ func (db *appdbimpl) GetPhotoFromPhotoId(photoid string) (CompletePhoto, error) 
 		// Error during the execution of the query
 		return photo, err
 	}
-	err = db.GetComments(photo)
+	var comments []Comment
+	comments, err = db.GetComments(photo)
 	if err != nil {
 		// Error during the execution of the query
 		return photo, err
 	}
+	photo.Comments = comments
 	return photo, nil
 }
 
@@ -101,17 +103,21 @@ func (db *appdbimpl) DeletePhoto(photoId string) error {
 	return err
 }
 
-func (db *appdbimpl) AddComment(c Comment) error {
-	// Utilize a SQL INSERT query to insert the comment into the database
-	_, err := db.c.Exec("INSERT INTO comments (username, photoid, content) VALUES (?, ?, ?)",
+func (db *appdbimpl) AddComment(c Comment) (int64, error) {
+	result, err := db.c.Exec("INSERT INTO comments (username, photoid, content) VALUES (?, ?, ?)",
 		c.Username, c.PhotoId, c.CommentContent)
 
 	if err != nil {
-		// Error executing query
-		return err
+		return 0, err
 	}
 
-	return nil
+	// get last inserted id
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 func (db *appdbimpl) DeleteComment(commentid string) error {
@@ -204,10 +210,12 @@ func (db *appdbimpl) GetStream(username string) ([]CompletePhoto, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = db.GetComments(photo)
+		var comments []Comment
+		comments, err = db.GetComments(photo)
 		if err != nil {
 			return nil, err
 		}
+		photo.Comments = comments
 		isliked, err := db.DoesUserLikePhoto(photo.PhotoId, username)
 		if err != nil {
 			return nil, err
@@ -252,11 +260,11 @@ func (db *appdbimpl) GetLikes(photo CompletePhoto) error {
 	return nil
 }
 
-func (db *appdbimpl) GetComments(photo CompletePhoto) error {
+func (db *appdbimpl) GetComments(photo CompletePhoto) ([]Comment, error) {
 	rows, err := db.c.Query(`SELECT * FROM comments WHERE photoid = ?`,
 		photo.PhotoId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// Wait for the func to finish before closing rows
 	defer func() { _ = rows.Close() }()
@@ -267,16 +275,15 @@ func (db *appdbimpl) GetComments(photo CompletePhoto) error {
 		var c Comment
 		err = rows.Scan(&c.CommentId, &c.PhotoId, &c.Username, &c.CommentContent)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		comments = append(comments, c)
 	}
 
 	if rows.Err() != nil {
-		return err
+		return nil, err
 	}
-	photo.Comments = comments
-	return nil
+	return comments, nil
 }
 
 // function that gets all the photos of a user
@@ -291,17 +298,20 @@ func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePh
 
 	for rows.Next() {
 		var photo CompletePhoto
-		if err := rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date); err != nil {
+		err := rows.Scan(&photo.PhotoId, &photo.Username, &photo.PhotoFile, &photo.Date)
+		if err != nil {
 			return nil, err
 		}
 		err = db.GetLikes(photo)
 		if err != nil {
 			return nil, err
 		}
-		err = db.GetComments(photo)
+		var comments []Comment
+		comments, err = db.GetComments(photo)
 		if err != nil {
 			return nil, err
 		}
+		photo.Comments = comments
 		isliked, err := db.DoesUserLikePhoto(photo.PhotoId, requesting)
 		if err != nil {
 			return nil, err

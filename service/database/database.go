@@ -63,7 +63,7 @@ type AppDatabase interface {
 	DeletePhoto(string) error
 	AddLike(string, string) error
 	GetUsernameFromPhotoId(string) (string, error)
-	AddComment(Comment) error
+	AddComment(Comment) (int64, error)
 	DeleteLike(string, string) error
 	PhotoExists(string) (bool, error)
 	DoesUserLikePhoto(string, string) (bool, error)
@@ -72,7 +72,7 @@ type AppDatabase interface {
 	CommentExists(string) (bool, error)
 	GetPhotoFromPhotoId(string) (CompletePhoto, error)
 	GetLikes(CompletePhoto) error
-	GetComments(CompletePhoto) error
+	GetComments(CompletePhoto) ([]Comment, error)
 
 	// Ping checks availability of the database, if not it returns an error.
 	Ping() error
