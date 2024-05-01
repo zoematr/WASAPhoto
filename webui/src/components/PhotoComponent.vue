@@ -17,6 +17,16 @@
             </div>
           </div>
           <comment-component :comments="photo.Comments" ref="commentComponent" @delete-comment="CommentDelete($event, photo)"></comment-component>
+          <div class="button-row">
+            <button v-if="!photo.AlreadyLiked" @click="toggleLike(photo)">
+              {{ photo.AlreadyLiked ? 'Unlike' : 'Like' }}
+            </button>
+            <button
+              v-if="photo.Username === getLocalStorageUsername()"
+              @click="DeletePhoto(photo)"
+              class="delete-button"
+            >Delete Photo</button>
+          </div>
         </div>
       </div>
     </div>
@@ -80,6 +90,23 @@ export default {
         return ''; // Return empty string if an error occurs
       }
     },
+    getLocalStorageUsername() {
+      return localStorage.getItem("username");
+    },
+    async DeletePhoto(photo){
+      try {
+        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}`,  {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          }
+        });
+        alert('You deleted your photo!');
+        // location.reload();
+      } catch (error) {
+        console.error('Error deleting the photo', error);
+      }
+    },
     formatDate(dateString) {
       const date = new Date(dateString);
       const options = {
@@ -138,6 +165,45 @@ export default {
         // location.reload();
       } catch (error) {
         console.error('Error deleting the comment', error);
+      }
+    },
+    async toggleLike(photo) {
+      try {
+        if (photo.AlreadyLiked) {
+          await this.unlikePhoto();
+        } else {
+          await this.likePhoto();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async likePhoto(photo){
+      try {
+        const response = await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/`,  {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          }
+        });
+        alert('You liked the photo!');
+        // location.reload();
+      } catch (error) {
+        console.error('Error liking the photo', error);
+      }
+    },
+    async unlikePhoto(photo){
+      try {
+        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/${localStorage.getItem('username')}`,  {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          }
+        });
+        alert('You unliked the photo!');
+        // location.reload();
+      } catch (error) {
+        console.error('Error unliking the photo', error);
       }
     }
   }
@@ -198,4 +264,13 @@ export default {
 .comment-input {
   margin-top: 10px;
 }
+
+.delete-button {
+  background-color: #cd1414;
+  color: white;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  font-size: 16px;
+  cursor: pointer;
+  }
 </style>
