@@ -1,4 +1,7 @@
 package database
+import (
+	"fmt"
+)
 
 func (db *appdbimpl) AddPhoto(p Photo) error {
 	// add db
@@ -24,11 +27,13 @@ func (db *appdbimpl) GetPhotoFromPhotoId(photoid string) (CompletePhoto, error) 
 		// Error during the execution of the query
 		return photo, err
 	}
-	err = db.GetLikes(photo)
+	var likes []Like
+	likes, err = db.GetLikes(photo)
 	if err != nil {
 		// Error during the execution of the query
 		return photo, err
 	}
+	photo.Likes = likes
 	var comments []Comment
 	comments, err = db.GetComments(photo)
 	if err != nil {
@@ -41,8 +46,8 @@ func (db *appdbimpl) GetPhotoFromPhotoId(photoid string) (CompletePhoto, error) 
 
 func (db *appdbimpl) AddLike(photoId string, likerUsername string) error {
 	// function to add like
-	_, err := db.c.Exec("INSERT INTO photos (username, photoid) VALUES (?, ?, ?)",
-		photoId, likerUsername)
+	_, err := db.c.Exec("INSERT INTO likes (username, photoid) VALUES (?, ?)",
+		likerUsername, photoId)
 
 	if err != nil {
 		// Error executing query
@@ -54,7 +59,7 @@ func (db *appdbimpl) AddLike(photoId string, likerUsername string) error {
 
 func (db *appdbimpl) DeleteLike(photoId string, likerUsername string) error {
 	// function to unlike
-	_, err := db.c.Exec("DELETE FROM photos WHERE photoid = ? AND username = ?",
+	_, err := db.c.Exec("DELETE FROM likes WHERE photoid = ? AND username = ?",
 		photoId, likerUsername)
 
 	if err != nil {
@@ -171,16 +176,18 @@ func (db *appdbimpl) CommentExists(commentid string) (bool, error) {
 
 func (db *appdbimpl) DoesUserLikePhoto(photoid string, likerusername string) (bool, error) {
 	// checks if a user has liked a photo
+	fmt.Println("doesuserlikephoto is called")
+	fmt.Println("photoid", photoid)
+	fmt.Println("likerusername", likerusername)
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM likes WHERE photoid = ? AND username = ?",
 		photoid, likerusername).Scan(&cnt)
-
 	if err != nil {
-		// Count always returns a row thanks to COUNT(*), so this situation should not happen
 		return false, err
 	}
+	fmt.Println("this is cnt", cnt)
 
-	// If counter 1 then the photo exists
+	// If counter 1 then the photo is liked already
 	if cnt == 1 {
 		return true, nil
 	}
@@ -206,10 +213,12 @@ func (db *appdbimpl) GetStream(username string) ([]CompletePhoto, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = db.GetLikes(photo)
+		var likes []Like
+		likes, err = db.GetLikes(photo)
 		if err != nil {
 			return nil, err
 		}
+		photo.Likes = likes
 		var comments []Comment
 		comments, err = db.GetComments(photo)
 		if err != nil {
@@ -233,11 +242,11 @@ func (db *appdbimpl) GetStream(username string) ([]CompletePhoto, error) {
 	return res, nil
 }
 
-func (db *appdbimpl) GetLikes(photo CompletePhoto) error {
+func (db *appdbimpl) GetLikes(photo CompletePhoto) ([]Like, error) {
 	rows, err := db.c.Query(`SELECT * FROM likes WHERE photoid = ?`,
 		photo.PhotoId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// Wait for the func to finish before closing rows
 	defer func() { _ = rows.Close() }()
@@ -248,16 +257,15 @@ func (db *appdbimpl) GetLikes(photo CompletePhoto) error {
 		var l Like
 		err = rows.Scan(&l.PhotoId, &l.Username)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		likes = append(likes, l)
 	}
 
 	if rows.Err() != nil {
-		return err
+		return nil, err
 	}
-	photo.Likes = likes
-	return nil
+	return likes, nil
 }
 
 func (db *appdbimpl) GetComments(photo CompletePhoto) ([]Comment, error) {
@@ -288,7 +296,6 @@ func (db *appdbimpl) GetComments(photo CompletePhoto) ([]Comment, error) {
 
 // function that gets all the photos of a user
 func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePhoto, error) {
-
 	var photos []CompletePhoto
 	rows, err := db.c.Query(`SELECT * FROM photos WHERE username = ?`, username)
 	if err != nil {
@@ -302,10 +309,12 @@ func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePh
 		if err != nil {
 			return nil, err
 		}
-		err = db.GetLikes(photo)
+		var likes []Like
+		likes, err = db.GetLikes(photo)
 		if err != nil {
 			return nil, err
 		}
+		photo.Likes = likes
 		var comments []Comment
 		comments, err = db.GetComments(photo)
 		if err != nil {
@@ -316,10 +325,9 @@ func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePh
 		if err != nil {
 			return nil, err
 		}
-		if isliked {
-			photo.AlreadyLiked = true
-		}
+		photo.AlreadyLiked = isliked
 		photos = append(photos, photo)
+		
 	}
 
 	if err := rows.Err(); err != nil {

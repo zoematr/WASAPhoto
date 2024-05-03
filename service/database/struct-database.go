@@ -43,7 +43,6 @@ type CompletePhoto struct {
 type Like struct {
 	PhotoId  string `json: photoid`
 	Username string `json: username`
-	LikeId   string `json: likeid`
 }
 
 type Comment struct {

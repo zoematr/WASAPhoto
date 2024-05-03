@@ -13,8 +13,11 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	targetUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
 	requestUsername, err := rt.db.GetUsernameFromToken(extractToken(authToken))
-	ctx.Logger.Infof("this is authToken", authToken)
-	ctx.Logger.Infof("this is the comment requestingUser %s", requestUsername)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("like photo: error authenticating the user")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
 	banned, err := rt.db.CheckBanned(targetUsername, requestUsername)
 	if err != nil {

@@ -9,26 +9,18 @@ import (
 // UNLIKE PHOTO
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	// retrieve data from header and path -> "/users/:username/photos/:photoid/likes/:likingusername"
+	// retrieve data from body and path -> "/users/:username/photos/:photoid/likes/:likingusername"
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
-	pathUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
-	targetLikingUsername := ps.ByName("likingusername")
+	likingUsername := ps.ByName("likingusername")
 
 	// verify identity of the user, aka if the user is logged in
-	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
-	valid := validateRequestingUser(tokenDbPath, authToken)
+	likingToken, err := rt.db.GetTokenFromUsername(likingUsername)
+	valid := validateRequestingUser(likingToken, authToken)
 	if valid != 0 {
 		ctx.Logger.WithError(err).Error("unlike-photo: user is not allowed to perform actions if not logged as the author of the action")
 		w.WriteHeader(valid)
-		return
-	}
-
-	// check if the user is trying to remove someome else's like
-	if targetLikingUsername != pathUsername {
-		ctx.Logger.WithError(err).Error("unlike-photo: you can't remove someone else's like")
-		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -40,7 +32,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	liked, err := rt.db.DoesUserLikePhoto(targetPhotoId, pathUsername)
+	liked, err := rt.db.DoesUserLikePhoto(targetPhotoId, likingUsername)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("unlike-photo: error executing db function call")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -53,7 +45,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// delete the like
-	err = rt.db.DeleteLike(targetPhotoId, targetLikingUsername)
+	err = rt.db.DeleteLike(targetPhotoId, likingUsername)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("unlike-photo: error executing db function call")
 		w.WriteHeader(http.StatusInternalServerError)

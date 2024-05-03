@@ -19,7 +19,10 @@
           <comment-component :comments="photo.Comments" ref="commentComponent" @delete-comment="CommentDelete($event, photo)"></comment-component>
           <div class="button-row">
             <button v-if="!photo.AlreadyLiked" @click="toggleLike(photo)">
-              {{ photo.AlreadyLiked ? 'Unlike' : 'Like' }}
+              Like
+            </button>
+            <button v-if="photo.AlreadyLiked" @click="toggleLike(photo)">
+              Unlike
             </button>
             <button
               v-if="photo.Username === getLocalStorageUsername()"
@@ -120,11 +123,9 @@ export default {
       };
       return date.toLocaleString(undefined, options);
     },
-
     async isValidComment(commenttext) {
       return commenttext.length > 1 && commenttext.length <= 400;
     },
-
     async commentPhoto(photo, commentText) {
       if (this.isValidComment(commentText)) {
         console.log(this.commentText)
@@ -170,9 +171,9 @@ export default {
     async toggleLike(photo) {
       try {
         if (photo.AlreadyLiked) {
-          await this.unlikePhoto();
+          await this.unlikePhoto(photo);
         } else {
-          await this.likePhoto();
+          await this.likePhoto(photo);
         }
       } catch (error) {
         console.error(error);
@@ -180,13 +181,16 @@ export default {
     },
     async likePhoto(photo){
       try {
-        const response = await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/`,  {
+        console.log("this is the token for like photo")
+        console.log(localStorage.getItem('token'))
+        const response = await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/`, `Bearer ${localStorage.getItem('token')}`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         alert('You liked the photo!');
+        photo.AlreadyLiked = true; // This line updates the photo.AlreadyLiked property
         // location.reload();
       } catch (error) {
         console.error('Error liking the photo', error);
@@ -194,13 +198,14 @@ export default {
     },
     async unlikePhoto(photo){
       try {
-        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/${localStorage.getItem('username')}`,  {
+        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/${localStorage.getItem('username')}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           }
         });
         alert('You unliked the photo!');
+        photo.AlreadyLiked = false; // This line updates the photo.AlreadyLiked property
         // location.reload();
       } catch (error) {
         console.error('Error unliking the photo', error);
@@ -213,10 +218,10 @@ export default {
 <style scoped>
 .photo-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Adjust the minmax width to your preference */
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 10px;
-  overflow-y: auto; /* Enable vertical scrolling */
-  max-height: 500px; /* Set a maximum height to limit the container size */
+  overflow-y: auto; /* vertical scrolling */
+  max-height: 500px; /* max height to limit the container size */
 }
 
 .photo-item {

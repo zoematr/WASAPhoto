@@ -61,7 +61,6 @@ type CompletePhoto struct {
 type Like struct {
 	PhotoId  string `json: photoid`
 	Username string `json: username`
-	LikeId   string `json: likeid`
 }
 
 type Comment struct {
@@ -138,7 +137,6 @@ func (ph Like) ToDatabase() database.Like {
 	return database.Like{
 		PhotoId:  ph.PhotoId,
 		Username: ph.Username,
-		LikeId:   ph.LikeId,
 	}
 }
 
