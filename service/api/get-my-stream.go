@@ -8,7 +8,7 @@ import (
 )
 
 func (rt *_router) getStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-
+	ctx.Logger.Infof("getStream is called")
 	// verify user identity
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
