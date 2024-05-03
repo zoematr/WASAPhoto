@@ -1,4 +1,5 @@
 package database
+
 import (
 	"fmt"
 )
@@ -327,7 +328,7 @@ func (db *appdbimpl) GetPhotos(username string, requesting string) ([]CompletePh
 		}
 		photo.AlreadyLiked = isliked
 		photos = append(photos, photo)
-		
+
 	}
 
 	if err := rows.Err(); err != nil {
