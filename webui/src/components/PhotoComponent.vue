@@ -18,6 +18,7 @@
           </div>
           <comment-component :comments="photo.Comments" ref="commentComponent" @delete-comment="CommentDelete($event, photo)"></comment-component>
           <div class="button-row">
+            <p class="likes-count">Likes: {{ photo.Likes ? photo.Likes.length : 0 }}</p>
             <button v-if="!photo.AlreadyLiked" @click="toggleLike(photo)">
               Like
             </button>

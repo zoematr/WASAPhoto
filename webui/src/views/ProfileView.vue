@@ -7,6 +7,8 @@
       </div>
       <div v-if="userProfile" class="user-info">
         <p class="username">{{ userProfile.Username }}</p>
+        <p class="follower-count">Followers: {{ userProfile.Followers ? userProfile.Followers.length : 0 }}</p>
+        <p class="following-count">Followings: {{ userProfile.Followings ? userProfile.Followings.length : 0 }}</p>
         <div v-if="!userProfile.OwnProfile" class="button-row">
           <button v-if="userProfile && !isOwnProfile" @click="toggleFollow">
             {{ userProfile.AlreadyFollowed ? 'Unfollow' : 'Follow' }}
@@ -201,6 +203,12 @@ button:hover {
 .username {
   font-size: 14px;
   margin-bottom: 10px;
+}
+
+.follower-count,
+.following-count {
+  text-align: left;
+  margin-bottom: 5px;
 }
 
 .button-row {
