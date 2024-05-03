@@ -408,7 +408,7 @@ paths:
         description: user that wants to like the photo and photo that he wants to like
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/like'}
+            schema: {$ref: '#/components/schemas/token'}
         required: true
       responses:
         '201': 
