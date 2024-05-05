@@ -26,7 +26,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// check if the photo exists
 	exists, err := rt.db.PhotoExists(targetPhotoId)
-	if exists != true {
+	if !exists {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -38,7 +38,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if liked != true {
+	if !liked {
 		ctx.Logger.WithError(err).Error("delete-photo: you cannot unlike an unliked photo")
 		w.WriteHeader(http.StatusForbidden)
 		return

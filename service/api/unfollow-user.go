@@ -15,7 +15,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if exists != true {
+	if !exists {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -46,5 +46,5 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	// UNFOLLOW
 	_ = rt.db.UnfollowUser(usernameRequestUser, usernameTargetUser)
 	// Respond with 204 http status
-	return
+	w.WriteHeader(http.StatusNoContent)
 }

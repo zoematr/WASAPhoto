@@ -16,6 +16,11 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	pathUsername := ps.ByName("username")
 	targetPhotoId := ps.ByName("photoid")
 	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("delete-photo: error retrieving token")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	// verify identity of the user
 	valid := validateRequestingUser(tokenDbPath, authToken)
 	if valid != 0 {
@@ -24,7 +29,12 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	// check if the photo exists
 	exists, err := rt.db.PhotoExists(targetPhotoId)
-	if exists != true {
+	if err != nil {
+		ctx.Logger.WithError(err).Error("delete-photo: error checking if the photo exists")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if !exists {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return

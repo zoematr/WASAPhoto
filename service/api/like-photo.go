@@ -36,7 +36,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	if banned != false {
+	if banned {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -48,7 +48,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if exists != true {
+	if !exists {
 		ctx.Logger.WithError(err).Error("like-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -59,7 +59,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if liked != false {
+	if liked {
 		ctx.Logger.WithError(err).Error("like-photo: you already liked this photo")
 		w.WriteHeader(http.StatusForbidden)
 		return

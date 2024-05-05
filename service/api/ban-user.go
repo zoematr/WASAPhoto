@@ -25,7 +25,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	var owner bool
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("set my username: error reading request body")
+		ctx.Logger.WithError(err).Error("ban user: error reading request body")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -35,7 +35,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	var target UsernameReqBody
 	err = json.Unmarshal(body, &target)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("set my username: error decoding json")
+		ctx.Logger.WithError(err).Error("ban user: error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -45,8 +45,8 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if exists != true {
-		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
+	if !exists {
+		ctx.Logger.WithError(err).Error("ban user: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -63,7 +63,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	ctx.Logger.Infof("checks done, user not banned yet")
 	err = rt.db.BanUser(usernameRequestUser, usernameTargetUser)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("ban user/db.BanUser: error executing insert query")
+		ctx.Logger.WithError(err).Error("ban user, db.BanUser: error executing insert query")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

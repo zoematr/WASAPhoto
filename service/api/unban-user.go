@@ -15,7 +15,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if exists != true {
+	if !exists {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return

@@ -60,22 +60,9 @@ func (rt *_router) handleLogin(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	/*
-		// w.Header().Set("Content-Type", "plain/text")
-		// err = json.NewEncoder(w).Encode(token)
-		// consider if there is an error, like the user can't be logged in
-		ctx.Logger.Infof("This is the token %d", token)
-		w.Header().Set("Authorization", "Bearer "+strconv.Itoa(token))
-		ctx.Logger.Infof("Authorization header set to: Bearer %d", token)
-		ctx.Logger.Infof("Authorization header set to: Bearer %s", r.Header.Get("Authorization"))
-		if r.Header.Get("Authorization") != ""{
-			ctx.Logger.Infof("The auth header exists")
-		} else {
-			ctx.Logger.Infof("The auth header doesnt exists")
-		}*/
+
 	w.WriteHeader(http.StatusOK)
 	ctx.Logger.Infof("The token is being encoded in the response body")
 	_ = json.NewEncoder(w).Encode(token)
-	return
 
 }

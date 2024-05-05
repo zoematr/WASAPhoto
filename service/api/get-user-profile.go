@@ -19,7 +19,11 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	tokenUserRequesting := extractToken(authString)
 	userRequesting, err := rt.db.GetUsernameFromToken(tokenUserRequesting)
-
+	if err != nil {
+		ctx.Logger.WithError(err).Error("get-user-profile: error retrieving username from token")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	targetUser := ps.ByName("username")
 
 	var followers []string

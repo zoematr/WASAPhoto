@@ -26,7 +26,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	if banned != false {
+	if banned {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -37,7 +37,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if exists != true {
+	if !exists {
 		ctx.Logger.WithError(err).Error("delete-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return

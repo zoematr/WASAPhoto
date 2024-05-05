@@ -13,6 +13,11 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	w.Header().Set("Content-Type", "application/json")
 	authToken := r.Header.Get("Authorization")
 	requestingUser, err := rt.db.GetUsernameFromToken(extractToken(authToken))
+	if err != nil {
+		ctx.Logger.WithError(err).Error("uncomment-photo: error retrieving username from token")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	targetPhotoId := ps.ByName("photoid")
 	targetCommentId := ps.ByName("commentid")
 
@@ -23,7 +28,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if exists != true {
+	if !exists {
 		ctx.Logger.WithError(err).Error("uncomment-photo: the photo does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -37,7 +42,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if exists != true {
+	if !exists {
 		ctx.Logger.WithError(err).Error("uncomment-photo: the comment does not exist")
 		w.WriteHeader(http.StatusNotFound)
 		return

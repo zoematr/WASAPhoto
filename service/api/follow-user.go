@@ -132,5 +132,5 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		AlreadyBanned:   alreadybanned,
 		OwnProfile:      owner,
 	})
-	return
+
 }

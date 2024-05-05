@@ -17,6 +17,11 @@ func (rt *_router) uplaodPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	pathUsername := ps.ByName("username")
 	// get the username from path and then get the token from the db because i did not manage to do it inside of validaterequestingUser
 	tokenDbPath, err := rt.db.GetTokenFromUsername(pathUsername)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("photo-upload: error retrieving token")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	// Verifica l'identità dell'utente che effettua la richiesta
 	valid := validateRequestingUser(tokenDbPath, authToken)
 	if valid != 0 {
