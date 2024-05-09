@@ -1,9 +1,5 @@
 package database
 
-import (
-	"fmt"
-)
-
 func (db *appdbimpl) AddPhoto(p Photo) error {
 	// add db
 	_, err := db.c.Exec("INSERT INTO photos (username, datetime, photofile) VALUES (?, ?, ?)",
@@ -177,16 +173,12 @@ func (db *appdbimpl) CommentExists(commentid string) (bool, error) {
 
 func (db *appdbimpl) DoesUserLikePhoto(photoid string, likerusername string) (bool, error) {
 	// checks if a user has liked a photo
-	fmt.Println("doesuserlikephoto is called")
-	fmt.Println("photoid", photoid)
-	fmt.Println("likerusername", likerusername)
 	var cnt int
 	err := db.c.QueryRow("SELECT COUNT(*) FROM likes WHERE photoid = ? AND username = ?",
 		photoid, likerusername).Scan(&cnt)
 	if err != nil {
 		return false, err
 	}
-	fmt.Println("this is cnt", cnt)
 
 	// If counter 1 then the photo is liked already
 	if cnt == 1 {
