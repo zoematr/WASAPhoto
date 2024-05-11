@@ -4,7 +4,7 @@
       <div v-if="userProfile" class="user-info">
         <p class="username">{{ userProfile.Username }}</p>
         <p class="follower-count">Followers: {{ userProfile.Followers ? userProfile.Followers.length : 0 }}</p>
-        <p class="following-count">Followings: {{ userProfile.Followings ? userProfile.Followings.length : 0 }}</p>
+        <p class="following-count">Following: {{ userProfile.Following ? userProfile.Following.length : 0 }}</p>
       </div>
     </div>
     <div v-if="userProfile">

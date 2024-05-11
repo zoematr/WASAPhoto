@@ -2,7 +2,7 @@
   <div>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
       <div :key="componentKey">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#/">WASAPhoto</a>
+        <p class="title">  WASAPhoto</p>
       </div>
       <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -28,36 +28,33 @@
               </form>
               <li class="nav-item">
                 <RouterLink to="/myprofile" class="nav-link">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
+                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#user"/></svg>
                   My Profile
                 </RouterLink>
               </li>
               <li class="nav-item">
                 <RouterLink to="/stream" class="nav-link">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
+                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#image"/></svg>
                   My stream
                 </RouterLink>
               </li>
               <li class="nav-item">
                 <RouterLink to="/users/" class="nav-link">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
+                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#search"/></svg>
                   Search users
                 </RouterLink>
               </li>
             </ul>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-              <span>Actions menu</span>
-            </h6>
             <ul class="nav flex-column">
               <li class="nav-item">
                 <a class="nav-link" href="#" @click="triggerFileInput">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#file-text"/></svg>
+                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#camera"/></svg>
                   Upload Photo
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#" @click="logmeout">
-                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#file-text"/></svg>
+                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#log-out"/></svg>
                   Log out
                 </a>
               </li>
@@ -231,6 +228,12 @@ export default {
     font-size: 1.0rem;
   }
 
+  .title {
+    font-size: 1.2rem;
+    color: #b0d7b2;
+  }
+
+
   button {
   background-color: #4CAF50;
   color: white;
@@ -239,4 +242,5 @@ export default {
   font-size: 16px;
   cursor: pointer;
   }
+
 </style>
