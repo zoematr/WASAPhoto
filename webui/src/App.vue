@@ -27,6 +27,12 @@
                 <button type="submit">Login</button>
               </form>
               <li class="nav-item">
+                <RouterLink to="/myprofile" class="nav-link">
+                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
+                  My Profile
+                </RouterLink>
+              </li>
+              <li class="nav-item">
                 <RouterLink to="/stream" class="nav-link">
                   <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
                   My stream
