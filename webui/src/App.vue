@@ -153,11 +153,8 @@ export default {
         alert('You successfully changed your username!');
         window.location.reload();
       } catch (error) {
-        if (error.response && error.response.data && error.response.data.message) {
-          console.error('Error changing username:', error.response.data.message);
-        } else {
-          console.error('Error changing username:', error);
-        }
+          console.error('An error occurred:', error);
+          alert("There was an error changing the username :( Try another one!");
       }
     }
 
