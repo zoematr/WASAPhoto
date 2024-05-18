@@ -12,8 +12,8 @@
               <p class="date">{{ formatDate(photo.Date) }}</p>
             </div>
             <div class="comment-input">
-              <input v-model="commentText" type="text" placeholder="Enter your comment">
-              <button class="comment-button" @click="commentPhoto(photo, commentText)">Comment</button>
+              <input v-model="commentText[photo.PhotoId]" type="text" placeholder="Enter your comment">
+              <button class="comment-button" @click="commentPhoto(photo, commentText[photo.PhotoId])">Comment</button>
             </div>
           </div>
           <comment-component :comments="photo.Comments" ref="commentComponent" @delete-comment="CommentDelete($event, photo)"></comment-component>
@@ -54,7 +54,7 @@ export default {
   },
   data() {
     return {
-      commentText: '',
+      commentText: {},
       storedUsername: localStorage.getItem("username") 
     };
   },
@@ -79,21 +79,20 @@ export default {
         }
         const blob = new Blob([byteArray], { type: 'image/jpeg' });
 
-        // Create blob URL for the image
         const imageUrl = URL.createObjectURL(blob);
 
-        // Check if imageUrl is not null or empty
         if (!imageUrl) {
           console.error('Generated image URL is null or empty:', imageUrl);
-          return ''; // Return empty string if imageUrl is not valid
+          return '';
         }
 
         return imageUrl;
       } catch (error) {
         console.error('Error converting photo data to URL:', error);
-        return ''; // Return empty string if an error occurs
+        return '';
       }
     },
+
     getLocalStorageUsername() {
       return localStorage.getItem("username");
     },
@@ -141,7 +140,7 @@ export default {
             }
           });
           // const newComment = response.data;
-          // photo.Comments.push(newComment);
+          photo.Comments.push(response.data);
           alert('You commented the photo!');
           // location.reload();
           this.commentText = '';

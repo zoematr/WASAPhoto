@@ -33,7 +33,6 @@ export default {
   },
   methods: {
     async getMyUserProfile() {
-      this.searched = true;
       try {
         const response = await instance.get(`/users/${localStorage.getItem('username')}`, {
           headers: {

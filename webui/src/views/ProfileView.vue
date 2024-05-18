@@ -102,7 +102,6 @@ export default {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        // Update AlreadyFollowed directly
         this.userProfile.AlreadyFollowed = false;
       } catch (error) {
         console.error(error);
