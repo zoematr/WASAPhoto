@@ -37,7 +37,6 @@
   </div>
 </template>
 
-
 <script>
 import instance from '../services/axios.js';
 import CommentComponent from './CommentComponent.vue';
@@ -55,7 +54,7 @@ export default {
   data() {
     return {
       commentText: {},
-      storedUsername: localStorage.getItem("username") 
+      storedUsername: localStorage.getItem("username")
     };
   },
   computed: {
@@ -92,20 +91,20 @@ export default {
         return '';
       }
     },
-
+    
     getLocalStorageUsername() {
       return localStorage.getItem("username");
     },
-    async DeletePhoto(photo){
+    async DeletePhoto(photo) {
       try {
-        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}`,  {
+        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         alert('You deleted your photo!');
-        // location.reload();
+        this.$emit('update-photos'); // to show changes in the photos, emit to parent component
       } catch (error) {
         console.error('Error deleting the photo', error);
       }
@@ -127,23 +126,17 @@ export default {
       return commenttext.length > 1 && commenttext.length <= 400;
     },
     async commentPhoto(photo, commentText) {
-      if (this.isValidComment(commentText)) {
-        console.log(this.commentText)
-        console.log(photo.Username)
-        console.log(photo.PhotoId)
-        console.log("this is the token", localStorage.getItem('token'))
+      if (await this.isValidComment(commentText)) {
         try {
-          const response = await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/`, commentText ,  {
+          const response = await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/`, commentText, {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
           });
-          // const newComment = response.data;
-          photo.Comments.push(response.data);
           alert('You commented the photo!');
-          // location.reload();
-          this.commentText = '';
+          this.$emit('update-photos'); // update the photos to show the changes
+          this.commentText[photo.PhotoId] = '';
         } catch (error) {
           console.error('Error commenting the photo:', error);
         }
@@ -154,16 +147,16 @@ export default {
     CommentDelete(commentid, photo) {
       this.handleDeleteComment(commentid, photo);
     },
-    async handleDeleteComment(commentid, photo){
+    async handleDeleteComment(commentid, photo) {
       try {
-        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/${commentid}`,  {
+        const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/comments/${commentid}`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         alert('You deleted your comment!');
-        // location.reload();
+        this.$emit('update-photos');
       } catch (error) {
         console.error('Error deleting the comment', error);
       }
@@ -175,14 +168,13 @@ export default {
         } else {
           await this.likePhoto(photo);
         }
+        this.$emit('update-photos');
       } catch (error) {
         console.error(error);
       }
     },
-    async likePhoto(photo){
+    async likePhoto(photo) {
       try {
-        console.log("this is the token for like photo")
-        console.log(localStorage.getItem('token'))
         const response = await instance.post(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/`, `Bearer ${localStorage.getItem('token')}`, {
           headers: {
             'Content-Type': 'application/json',
@@ -190,30 +182,29 @@ export default {
           }
         });
         alert('You liked the photo!');
-        photo.AlreadyLiked = true; // This line updates the photo.AlreadyLiked property
-        // location.reload();
+        photo.AlreadyLiked = true;
       } catch (error) {
         console.error('Error liking the photo', error);
       }
     },
-    async unlikePhoto(photo){
+    async unlikePhoto(photo) {
       try {
         const response = await instance.delete(`/users/${photo.Username}/photos/${photo.PhotoId}/likes/${localStorage.getItem('username')}`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         alert('You unliked the photo!');
-        photo.AlreadyLiked = false; // This line updates the photo.AlreadyLiked property
-        // location.reload();
+        photo.AlreadyLiked = false;
       } catch (error) {
         console.error('Error unliking the photo', error);
       }
     }
   }
-}
+};
 </script>
+
 
 <style scoped>
 .photo-container {

@@ -20,14 +20,13 @@
       </div>
     </div>
     <div v-if="userProfile">
-      <PhotoComponent :photos="userProfile.Photos" />
+      <PhotoComponent :photos="userProfile.Photos" @update-photos="searchUser" />
     </div>
     <div v-else-if="searched && !userProfile">
       <p>User not found</p>
     </div>
   </div>
 </template>
-
 
 <script>
 import instance from '../services/axios.js';
@@ -72,7 +71,6 @@ export default {
         } else {
           await this.followUser();
         }
-        // Call searchUser again to update userProfile with the latest data
         await this.searchUser();
       } catch (error) {
         console.error(error);
@@ -115,7 +113,6 @@ export default {
         } else {
           await this.banUser();
         }
-        // Call searchUser again to update userProfile with the latest data
         await this.searchUser();
       } catch (error) {
         console.error(error);
@@ -150,8 +147,6 @@ export default {
         console.error(error);
       }
     }
-
-
   },
   created() {
     if (this.searchedUsername) {
@@ -160,6 +155,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .container {
