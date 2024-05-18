@@ -88,9 +88,13 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if db == nil {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
+	_, err := db.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		return nil, fmt.Errorf("error enabling foreign keys: %w", err)
+	}
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
 	// fmt.Println("this is the db error")
 	// fmt.Println(err)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -112,14 +116,14 @@ func New(db *sql.DB) (AppDatabase, error) {
 			username TEXT NOT NULL,
 			photofile VARBINARY(100000) NOT NULL,
 			datetime TEXT NOT NULL DEFAULT '0000-01-01T00:00:00Z',
-			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE
 		);
 		
 		CREATE TABLE IF NOT EXISTS likes (
 			photoid INTEGER NOT NULL,
 			username TEXT NOT NULL,
-			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
-			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE,
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE ON UPDATE CASCADE,
 			PRIMARY KEY (photoid, username)
 		);
 		
@@ -128,23 +132,23 @@ func New(db *sql.DB) (AppDatabase, error) {
 			photoid INTEGER NOT NULL,
 			username TEXT NOT NULL,
 			content TEXT NOT NULL,
-			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE,
-			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE
+			FOREIGN KEY(photoid) REFERENCES photos(photoid) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE
 		);
 		
 		CREATE TABLE IF NOT EXISTS banned (
 			username TEXT NOT NULL,
 			bannedusername TEXT NOT NULL,
-			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
-			FOREIGN KEY(bannedusername) REFERENCES users(username) ON DELETE CASCADE,
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY(bannedusername) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE,
 			PRIMARY KEY (username, bannedusername)
 		);
 		
 		CREATE TABLE IF NOT EXISTS followers (
 			username TEXT NOT NULL,
 			followerusername TEXT NOT NULL,
-			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE,
-			FOREIGN KEY(followerusername) REFERENCES users(username) ON DELETE CASCADE,
+			FOREIGN KEY(username) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY(followerusername) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE,
 			PRIMARY KEY (username, followerusername)
 		);
 		
